@@ -1,23 +1,53 @@
-from PIL import Image
+from argparse import ArgumentParser
 from pathlib import Path
-import argparse
+from typing import Any
+
+from PIL import Image, ImageDraw, ImageFont
+from gw2api import GuildWars2Client
+from gw2api.objects.api_version_2 import Maps
+
+from data import maps
 
 
 def main():
     args = parse_arguments()
-    generate_maps(args)
+    map_data = load_map_data()
+    generate_maps(args, map_data)
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-t', '--tiles', default='input/tiles', help="The input tiles directory")
+    parser = ArgumentParser()
+    parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[2], help="The zoom levels to generate the maps for")
     return parser.parse_args()
 
 
-def generate_maps(args):
-    tile_size = 256
+def load_map_data():
+    def split_list(input_list, sublist_size):
+        return [input_list[i:i + sublist_size] for i in range(0, len(input_list), sublist_size)]
+
+    page_size = 200
+    gw2_client: Any = GuildWars2Client()
+    maps_api: Maps = gw2_client.maps
+    map_ids = maps.MapList().get_all_ids()
+    maps_for_display = []
+
+    for ids in split_list(map_ids, page_size):
+        for m in maps_api.get(ids=ids):
+            if ('continent_id' in m and m['continent_id'] == 1
+                    and 'type' in m and m['type'] == 'Public'
+                    and 'floors' in m and 1 in m['floors']):
+                maps_for_display.append(m)
+
+    return maps_for_display
+
+
+def generate_maps(args, map_data):
+    tile_image_size = 256
+    tile_coord_size_zoom_1 = 2 ** 14
+    font = ImageFont.truetype("arial.ttf", 16)
+
     continent = 1
     floor = 1
 
@@ -29,16 +59,29 @@ def generate_maps(args):
             file.unlink()
 
     # Load and combine the tiles into the image
-    for z in args.zoom:
-        max_x, max_y = get_tile_count(args, continent, floor, z)
-        image = Image.new("RGB", (tile_size * max_x, tile_size * max_y))
+    for zoom in args.zoom:
+        tile_coord_size = tile_coord_size_zoom_1 / (2 ** (zoom - 1))
+        tile_coord_multiplier = tile_image_size / tile_coord_size
+        max_x, max_y = get_tile_count(args, continent, floor, zoom)
+        image = Image.new("RGB", (tile_image_size * max_x, tile_image_size * max_y))
+        draw = ImageDraw.Draw(image)
+
+        # Merge tiles into the output image
         for x in range(max_x):
             for y in range(max_y):
-                tile = Image.open(get_tile_path(args, continent, floor, z, x, y))
-                image.paste(tile, (x * tile_size, y * tile_size))
+                tile = Image.open(get_tile_path(args, continent, floor, zoom, x, y))
+                image.paste(tile, (x * tile_image_size, y * tile_image_size))
 
-        image.save(f'{args.output}/map_{z}.png')
-        print(f"Finished zoom {z}")
+        # Draw map boundaries
+        for m in map_data:
+            rect = m['continent_rect']
+            image_rect = (rect[0][0] * tile_coord_multiplier, rect[0][1] * tile_coord_multiplier, rect[1][0] * tile_coord_multiplier, rect[1][1] * tile_coord_multiplier)
+            draw.rectangle(image_rect, outline='white', width=1)
+            image_rect_center = ((image_rect[0] + image_rect[2]) / 2, (image_rect[1] + image_rect[3]) / 2)
+            draw.text(image_rect_center, m['name'], fill='white', font=font, anchor='mm')
+
+        image.save(f'{args.output}/map_{zoom}.png')
+        print(f"Finished zoom {zoom}.")
 
 
 def get_tile_count(args, continent: int, floor: int, zoom: int):
