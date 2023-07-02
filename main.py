@@ -9,24 +9,26 @@ from map.map_overlay import ZoneBoundaryOverlay
 
 def main():
     args = parse_arguments()
-    zone_data = DataApi.load_zone_data()
-    generate_maps(args, zone_data)
+    generate_maps(args)
 
 
 def parse_arguments():
     parser = ArgumentParser()
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
-    parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[1, 3], help="The zoom levels to generate the maps for")
+    parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[3], help="The zoom levels to generate the maps for")
+    parser.add_argument('--no-overrides', dest='overrides', action='store_false',
+                        help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
     return parser.parse_args()
 
 
-def generate_maps(args, zone_data):
-    prepare_output_directory(args)
-
+def generate_maps(args):
     continent_id = 1
     floor_id = 1
 
+    prepare_output_directory(args)
+
+    zone_data = DataApi.load_zone_data(args.overrides)
     map_params = continent_map_params[continent_id]
     tile_source = LocalMapTileSource(args.tiles)
     map_generator = MapGenerator(map_params, tile_source)
