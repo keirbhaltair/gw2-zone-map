@@ -1,10 +1,8 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
-from data.continents import continent_map_params
-from data.zones import DataApi
-from map.map_generator import MapGenerator, LocalMapTileSource
-from map.map_overlay import ZoneBoundaryOverlay
+import data
+import mapgen
 
 
 def main():
@@ -28,15 +26,18 @@ def generate_maps(args):
 
     prepare_output_directory(args)
 
-    zone_data = DataApi.load_zone_data(args.overrides)
-    map_params = continent_map_params[continent_id]
-    tile_source = LocalMapTileSource(args.tiles)
-    map_generator = MapGenerator(map_params, tile_source)
-    map_overlay = ZoneBoundaryOverlay()
+    tile_source = mapgen.map_generator.LocalMapTileSource(args.tiles)
+    map_generator = mapgen.map_generator.MapGenerator(tile_source)
+    map_overlay = mapgen.map_overlay.ZoneBoundaryOverlay()
+    zone_data = mapgen.data_api.load_zone_data(args.overrides)
+
+    map_params = data.continents.continent_map_params[continent_id]
+    sector = data.sectors.sectors['Tyria']
 
     for zoom in args.zoom:
-        image = map_generator.generate_map_image(continent_id, floor_id, zoom)
-        map_overlay.draw_overlay(image, map_params, zoom, zone_data)
+        map_coord = mapgen.map_coordinates.MapCoordinateSystem(map_params, zoom, sector)
+        image = map_generator.generate_map_image(continent_id, floor_id, map_coord)
+        map_overlay.draw_overlay(image, zone_data, map_coord)
         image.save(f'{args.output}/zoom_{zoom}.png')
         print(f"Finished zoom {zoom}.")
 

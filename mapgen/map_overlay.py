@@ -3,15 +3,15 @@ from urllib.request import urlopen
 
 from PIL import Image, ImageFont, ImageDraw
 
-from data.continents import MapParameters
+from mapgen.map_coordinates import MapCoordinateSystem
+
+font_regular_url = urlopen("https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/font/menomonia.ttf")
+font_italic_url = urlopen("https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/font/menomonia-italic.ttf")
 
 
 class MapOverlay(ABC):
-    font_regular_url = urlopen("https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/font/menomonia.ttf")
-    font_italic_url = urlopen("https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/font/menomonia-italic.ttf")
-
     @abstractmethod
-    def draw_overlay(self, image: Image, map_params: MapParameters, zoom: int, zone_data: list[dict]):
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem):
         pass
 
 
@@ -25,25 +25,26 @@ class ZoneBoundaryOverlay(MapOverlay):
         'story': {'order': 0, 'color': (255, 160, 0), 'show_level': False, 'label': 'Story'}
     }
 
-    def draw_overlay(self, image: Image, map_params: MapParameters, zoom: int, zone_data: list[dict]):
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem):
         label_multiline_offset = 22
-        zone_name_font = ImageFont.truetype(MapOverlay.font_regular_url, 20)
-        label_font = ImageFont.truetype(MapOverlay.font_italic_url, 16)
+        zone_name_font = ImageFont.truetype(font_regular_url, 20)
+        label_font = ImageFont.truetype(font_italic_url, 16)
 
         draw = ImageDraw.Draw(image)
-
-        tile_coord_size = map_params.tile_coord_size_min_zoom * (map_params.zoom_factor ** (zoom - map_params.min_zoom))
-        tile_coord_multiplier = map_params.tile_image_size / tile_coord_size
 
         zone_data.sort(key=lambda z: (ZoneBoundaryOverlay.category_settings[z['category']]['order'], z['id']))
 
         for zone in zone_data:
-            rect = zone['continent_rect']
+            continent_rect = zone['continent_rect']
+
+            if not map_coord.is_rect_contained_in_sector(continent_rect):
+                print(f"Skipping zone {zone['name']} as it's outside of the rendered sector.")
+                continue
+
             category = zone['category']
             settings = ZoneBoundaryOverlay.category_settings[category]
 
-            image_rect = (
-                (rect[0][0] * tile_coord_multiplier, rect[0][1] * tile_coord_multiplier), (rect[1][0] * tile_coord_multiplier, rect[1][1] * tile_coord_multiplier))
+            image_rect = map_coord.continent_to_sector_image_rect(continent_rect)
             draw.rectangle(image_rect, outline=settings['color'], width=1)
 
             text_y_offset = 0
