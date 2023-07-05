@@ -108,6 +108,9 @@ zone_ids: dict[str, list[int]] = {
 }
 
 zone_data_overrides: dict[int: dict] = {
+    139: {  # Rata Sum
+        'continent_rect': [[37376, 36096], [39936, 38654]]
+    },
     988: {  # Dry Top
         'continent_rect': [[36608, 32128], [38656, 33536]]
     },
@@ -127,7 +130,7 @@ zone_data_overrides: dict[int: dict] = {
         'continent_rect': [[37374, 44676], [41214, 47358]]
     },
     1195: {  # Draconis Mons
-        'continent_rect': [[34716, 40034], [38560, 43134]]
+        'continent_rect': [[35228, 40290], [38176, 43134]]
     },
     1263: {  # Domain of Istan
         'continent_rect': [[55318, 59966], [58858, 63406]]
@@ -135,7 +138,13 @@ zone_data_overrides: dict[int: dict] = {
     1288: {  # Domain of Kourna
         'continent_rect': [[63624, 59572], [67212, 63806]]
     },
+    1419: {  # Isle of Reflection
+        'continent_rect': [[21319, 103785], [23239, 105705]]
+    },
     1428: {  # Arborstone
         'continent_rect': [[29185, 100890], [30141, 101657]]
+    },
+    1465: {  # Thousand Seas Pavilion
+        'continent_rect': [[20900, 98253], [22052, 99405]]
     },
 }

@@ -5,8 +5,8 @@ from PIL import Image, ImageFont, ImageDraw
 
 from mapgen.map_coordinates import MapCoordinateSystem
 
-font_regular_url = urlopen("https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/font/menomonia.ttf")
-font_italic_url = urlopen("https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/font/menomonia-italic.ttf")
+font_regular_url = "https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/font/menomonia.ttf"
+font_italic_url = "https://d1h9a8s8eodvjz.cloudfront.net/fonts/menomonia/08-02-12/font/menomonia-italic.ttf"
 
 
 class MapOverlay(ABC):
@@ -27,8 +27,8 @@ class ZoneBoundaryOverlay(MapOverlay):
 
     def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem):
         label_multiline_offset = 22
-        zone_name_font = ImageFont.truetype(font_regular_url, 20)
-        label_font = ImageFont.truetype(font_italic_url, 16)
+        zone_name_font = ImageFont.truetype(urlopen(font_regular_url), 20)
+        label_font = ImageFont.truetype(urlopen(font_italic_url), 16)
 
         draw = ImageDraw.Draw(image)
 
@@ -38,7 +38,6 @@ class ZoneBoundaryOverlay(MapOverlay):
             continent_rect = zone['continent_rect']
 
             if not map_coord.is_rect_contained_in_sector(continent_rect):
-                print(f"Skipping zone {zone['name']} as it's outside of the rendered sector.")
                 continue
 
             category = zone['category']
