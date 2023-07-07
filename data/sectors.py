@@ -14,7 +14,7 @@ composites_by_continent_id: dict[int, MapComposite] = {
     1: MapComposite([
         ((0, 0), _composite_sectors['Tyria']),
         ((0, _composite_sectors['Tyria'].continent_rect[1][1] - _composite_sectors['Tyria'].continent_rect[0][1]
-          - (_composite_sectors['Cantha'].continent_rect[1][1] - _composite_sectors['Cantha'].continent_rect[0][1])),
+          - _composite_sectors['Cantha'].continent_rect[1][1] + _composite_sectors['Cantha'].continent_rect[0][1]),
          _composite_sectors['Cantha']),
     ])
 }

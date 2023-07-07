@@ -25,7 +25,7 @@ def parse_arguments():
 
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
-    parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[3], help="The zoom levels to generate the maps for")
+    parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[1, 2, 3], help="The zoom levels to generate the maps for")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
 

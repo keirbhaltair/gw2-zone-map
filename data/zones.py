@@ -111,6 +111,9 @@ zone_data_overrides: dict[int: dict] = {
     139: {  # Rata Sum
         'continent_rect': [[37376, 36096], [39936, 38654]]
     },
+    335: {  # Claw Island
+        'continent_rect': [[46720, 32256], [48000, 33792]]
+    },
     988: {  # Dry Top
         'continent_rect': [[36608, 32128], [38656, 33536]]
     },
@@ -131,6 +134,12 @@ zone_data_overrides: dict[int: dict] = {
     },
     1195: {  # Draconis Mons
         'continent_rect': [[35228, 40290], [38176, 43134]]
+    },
+    1210: {  # Crystal Oasis
+        'continent_rect': [[57256, 42304], [62376, 44800]]
+    },
+    1228: {  # Elon Riverlands
+        'continent_rect': [[58240, 44800], [61824, 48192]]
     },
     1263: {  # Domain of Istan
         'continent_rect': [[55318, 59966], [58858, 63406]]

@@ -7,7 +7,7 @@ def combine_part_images(parts: list[tuple[(int, int), Image]]) -> Image:
 
     full_image = Image.new("RGB", total_size)
     full_image_draw = ImageDraw.Draw(full_image, "RGBA")
-    outline_width = 9
+    outline_width = 7
 
     for part in parts:
         part_top_left = part[0]
