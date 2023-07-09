@@ -79,40 +79,18 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (49736, 38784),  # Sparkfly Fen - Straits of Devastation
         (36608, 31723),  # The Silverwastes - Verdant Brink
     ],
-    'strike/asura_gate': [
-        (29806.95, 101538.15),  # Arborstone
-        (57853.3, 21830.8),  # Eye of the North
-    ],
-    'asura_gate': [
-        # (29833.7, 101567.3),  # Arborstone -> Lion's Arch
-        (56816, 30443),  # Black Citadel -> Lion's Arch
-        (49368, 32874),  # Chantry of Secrets -> Straits of Devastation
-        (44706.68, 27352.05),  # Divinity's Reach -> Fields of Ruin
-        (44108.81, 27388.08),  # Divinity's Reach -> Lion's Arch
-        # (57853.3, 21830.8),  # Eye of the North
-        (61826, 34803),  # Fields of Ruin -> Divinity's Reach
-        (49473.9, 29003.23),  # Gendarran Fields -> Straits of Devastation
-        (53266, 30656),  # Hoelbrak -> Lion's Arch
-        (49399.7, 31138),  # Lion's Arch -> Cities
-        (49399.2, 31822.6),  # Lion's Arch -> Mist Portals
-        (50586, 31388.5),  # Lornar's Pass -> Straits of Devastation
-        (38774.3, 36917.39),  # Rata Sum -> Lion's Arch
-        (46642, 36713),  # Southsun Cove -> Lion's Arch
-        (50184, 39787),  # Straits of Devastation -> Order Headquarters
-        (43218.1, 37296.54),  # The Grove -> Lion's Arch
+    'fractal': [
+        (49392.2, 31889.7)
     ],
     'dungeon': [
         (60421.5, 30348.2),  # Ascalonian Catacombs
-        (46046, 28325),  # Caudecus's Manor
+        (46046.0, 28325.0),  # Caudecus's Manor
         (42331.4, 32939.1),  # Twilight Arbor
         (52444.2, 34103.4),  # Sorrow's Embrace
-        (59715.3, 25086),  # Citadel of Flame
+        (59715.3, 25086.0),  # Citadel of Flame
         (55207.6, 25189.8),  # Honor of the Waves
         (53747.7, 38279.5),  # Crucible of Eternity
         (44802.4, 44060.5),  # The Ruined City of Arah
-    ],
-    'fractal': [
-        (49392.2, 31889.7)
     ],
     'raid': [
         (49331.4, 32136.9),  # Lion's Arch Aerodrome hub
@@ -120,6 +98,10 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (35494.9, 30669.7),  # Bloodstone Fen -> Bastion of the Penitent
         (51935.2, 32267.7),  # Lornar's Pass -> Hall of Chains
         (67349.2, 52779.2),  # Domain of Vabbi -> The Key of Ahdashim
+    ],
+    'strike/asura_gate': [
+        (29806.9, 101538.1),  # Arborstone
+        (57853.3, 21830.8),  # Eye of the North
     ],
     'strike': [
         (60113.2, 19683.9),  # Grothmar Valley -> Shiverpeaks Pass
@@ -133,6 +115,24 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (26196, 99894),  # New Kaineng City -> Kaineng Overlook
         (34433, 105132),  # Dragon's End -> Harvest Temple
         (49006.9, 31189.1),  # Lion's Arch -> Old Lion's Court
-    ]
+    ],
+    'asura_gate': [
+        # (29833.7, 101567.3),  # Arborstone -> Lion's Arch
+        (56816, 30443),  # Black Citadel -> Lion's Arch
+        (49368, 32874),  # Chantry of Secrets -> Straits of Devastation
+        (44706.68, 27352.05),  # Divinity's Reach -> Fields of Ruin
+        (44108.81, 27388.08),  # Divinity's Reach -> Lion's Arch
+        # (57853.3, 21830.8),  # Eye of the North
+        (61826, 34803),  # Fields of Ruin -> Divinity's Reach
+        (49473.9, 29003.23),  # Gendarran Fields -> Straits of Devastation
+        (53266, 30656),  # Hoelbrak -> Lion's Arch
+        (49399.7, 31138),  # Lion's Arch -> Cities
+        (49415.9, 31729.1),  # Lion's Arch -> Mist Portals
+        (50586, 31388.5),  # Lornar's Pass -> Straits of Devastation
+        (38774.3, 36917.39),  # Rata Sum -> Lion's Arch
+        (46642, 36713),  # Southsun Cove -> Lion's Arch
+        (50184, 39787),  # Straits of Devastation -> Order Headquarters
+        (43218.1, 37296.54),  # The Grove -> Lion's Arch
+    ],
 }
 

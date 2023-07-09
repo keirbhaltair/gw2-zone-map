@@ -79,11 +79,11 @@ class ZoneMapOverlay(MapOverlay):
             if not map_coord.is_rect_contained_in_sector(continent_rect):
                 continue
 
-            zone_image_bounds = map_coord.continent_to_sector_image_rect(continent_rect)
+            zone_image_rect = map_coord.continent_to_sector_image_rect(continent_rect)
             settings = ZoneMapOverlay.category_settings[zone['category']]
-            drawn_zones.append((zone, zone_image_bounds, settings))
+            drawn_zones.append((zone, zone_image_rect, settings))
 
-            draw.rectangle(zone_image_bounds, outline=settings['color'], width=1)
+            draw.rectangle(zone_image_rect, outline=settings['color'], width=1)
 
         # Draw icons for portals, asura gates, dungeons etc.
         for portal_type in reversed(portals.keys()):
@@ -100,48 +100,62 @@ class ZoneMapOverlay(MapOverlay):
 
         # Draw zone labels
         drawn_zones.sort(key=lambda z: (ZoneMapOverlay.category_settings[z[0]['category']]['label_order'], z[0]['id']))
-        for zone, zone_image_bounds, settings in drawn_zones:
+        for zone, zone_image_rect, settings in drawn_zones:
+            # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden
+            if 'label_rect' in zone:
+                label_image_rect = map_coord.continent_to_sector_image_rect(zone['label_rect'])
+            else:
+                label_image_rect = zone_image_rect
+            if 'label_anchor' in zone:
+                label_anchor = zone['label_anchor']
+                if len(label_anchor) != 2 or label_anchor[0] not in 'lmr' or label_anchor[1] not in 'tmb':
+                    raise ValueError(f"Invalid label anchor: {label_anchor}")
+            else:
+                label_anchor = 'mm'
+
             # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
             zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)
-            label_image_size = (max(250, zone_name_label_bbox[2] + 10, 2 * zone_image_bounds[1][0]),
-                                max(250, 10 * zone_name_label_bbox[3] + 10, 2 * zone_image_bounds[1][1]))
+            label_image_size = (max(250, zone_name_label_bbox[2] + 10, 2 * label_image_rect[1][0] + 20),
+                                max(250, 10 * zone_name_label_bbox[3] + 10, 2 * label_image_rect[1][1] + 20))
             label_image = Image.new('RGBA', label_image_size, (255, 255, 255, 0))
             label_draw = ImageDraw.Draw(label_image, 'RGBA')
+            label_draw_text_anchor = label_anchor[0] + 'a'
 
             # Find the ideal line wrapping for the zone's name and shape
-            zone_image_width = zone_image_bounds[1][0] - zone_image_bounds[0][0]
-            zone_image_height = zone_image_bounds[1][1] - zone_image_bounds[0][1]
+            label_box_image_width = label_image_rect[1][0] - label_image_rect[0][0]
+            label_box_image_height = label_image_rect[1][1] - label_image_rect[0][1]
             height_for_max_width = 2 * (main_label_metrics[0] + main_label_metrics[1] + label_margin) + sub_label_metrics[0] + sub_label_metrics[1]
             height_for_min_width = 1 * (main_label_metrics[0] + label_margin) + height_for_max_width
-            height_diff_ratio = (zone_image_height - height_for_max_width) / (height_for_min_width - height_for_max_width)
-            main_label_ideal_width = (2 - max(0, min(1, height_diff_ratio))) * zone_image_width - 8
+            height_diff_ratio = (label_box_image_height - height_for_max_width) / (height_for_min_width - height_for_max_width)
+            main_label_ideal_width = (2 - max(0, min(1, height_diff_ratio))) * label_box_image_width - 8
             main_label_min_width = 4 * main_label_metrics[0]
             main_label_bounded_ideal_width = min(label_image_size[0], max(main_label_min_width, main_label_ideal_width))
             wrapped_zone_name_lines = get_wrapped_text_lines(zone['name'], main_label_font, main_label_bounded_ideal_width)
 
             # Draw label for the zone name
-            label_pos_x = label_image.size[0] / 2
+            label_pos_x = label_image.size[0] / 2 if label_anchor[0] == 'm' else 2 if label_anchor[0] == 'l' else label_image.size[0] - 2
             label_pos_y = 0
             for line in wrapped_zone_name_lines:
-                label_draw.text((label_pos_x, label_pos_y), line, font=main_label_font, anchor='ma', align='center', stroke_width=2, fill=settings['color'], stroke_fill='black')
+                label_draw.text((label_pos_x, label_pos_y), line,
+                                font=main_label_font, anchor=label_draw_text_anchor, align='center', stroke_width=2, fill=settings['color'], stroke_fill='black')
                 label_pos_y = label_pos_y + main_label_metrics[0] + label_margin
             label_pos_y = label_pos_y + main_label_metrics[1]
 
             # Draw the zone's description label (City, Dungeon etc.)
             if settings['label']:
-                label_draw.text((label_pos_x, label_pos_y), settings['label'], fill=settings['color'], font=sub_label_font, anchor='ma', stroke_width=2, stroke_fill='black')
+                label_draw.text((label_pos_x, label_pos_y), settings['label'],
+                                fill=settings['color'], font=sub_label_font, anchor=label_draw_text_anchor, stroke_width=2, stroke_fill='black')
                 label_pos_y = label_pos_y + sub_label_metrics[0] + sub_label_metrics[1] + label_margin
 
             # Draw the zone's level distribution label
             if settings['show_level']:
                 level_text = str(zone['min_level']) if zone['min_level'] == zone['max_level'] else f"{zone['min_level']}–{zone['max_level']}"
-                label_draw.text((label_pos_x, label_pos_y), level_text, fill=settings['color'], font=sub_label_font, anchor='ma', stroke_width=2, stroke_fill='black')
+                label_draw.text((label_pos_x, label_pos_y), level_text,
+                                fill=settings['color'], font=sub_label_font, anchor=label_draw_text_anchor, stroke_width=2, stroke_fill='black')
 
             # Paste the resulting label into the actual map image
-            label_bbox = label_image.getbbox()
-            label_center = (round((zone_image_bounds[0][0] + zone_image_bounds[1][0] - label_image_size[0]) / 2),
-                            round((zone_image_bounds[0][1] + zone_image_bounds[1][1] - label_bbox[3] + label_bbox[1]) / 2))
-            image.paste(label_image, label_center, label_image)
+            label_paste_pos = self.calculate_label_paste_position(label_anchor, label_image, label_image_rect)
+            image.paste(label_image, label_paste_pos, label_image)
 
     @staticmethod
     def get_portal_icon(portal_type, icon_size):
@@ -182,6 +196,26 @@ class ZoneMapOverlay(MapOverlay):
         resized_size = line_rect[0] + margin, line_rect[1] + margin
         smooth_line_image = super_sampled_image.resize(resized_size, resample=Image.LANCZOS)
         map_image.paste(smooth_line_image, paste_coord, smooth_line_image)
+
+    @staticmethod
+    def calculate_label_paste_position(label_anchor, label_image, label_image_rect):
+        label_bbox = label_image.getbbox()
+        label_paste_pos = []
+        match label_anchor[0]:
+            case 'l':
+                label_paste_pos.append(label_image_rect[0][0])
+            case 'm':
+                label_paste_pos.append(round((label_image_rect[0][0] + label_image_rect[1][0] - label_image.size[0]) / 2))
+            case 'r':
+                label_paste_pos.append(label_image_rect[1][0] - label_image.size[0])
+        match label_anchor[1]:
+            case 't':
+                label_paste_pos.append(label_image_rect[0][1])
+            case 'm':
+                label_paste_pos.append(round((label_image_rect[0][1] + label_image_rect[1][1] - label_bbox[3] + label_bbox[1]) / 2))
+            case 'b':
+                label_paste_pos.append(label_image_rect[1][1] - label_bbox[3] + label_bbox[1] - 4)
+        return label_paste_pos
 
 
 def get_wrapped_text_lines(text: str, font: FreeTypeFont, line_length: int):

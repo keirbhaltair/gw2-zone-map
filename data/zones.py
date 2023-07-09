@@ -111,27 +111,86 @@ zone_ids: dict[str, list[int]] = {
     ],
 }
 
+"""
+Custom overrides for the data coming from the API to make the resulting map look a bit cleaner. This can also add custom data for the zones:
+- label_rect: The continent rect bounds to display the zone label in. Useful if multiple labels would overlap.
+- label_anchor: Two letter description for where in the zone or label rect we want to align the label. First letter is the horizontal alignment (l = left, m = middle, r = right),
+second letter is vertical alignment (t = top, m = middle, b = bottom). Default is middle ('mm').
+"""
 zone_data_overrides: dict[int: dict] = {
+    36: {  # Ascalonian Catacombs
+        'label_rect': [[61184, 29120], [62464, 30144]],
+        'label_anchor': 'lm'
+    },
+    50: {  # Lion's Arch
+        'label_rect': [[46976, 30720], [48736, 31804]],
+        'label_anchor': 'rm'
+    },
+    64: {  # Sorrow's Embrace
+        'label_rect': [[53696, 33792], [55232, 35328]],
+        'label_anchor': 'lm'
+    },
+    67: {  # Twilight Arbor
+        'label_rect': [[42560, 32704], [43456, 33728]],
+        'label_anchor': 'lt'
+    },
+    69: {  # Citadel of Flame
+        'label_rect': [[59968, 24064], [61248, 25344]],
+        'label_anchor': 'lm'
+    },
+    71: {  # Honor of the Waves
+        'label_rect': [[55424, 24448], [56576, 25600]],
+        'label_anchor': 'lm'
+    },
+    76: {  # Caudecus's Manor
+        'label_rect': [[44672, 27776], [45866, 28800]],
+        'label_anchor': 'rm'
+    },
+    82: {  # Crucible of Eternity
+        'label_rect': [[53952, 37312], [54976, 38592]],
+        'label_anchor': 'lm'
+    },
     139: {  # Rata Sum
-        'continent_rect': [[37376, 36096], [39936, 38654]]
+        'continent_rect': [[37376, 36096], [39936, 38654]],
+        'label_rect': [[37376, 36735], [39936, 38654]],
     },
     335: {  # Claw Island
         'continent_rect': [[46720, 32256], [48000, 33792]]
     },
+    336: {  # Chantry of Secrets
+        'continent_rect': [[48896, 32576], [49664, 33280]],
+        'label_rect': [[49696, 32576], [50720, 33280]],
+        'label_anchor': 'lm'
+    },
     988: {  # Dry Top
         'continent_rect': [[36608, 32128], [38656, 33536]]
     },
+    1043: {  # Auric Basin
+        'label_rect': [[33280, 32896], [35328, 35328]]
+    },
     1062: {  # Spirit Vale
-        'continent_rect': [[36392, 28544], [37112, 30592]]
+        'continent_rect': [[36392, 28544], [37112, 30592]],
+        'label_rect': [[36872, 28592], [38376, 29696]],
+        'label_anchor': 'lt'
+    },
+    1069: {  # Lost Precipice
+        'label_rect': [[32224, 29696], [33504, 30976]],
+        'label_anchor': 'rm'
     },
     1149: {  # Salvation Pass
-        'continent_rect': [[35582, 28544], [36392, 30338]]
+        'continent_rect': [[35582, 28544], [36392, 30338]],
+        'label_rect': [[35582, 28592], [36392, 30306]],
+        'label_anchor': 'mt'
     },
     1155: {  # Lion's Arch Aerodrome
-        'continent_rect': [[49054, 31868], [49641, 32374]]
+        'continent_rect': [[49054, 31868], [49641, 32374]],
+        'label_rect': [[47006, 31804], [49022, 32438]],
+        'label_anchor': 'rm'
     },
     1156: {  # Stronghold of the Faithful
-        'continent_rect': [[34729, 28544], [35582, 30338]]
+        'continent_rect': [[34729, 28544], [35582, 30338]],
+        'label_rect': [[33204, 28592], [35013, 29696]],
+        'label_anchor': 'rt'
     },
     1175: {  # Ember Bay
         'continent_rect': [[37374, 44676], [41214, 47358]]
@@ -151,11 +210,18 @@ zone_data_overrides: dict[int: dict] = {
     1288: {  # Domain of Kourna
         'continent_rect': [[63624, 59576], [67212, 63806]]
     },
+    1370: {  # Eye of the North
+        'continent_rect': [[57344, 21248], [58198, 22102]],
+        'label_rect': [[55008, 21248], [57312, 22102]],
+        'label_anchor': 'rm'
+    },
     1419: {  # Isle of Reflection
         'continent_rect': [[21319, 103785], [23239, 105705]]
     },
     1428: {  # Arborstone
-        'continent_rect': [[29185, 100890], [30141, 101657]]
+        'continent_rect': [[29185, 100890], [30141, 101657]],
+        'label_rect': [[27585, 100890], [29121, 101657]],
+        'label_anchor': 'rm'
     },
     1465: {  # Thousand Seas Pavilion
         'continent_rect': [[20900, 98253], [22052, 99405]]
