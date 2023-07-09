@@ -6,7 +6,7 @@ zone_ids: dict[str, list[int]] = {
         139,  # Rata Sum
         218,  # Black Citadel
         326,  # Hoelbrak
-        # 1155,  # Lion's Arch Aerodrome
+        1155,  # Lion's Arch Aerodrome
         1370,  # Eye of the North
         1428,  # Arborstone
         1465,  # Thousand Seas Pavilion
@@ -105,6 +105,10 @@ zone_ids: dict[str, list[int]] = {
         335,  # Claw Island
         1268,  # Fahranur, the First City
     ],
+
+    'misc': [
+        336,  # Chantry of Secrets
+    ],
 }
 
 zone_data_overrides: dict[int: dict] = {
@@ -145,7 +149,7 @@ zone_data_overrides: dict[int: dict] = {
         'continent_rect': [[55318, 59966], [58858, 63406]]
     },
     1288: {  # Domain of Kourna
-        'continent_rect': [[63624, 59572], [67212, 63806]]
+        'continent_rect': [[63624, 59576], [67212, 63806]]
     },
     1419: {  # Isle of Reflection
         'continent_rect': [[21319, 103785], [23239, 105705]]

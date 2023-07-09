@@ -7,7 +7,7 @@ from mapgen.data_api import load_zone_data
 from mapgen.map_composite import combine_part_images
 from mapgen.map_coordinates import MapCoordinateSystem, MapComposite, MapSector
 from mapgen.map_generator import LocalMapTileSource, MapGenerator
-from mapgen.map_overlay import ZoneBoundaryOverlay
+from mapgen.map_overlay import ZoneMapOverlay
 
 
 def main():
@@ -37,7 +37,7 @@ def generate_maps(args):
 
     tile_source = LocalMapTileSource(args.tiles)
     map_generator = MapGenerator(tile_source)
-    map_overlay = ZoneBoundaryOverlay()
+    map_overlay = ZoneMapOverlay()
     zone_data = load_zone_data(args.overrides)
     map_composite = choose_rendered_area(args)
 

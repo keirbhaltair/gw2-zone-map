@@ -5,8 +5,8 @@ def combine_part_images(parts: list[tuple[(int, int), Image]]) -> Image:
     total_size = (max(pi[0][0] + pi[1].size[0] for pi in parts),
                   max(pi[0][1] + pi[1].size[1] for pi in parts))
 
-    full_image = Image.new("RGB", total_size)
-    full_image_draw = ImageDraw.Draw(full_image, "RGBA")
+    full_image = Image.new('RGB', total_size)
+    full_image_draw = ImageDraw.Draw(full_image, 'RGBA')
     outline_width = 7
 
     for part in parts:

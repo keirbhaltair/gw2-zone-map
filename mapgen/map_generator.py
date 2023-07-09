@@ -27,7 +27,7 @@ class MapGenerator:
 
     def generate_map_image(self, continent: int, floor: int, map_coord: MapCoordinateSystem) -> Image:
         image_dimensions = map_coord.continent_to_full_image_coord(map_coord.sector_dimensions)
-        image = Image.new("RGB", image_dimensions)
+        image = Image.new('RGB', image_dimensions)
 
         top_left_tile = map_coord.continent_to_tile_coord(map_coord.sector_top_left)
         bottom_right_tile = map_coord.continent_to_tile_coord(map_coord.sector_bottom_right)

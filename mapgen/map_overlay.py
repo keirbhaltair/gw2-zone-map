@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
+from urllib.request import urlopen
 
 from PIL import Image, ImageFont, ImageDraw
 from PIL.ImageFont import FreeTypeFont
 
+from data.portals import portals
 from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor
 
 
@@ -15,16 +17,20 @@ def get_font(size: int, bold: bool):
         return ImageFont.truetype(font_file, size)
 
 
-def get_text_zoom_multiplier(map_coord: MapCoordinateSystem):
+def get_zoom_size_multiplier(map_coord: MapCoordinateSystem):
     return ((zoom_factor + 1) / 2) ** map_coord.zoom  # increases exponentially with zoom, but slower
 
 
 def get_main_label_font_size(map_coord: MapCoordinateSystem):
-    return min(32, max(8, round(6 * get_text_zoom_multiplier(map_coord))))
+    return min(32, max(8, round(6 * get_zoom_size_multiplier(map_coord))))
 
 
 def get_sub_label_font_size(map_coord: MapCoordinateSystem):
-    return min(28, max(8, round(4.75 * get_text_zoom_multiplier(map_coord))))
+    return min(28, max(8, round(4.75 * get_zoom_size_multiplier(map_coord))))
+
+
+def get_icon_size(map_coord: MapCoordinateSystem):
+    return min(32, max(12, round(7 * get_zoom_size_multiplier(map_coord))))
 
 
 class MapOverlay(ABC):
@@ -33,29 +39,40 @@ class MapOverlay(ABC):
         pass
 
 
-class ZoneBoundaryOverlay(MapOverlay):
+class ZoneMapOverlay(MapOverlay):
     category_settings = {
         'city': {'boundary_order': 0, 'label_order': 2, 'color': 'white', 'show_level': False, 'label': 'City'},
         'open_world': {'boundary_order': 0, 'label_order': 1, 'color': 'white', 'show_level': True, 'label': None},
         'guild_hall': {'boundary_order': 1, 'label_order': 0, 'color': (255, 160, 0), 'show_level': False, 'label': 'Guild hall'},
         'dungeon': {'boundary_order': 1, 'label_order': 0, 'color': (255, 160, 0), 'show_level': False, 'label': 'Dungeon'},
         'raid': {'boundary_order': 1, 'label_order': 0, 'color': (255, 160, 0), 'show_level': False, 'label': 'Raid'},
-        'story': {'boundary_order': 1, 'label_order': 0, 'color': (255, 160, 0), 'show_level': False, 'label': 'Story'}
+        'story': {'boundary_order': 1, 'label_order': 0, 'color': (255, 160, 0), 'show_level': False, 'label': 'Story'},
+        'misc': {'boundary_order': 1, 'label_order': 0, 'color': (255, 160, 0), 'show_level': False, 'label': None},
+    }
+
+    portals = {
+        'neighbor': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/a/ae/Asura_gate_starter_area_%28map_icon%29.png")), 'line_color': (45, 185, 227, 150)},
+        'asura_gate': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/6/6c/Asura_gate_%28map_icon%29.png")), 'line_color': None},
+        'dungeon': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/3/3c/Dungeon_%28map_icon%29.png")), 'line_color': None},
+        'raid': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/8/86/Raid_%28map_icon%29.png")), 'line_color': (199, 76, 42, 150)},
+        'fractal': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/9/9f/Fractals_of_the_Mists_%28map_icon%29.png")), 'line_color': None},
+        'strike': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/e/e7/Strike_Mission_%28map_icon%29.png")), 'line_color': None},
     }
 
     def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem):
         main_label_font = get_font(get_main_label_font_size(map_coord), True)
         sub_label_font = get_font(get_sub_label_font_size(map_coord), False)
+        icon_size = get_icon_size(map_coord)
 
         main_label_metrics = main_label_font.getmetrics()
         sub_label_metrics = sub_label_font.getmetrics()
         label_margin = map_coord.zoom // 2
 
-        draw = ImageDraw.Draw(image, "RGBA")
+        draw = ImageDraw.Draw(image, 'RGBA')
 
-        # Calculate and draw zone boundaries
+        # Draw zone boundaries
         drawn_zones = []  # list[tuple[zone, zone_image_bounds, zone_settings]]
-        zone_data.sort(key=lambda z: (ZoneBoundaryOverlay.category_settings[z['category']]['boundary_order'], z['id']))
+        zone_data.sort(key=lambda z: (ZoneMapOverlay.category_settings[z['category']]['boundary_order'], z['id']))
         for zone in zone_data:
             continent_rect = zone['continent_rect']
 
@@ -63,20 +80,33 @@ class ZoneBoundaryOverlay(MapOverlay):
                 continue
 
             zone_image_bounds = map_coord.continent_to_sector_image_rect(continent_rect)
-            settings = ZoneBoundaryOverlay.category_settings[zone['category']]
+            settings = ZoneMapOverlay.category_settings[zone['category']]
             drawn_zones.append((zone, zone_image_bounds, settings))
 
             draw.rectangle(zone_image_bounds, outline=settings['color'], width=1)
 
+        # Draw icons for portals, asura gates, dungeons etc.
+        for portal_type in reversed(portals.keys()):
+            portal_icon = self.get_portal_icon(portal_type, icon_size)
+            for portal in portals[portal_type]:
+                portal_image_coord = map_coord.continent_to_sector_image_coord((portal[0], portal[1]))
+                portal_paste_coord = (round(portal_image_coord[0] - portal_icon.size[0] / 2), round(portal_image_coord[1] - portal_icon.size[1] / 2))
+                if len(portal) == 4:
+                    portal2_image_coord = map_coord.continent_to_sector_image_coord((portal[2], portal[3]))
+                    portal2_paste_coord = (round(portal2_image_coord[0] - portal_icon.size[0] / 2), round(portal2_image_coord[1] - portal_icon.size[1] / 2))
+                    self.draw_portal_connection_line(image, portal_image_coord, portal2_image_coord, portal_type)
+                    image.paste(portal_icon, portal2_paste_coord, portal_icon)
+                image.paste(portal_icon, portal_paste_coord, portal_icon)
+
         # Draw zone labels
-        drawn_zones.sort(key=lambda z: (ZoneBoundaryOverlay.category_settings[z[0]['category']]['label_order'], z[0]['id']))
+        drawn_zones.sort(key=lambda z: (ZoneMapOverlay.category_settings[z[0]['category']]['label_order'], z[0]['id']))
         for zone, zone_image_bounds, settings in drawn_zones:
             # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
             zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)
             label_image_size = (max(250, zone_name_label_bbox[2] + 10, 2 * zone_image_bounds[1][0]),
                                 max(250, 10 * zone_name_label_bbox[3] + 10, 2 * zone_image_bounds[1][1]))
-            label_image = Image.new("RGBA", label_image_size, (255, 255, 255, 0))
-            label_draw = ImageDraw.Draw(label_image, "RGBA")
+            label_image = Image.new('RGBA', label_image_size, (255, 255, 255, 0))
+            label_draw = ImageDraw.Draw(label_image, 'RGBA')
 
             # Find the ideal line wrapping for the zone's name and shape
             zone_image_width = zone_image_bounds[1][0] - zone_image_bounds[0][0]
@@ -112,6 +142,46 @@ class ZoneBoundaryOverlay(MapOverlay):
             label_center = (round((zone_image_bounds[0][0] + zone_image_bounds[1][0] - label_image_size[0]) / 2),
                             round((zone_image_bounds[0][1] + zone_image_bounds[1][1] - label_bbox[3] + label_bbox[1]) / 2))
             image.paste(label_image, label_center, label_image)
+
+    @staticmethod
+    def get_portal_icon(portal_type, icon_size):
+        if '/' not in portal_type:
+            template_icon = ZoneMapOverlay.portals[portal_type]['icon']
+            return template_icon.resize((icon_size, icon_size), resample=Image.LANCZOS)
+        else:
+            # Blend multiple icons together so that they're all at least partially visible despite overlapping
+            blended_icon = Image.new('RGBA', (icon_size, icon_size), color=(255, 255, 255, 0))
+            portal_types = portal_type.split('/')
+            arc_angle = 360 / len(portal_types)
+            for i, t in enumerate(portal_types):
+                template_icon = ZoneMapOverlay.portals[t]['icon']
+                resized_icon = template_icon.resize((icon_size, icon_size), resample=Image.LANCZOS)
+                start_angle = i * arc_angle - 90
+                end_angle = (i + 1) * arc_angle - 90
+                mask = Image.new('L', (icon_size, icon_size), color='white')
+                ImageDraw.Draw(mask).pieslice(((0, 0), (icon_size, icon_size)), start_angle, end_angle, width=0, fill='black')
+                blended_icon = Image.composite(blended_icon, resized_icon, mask)
+            return blended_icon
+
+    @staticmethod
+    def draw_portal_connection_line(map_image, portal1_image_coord, portal2_image_coord, portal_type):
+        """Draws the line between two connected far-away portals, with super-sampling for simple, if inefficient, antialiasing."""
+        margin = 2
+        super_sampling_factor = 4
+        line_rect = abs(portal1_image_coord[0] - portal2_image_coord[0]), abs(portal1_image_coord[1] - portal2_image_coord[1])
+        paste_coord = min(portal1_image_coord[0], portal2_image_coord[0]) - margin, min(portal1_image_coord[1], portal2_image_coord[1]) - margin
+        super_sampled_image_size = super_sampling_factor * (line_rect[0] + margin), super_sampling_factor * (line_rect[1] + margin)
+        super_sampled_image = Image.new('RGBA', super_sampled_image_size)
+        super_sampled_draw = ImageDraw.Draw(super_sampled_image)
+
+        line_color = ZoneMapOverlay.portals[portal_type]['line_color']
+        line_coord = ((super_sampling_factor * (portal1_image_coord[0] - paste_coord[0]), super_sampling_factor * (portal1_image_coord[1] - paste_coord[1])),
+                      (super_sampling_factor * (portal2_image_coord[0] - paste_coord[0]), super_sampling_factor * (portal2_image_coord[1] - paste_coord[1])))
+        super_sampled_draw.line(line_coord, fill=line_color, width=2 * super_sampling_factor)
+
+        resized_size = line_rect[0] + margin, line_rect[1] + margin
+        smooth_line_image = super_sampled_image.resize(resized_size, resample=Image.LANCZOS)
+        map_image.paste(smooth_line_image, paste_coord, smooth_line_image)
 
 
 def get_wrapped_text_lines(text: str, font: FreeTypeFont, line_length: int):
