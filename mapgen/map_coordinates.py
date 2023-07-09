@@ -8,7 +8,7 @@ zoom_factor = 2
 @dataclass
 class MapParameters:
     continent_id: int
-    dimensions: (int, int)
+    dimensions: tuple[int, int]
     min_zoom: int
     max_zoom: int
     max_zoom_tile_dimensions: int = tile_image_size
@@ -17,12 +17,22 @@ class MapParameters:
 @dataclass
 class MapSector:
     continent_id: int
-    continent_rect: ((int, int), (int, int))
+    continent_rect: tuple[tuple[int, int], tuple[int, int]] | None
+
+    def width(self):
+        return self.continent_rect[1][0] - self.continent_rect[0][0]
+
+    def height(self):
+        return self.continent_rect[1][1] - self.continent_rect[0][1]
 
 
 @dataclass
-class MapComposite:
-    parts: list[tuple[(int, int), MapSector]]
+class MapLayout:
+    parts: list[tuple[tuple[int, int], MapSector]]
+
+    @classmethod
+    def single_sector(cls, sector: MapSector):
+        return cls([((0, 0), sector)])
 
 
 class MapCoordinateSystem:
