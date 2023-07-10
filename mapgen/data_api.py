@@ -24,8 +24,6 @@ def load_zone_data(use_overrides: bool) -> list[dict]:
             zone_data['category'] = zone_categories_by_id[zone_id]
             zones.append(zone_data)
 
-    print('Loaded zone data from the API.')
-
     return zones
 
 

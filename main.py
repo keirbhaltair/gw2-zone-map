@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-from pathlib import Path
 
 from data.continents import continent_map_params
 from data.layouts import map_layouts
@@ -32,15 +31,17 @@ def parse_arguments():
 
 
 def generate_maps(args):
-    prepare_output_directory(args)
-
     tile_source = LocalMapTileSource(args.tiles)
     map_generator = MapGenerator(tile_source)
     map_overlay = ZoneMapOverlay()
     map_layout = choose_map_layout(args)
+
+    print(f"Loading data from the API...")
     zone_data = load_zone_data(args.overrides)
+    print(f"Data loaded.")
 
     for zoom in args.zoom:
+        print(f"Generating map for zoom {zoom}...")
         part_images = []
 
         for part in map_layout.parts:
@@ -54,21 +55,13 @@ def generate_maps(args):
             part_top_left = map_coord.continent_to_full_image_coord(part[0])
             part_images.append((part_top_left, part_image))
 
-        output_file_name = f'{args.output}/zoom_{zoom}.png'
+        output_file_name = f'{args.output}/zones_{zoom}.png'
         if len(part_images) == 1:
             part_images[0][1].save(output_file_name)
         else:
             combine_part_images(part_images).save(output_file_name)
 
-        print(f"Finished zoom {zoom}.")
-
-
-def prepare_output_directory(args):
-    output_path = Path(args.output)
-    output_path.mkdir(exist_ok=True)
-    for file in output_path.glob('*'):
-        if file.is_file():
-            file.unlink()
+        print(f"Map for zoom {zoom} finished.")
 
 
 def choose_map_layout(args) -> MapLayout:
