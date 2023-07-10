@@ -2,12 +2,12 @@ from argparse import ArgumentParser
 
 from data.continents import continent_map_params
 from data.layouts import map_layouts
-from data.zones import conditional_zone_blacklist, conditional_zone_data_overrides
+from data.zones import conditional_zone_blacklist, conditional_zone_data_overrides, zone_data_overrides
 from mapgen.data_api import load_zone_data
 from mapgen.map_composite import combine_part_images
 from mapgen.map_coordinates import MapCoordinateSystem, MapLayout, MapSector
 from mapgen.map_generator import LocalMapTileSource, MapGenerator
-from mapgen.map_overlay import ZoneMapOverlay, MapOverlay
+from mapgen.map_overlay import MapOverlay, map_overlay_types
 
 
 def main():
@@ -24,6 +24,7 @@ def parse_arguments():
 
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
+    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
     parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[3], help="The zoom levels to generate the maps for")
     parser.add_argument('--lang', default='en', help="Language to generate the map in (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
@@ -41,40 +42,48 @@ def parse_arguments():
 def generate_maps(args):
     tile_source = LocalMapTileSource(args.tiles)
     map_generator = MapGenerator(tile_source)
-    map_overlay = ZoneMapOverlay()
     map_layout = choose_map_layout(args)
 
     print(f"Loading data from the API...")
-    zone_data = load_zone_data(args.overrides, args.lang)
+    zone_data = load_zone_data(args.lang)
     print(f"Data loaded.")
 
     for zoom in args.zoom:
-        print(f"Generating map for zoom {zoom}...")
-        part_images = []
+        print(f"Generating maps for zoom {zoom}...")
+        part_images = {}
 
         map_coord = None
         for part in map_layout.parts:
             sector = part[1]
             map_params = continent_map_params[sector.continent_id]
             map_coord = MapCoordinateSystem(map_params, zoom, sector)
-            custom_zone_data = customize_zone_data(zone_data, map_overlay)
+            part_top_left = map_coord.continent_to_full_image_coord(part[0])
 
             part_image = map_generator.generate_map_image(sector.continent_id, 1, map_coord)
-            map_overlay.draw_overlay(part_image, custom_zone_data, map_coord)
 
-            part_top_left = map_coord.continent_to_full_image_coord(part[0])
-            part_images.append((part_top_left, part_image))
+            for i, overlay_name in enumerate(args.overlay, start=1):
+                if overlay_name not in map_overlay_types:
+                    raise ValueError(f"Invalid overlay name specified ({overlay_name}). Allowed values are: {list(map_overlay_types.keys())}")
+                map_overlay = map_overlay_types[overlay_name]()
+                overridden_zone_data = override_zone_data(zone_data, map_overlay) if args.overrides else zone_data
+                part_image_copy = part_image.copy() if i < len(args.overlay) else part_image
+                map_overlay.draw_overlay(part_image_copy, overridden_zone_data, map_coord)
 
-        output_file_name = f'continent{args.continent}' if args.continent else args.layout
-        output_path = f'{args.output}/{output_file_name}_zones_zoom{zoom}_{args.lang}.png'
-        full_image = part_images[0][1] if len(part_images) == 1 else combine_part_images(part_images)
+                if overlay_name not in part_images:
+                    part_images[overlay_name] = []
+                part_images[overlay_name].append((part_top_left, part_image_copy))
 
-        if args.legend:
-            map_overlay.draw_legend(full_image, map_layout, map_coord)
+        for overlay_name in part_images.keys():
+            layout_name = f'continent{args.continent}' if args.continent else args.layout
+            output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom}_{args.lang}.png'
+            full_image = part_images[overlay_name][0][1] if len(part_images[overlay_name]) == 1 else combine_part_images(part_images[overlay_name])
 
-        full_image.save(output_path)
+            if args.legend:
+                map_overlay_types[overlay_name]().draw_legend(full_image, map_layout, map_coord)
 
-        print(f"Map for zoom {zoom} finished.")
+            full_image.save(output_path)
+
+        print(f"Maps for zoom {zoom} finished.")
 
 
 def choose_map_layout(args) -> MapLayout:
@@ -88,15 +97,15 @@ def choose_map_layout(args) -> MapLayout:
         raise ValueError('No continent or layout chosen.')
 
 
-def customize_zone_data(zone_data: list[dict], map_overlay: MapOverlay):
+def override_zone_data(zone_data: list[dict], map_overlay: MapOverlay):
     custom_data = []
     for z in zone_data:
         if type(map_overlay) in conditional_zone_blacklist and z['id'] in conditional_zone_blacklist[type(map_overlay)]:
             continue
-        elif type(map_overlay) in conditional_zone_data_overrides and z['id'] in conditional_zone_data_overrides[type(map_overlay)]:
-            custom_data.append(z | conditional_zone_data_overrides[type(map_overlay)][z['id']])
-        else:
-            custom_data.append(z)
+        d = z | zone_data_overrides[z['id']] if z['id'] in zone_data_overrides else z
+        if type(map_overlay) in conditional_zone_data_overrides and z['id'] in conditional_zone_data_overrides[type(map_overlay)]:
+            d = d | conditional_zone_data_overrides[type(map_overlay)][z['id']]
+        custom_data.append(d)
     return custom_data
 
 

@@ -1,4 +1,4 @@
-from mapgen.map_overlay import ZoneMapOverlay
+from mapgen.map_overlay import ZoneMapOverlay, MasteryRegionMapOverlay
 
 zone_ids: dict[str, list[int]] = {
     'city': [
@@ -113,6 +113,16 @@ zone_ids: dict[str, list[int]] = {
     ],
 }
 
+source_thresholds = {
+    0: {'unlock': ['GW2'], 'mastery': 'Central Tyria'},
+    1041: {'unlock': ['HoT'], 'mastery': 'Heart of Thorns'},
+    1165: {'unlock': ['HoT', 'LW3'], 'mastery': 'Heart of Thorns'},
+    1210: {'unlock': ['PoF'], 'mastery': 'Path of Fire'},
+    1263: {'unlock': ['PoF', 'LW4'], 'mastery': 'Path of Fire'},
+    1330: {'unlock': ['PoF', 'IBS'], 'mastery': 'Icebrood Saga'},
+    1419: {'unlock': ['EoD'], 'mastery': 'End of Dragons'},
+}
+
 """
 Custom overrides for the data coming from the API to make the resulting map look a bit cleaner. This can also add custom data for the zones:
 - label_rect: The continent rect bounds to display the zone label in. Useful if multiple labels would overlap.
@@ -120,6 +130,9 @@ Custom overrides for the data coming from the API to make the resulting map look
 second letter is vertical alignment (t = top, m = middle, b = bottom). Default is middle ('mm').
 """
 zone_data_overrides: dict[int: dict] = {
+    27: {  # Lornar's Pass
+        'label_rect': [[50432, 29696], [52224, 32938]]
+    },
     335: {  # Claw Island
         'continent_rect': [[46720, 32256], [48000, 33792]]
     },
@@ -158,6 +171,9 @@ zone_data_overrides: dict[int: dict] = {
     1175: {  # Ember Bay
         'continent_rect': [[37374, 44676], [41214, 47358]]
     },
+    1188: {  # Bastion of the Penitent
+        'source': {'unlock': ['HoT'], 'mastery': 'Heart of Thorns'}
+    },
     1195: {  # Draconis Mons
         'continent_rect': [[35228, 40290], [38176, 43134]]
     },
@@ -170,8 +186,17 @@ zone_data_overrides: dict[int: dict] = {
     1263: {  # Domain of Istan
         'continent_rect': [[55318, 59966], [58858, 63406]]
     },
+    1264: {  # Hall of Chains
+        'source': {'unlock': ['PoF'], 'mastery': 'Path of Fire'}
+    },
     1288: {  # Domain of Kourna
         'continent_rect': [[63624, 59576], [67212, 63806]]
+    },
+    1303: {  # Mythwright Gambit
+        'source': {'unlock': ['PoF'], 'mastery': 'Path of Fire'}
+    },
+    1323: {  # The Key of Ahdashim
+        'source': {'unlock': ['PoF'], 'mastery': 'Path of Fire'}
     },
     1419: {  # Isle of Reflection
         'continent_rect': [[21319, 103785], [23239, 105705]]
@@ -189,16 +214,18 @@ conditional_zone_blacklist: dict[type, list[int]] = {
     ZoneMapOverlay: [
         1264,  # Hall of Chains
         1303,  # Mythwright Gambit
-    ]
+    ],
+    MasteryRegionMapOverlay: [
+        336,  # Chantry of Secrets
+        1155,  # Lion's Arch Aerodrome
+        1465,  # Thousand Seas Pavilion
+    ],
 }
 
 """Custom overrides for the data coming from the API to make the resulting map look a bit cleaner. Similar to zone_data_overrides, but it includes additional changes for 
 specific map overlays."""
 conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
     ZoneMapOverlay: {
-        27: {  # Lornar's Pass
-            'label_rect': [[50432, 29696], [52224, 32938]]
-        },
         36: {  # Ascalonian Catacombs
             'label_rect': [[61184, 29056], [62464, 30080]],
             'label_anchor': 'lm'
@@ -240,7 +267,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
         1264: {  # Hall of Chains
             'label_rect': [[52352, 31484], [54784, 32508]],
-            'label_anchor': 'lb'
+            'label_anchor': 'lb',
         },
         1370: {  # Eye of the North
             'continent_rect': [[57344, 21248], [58198, 22102]],
@@ -250,6 +277,17 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         1428: {  # Arborstone
             'label_rect': [[27585, 100890], [29121, 101657]],
             'label_anchor': 'rm'
+        },
+    },
+    MasteryRegionMapOverlay: {
+        17: {  # Harathi Hinterlands
+            'label_rect': [[46208, 25856], [49408, 27990]],
+        },
+        26: {  # Dredgehaunt Cliffs
+            'label_rect': [[52224, 32892], [54528, 33792]],
+        },
+        39: {  # Mount Maelstrom
+            'label_rect': [[50560, 38720], [54400, 40192]],
         },
     }
 }
