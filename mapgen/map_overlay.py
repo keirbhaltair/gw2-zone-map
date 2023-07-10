@@ -5,7 +5,7 @@ from PIL import Image, ImageFont, ImageDraw
 from PIL.ImageFont import FreeTypeFont
 
 from data.portals import portals
-from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor
+from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor, MapLayout
 
 
 def get_font(size: int, bold: bool):
@@ -29,13 +29,56 @@ def get_sub_label_font_size(map_coord: MapCoordinateSystem):
     return min(28, max(8, round(4.75 * get_zoom_size_multiplier(map_coord))))
 
 
+def get_legend_font_size(map_coord: MapCoordinateSystem):
+    return min(28, max(10, round(4.75 * get_zoom_size_multiplier(map_coord))))
+
+
 def get_icon_size(map_coord: MapCoordinateSystem):
     return min(32, max(12, round(7 * get_zoom_size_multiplier(map_coord))))
+
+
+def calculate_zone_label_paste_position(label_anchor, label_image: Image, label_image_rect: tuple[tuple[int, int], tuple[int, int]]):
+    label_bbox = label_image.getbbox()
+    label_paste_pos = []
+    match label_anchor[0]:
+        case 'l':
+            label_paste_pos.append(label_image_rect[0][0])
+        case 'm':
+            label_paste_pos.append(round((label_image_rect[0][0] + label_image_rect[1][0] - label_image.size[0]) / 2))
+        case 'r':
+            label_paste_pos.append(label_image_rect[1][0] - label_image.size[0])
+    match label_anchor[1]:
+        case 't':
+            label_paste_pos.append(label_image_rect[0][1])
+        case 'm':
+            label_paste_pos.append(round((label_image_rect[0][1] + label_image_rect[1][1] - label_bbox[3] + label_bbox[1]) / 2))
+        case 'b':
+            label_paste_pos.append(label_image_rect[1][1] - label_bbox[3] + label_bbox[1] - 4)
+    return label_paste_pos
+
+
+def calculate_legend_paste_position(image: Image, legend_image: Image, map_layout: MapLayout):
+    coord = []
+    match map_layout.legend_align[0]:
+        case 'l':
+            coord.append(map_layout.legend_image_coord[0])
+        case 'r':
+            coord.append(image.size[0] - map_layout.legend_image_coord[0] - legend_image.size[0])
+    match map_layout.legend_align[1]:
+        case 't':
+            coord.append(map_layout.legend_image_coord[1])
+        case 'b':
+            coord.append(image.size[1] - map_layout.legend_image_coord[1] - legend_image.size[1])
+    return coord[0], coord[1], coord[0] + legend_image.size[0], coord[1] + legend_image.size[1]
 
 
 class MapOverlay(ABC):
     @abstractmethod
     def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem):
+        pass
+
+    @abstractmethod
+    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem):
         pass
 
 
@@ -50,13 +93,19 @@ class ZoneMapOverlay(MapOverlay):
         'misc': {'boundary_order': 1, 'label_order': 0, 'color': (255, 160, 0), 'show_level': False, 'label': None},
     }
 
-    portals = {
-        'neighbor': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/a/ae/Asura_gate_starter_area_%28map_icon%29.png")), 'line_color': (45, 185, 227, 150)},
-        'asura_gate': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/6/6c/Asura_gate_%28map_icon%29.png")), 'line_color': None},
-        'dungeon': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/3/3c/Dungeon_%28map_icon%29.png")), 'line_color': None},
-        'raid': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/8/86/Raid_%28map_icon%29.png")), 'line_color': (199, 76, 42, 150)},
-        'fractal': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/9/9f/Fractals_of_the_Mists_%28map_icon%29.png")), 'line_color': None},
-        'strike': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/e/e7/Strike_Mission_%28map_icon%29.png")), 'line_color': None},
+    portal_settings = {
+        'neighbor': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/a/ae/Asura_gate_starter_area_%28map_icon%29.png")), 'line_color': (45, 185, 227, 150),
+                     'legend': 'Zone portal'},
+        'asura_gate': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/6/6c/Asura_gate_%28map_icon%29.png")), 'line_color': None,
+                       'legend': 'Asura gate'},
+        'dungeon': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/3/3c/Dungeon_%28map_icon%29.png")), 'line_color': None,
+                    'legend': 'Dungeon entrance'},
+        'fractal': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/9/9f/Fractals_of_the_Mists_%28map_icon%29.png")), 'line_color': None,
+                    'legend': 'Fractals of the Mists entrance'},
+        'strike': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/e/e7/Strike_Mission_%28map_icon%29.png")), 'line_color': None,
+                   'legend': 'Strike mission entrance'},
+        'raid': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/8/86/Raid_%28map_icon%29.png")), 'line_color': (199, 76, 42, 150),
+                 'legend': 'Raid entrance'},
     }
 
     def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem):
@@ -154,13 +203,39 @@ class ZoneMapOverlay(MapOverlay):
                                 fill=settings['color'], font=sub_label_font, anchor=label_draw_text_anchor, stroke_width=2, stroke_fill='black')
 
             # Paste the resulting label into the actual map image
-            label_paste_pos = self.calculate_label_paste_position(label_anchor, label_image, label_image_rect)
+            label_paste_pos = calculate_zone_label_paste_position(label_anchor, label_image, label_image_rect)
             image.paste(label_image, label_paste_pos, label_image)
+
+    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem):
+        font = get_font(get_legend_font_size(map_coord), False)
+        font_metrics = font.getmetrics()
+        icon_size = get_icon_size(map_coord)
+
+        legend_image = Image.new('RGBA', (100 * (font_metrics[0] + font_metrics[1]), 20 * (font_metrics[0] + font_metrics[1])))
+        legend_draw = ImageDraw.Draw(legend_image)
+        legend_label_x = legend_label_y = 10
+        legend_padding = 6
+        assert legend_label_x > legend_padding < legend_label_y
+        for portal_type in ZoneMapOverlay.portal_settings.keys():
+            icon = self.get_portal_icon(portal_type, icon_size)
+            legend_image.paste(icon, (legend_label_x, legend_label_y), icon)
+            legend_draw_coord = legend_label_x + icon_size + 6, legend_label_y + round(icon_size / 2)
+            legend_draw_text = ZoneMapOverlay.portal_settings[portal_type]['legend']
+            legend_text_bbox = legend_draw.textbbox(legend_draw_coord, legend_draw_text, font=font, stroke_width=1, anchor='lm')
+            legend_draw.text(legend_draw_coord, legend_draw_text, font=font, fill='white', stroke_width=1, stroke_fill='black', anchor='lm')
+            legend_label_y = legend_label_y + max(icon_size, legend_text_bbox[3] - legend_text_bbox[1]) + map_coord.zoom
+        legend_bbox = legend_image.getbbox()
+        legend_image = legend_image.crop((legend_bbox[0] - legend_padding, legend_bbox[1] - legend_padding, legend_bbox[2] + legend_padding, legend_bbox[3] + legend_padding))
+
+        legend_coord = calculate_legend_paste_position(image, legend_image, map_layout)
+        legend_draw = ImageDraw.Draw(image, 'RGBA')
+        legend_draw.rectangle(legend_coord, fill=(0, 0, 0, 160), width=1, outline=(255, 255, 255, 160))
+        image.paste(legend_image, legend_coord, legend_image)
 
     @staticmethod
     def get_portal_icon(portal_type, icon_size):
         if '/' not in portal_type:
-            template_icon = ZoneMapOverlay.portals[portal_type]['icon']
+            template_icon = ZoneMapOverlay.portal_settings[portal_type]['icon']
             return template_icon.resize((icon_size, icon_size), resample=Image.LANCZOS)
         else:
             # Blend multiple icons together so that they're all at least partially visible despite overlapping
@@ -168,7 +243,7 @@ class ZoneMapOverlay(MapOverlay):
             portal_types = portal_type.split('/')
             arc_angle = 360 / len(portal_types)
             for i, t in enumerate(portal_types):
-                template_icon = ZoneMapOverlay.portals[t]['icon']
+                template_icon = ZoneMapOverlay.portal_settings[t]['icon']
                 resized_icon = template_icon.resize((icon_size, icon_size), resample=Image.LANCZOS)
                 start_angle = i * arc_angle - 90
                 end_angle = (i + 1) * arc_angle - 90
@@ -188,7 +263,7 @@ class ZoneMapOverlay(MapOverlay):
         super_sampled_image = Image.new('RGBA', super_sampled_image_size)
         super_sampled_draw = ImageDraw.Draw(super_sampled_image)
 
-        line_color = ZoneMapOverlay.portals[portal_type]['line_color']
+        line_color = ZoneMapOverlay.portal_settings[portal_type]['line_color']
         line_coord = ((super_sampling_factor * (portal1_image_coord[0] - paste_coord[0]), super_sampling_factor * (portal1_image_coord[1] - paste_coord[1])),
                       (super_sampling_factor * (portal2_image_coord[0] - paste_coord[0]), super_sampling_factor * (portal2_image_coord[1] - paste_coord[1])))
         super_sampled_draw.line(line_coord, fill=line_color, width=2 * super_sampling_factor)
@@ -196,26 +271,6 @@ class ZoneMapOverlay(MapOverlay):
         resized_size = line_rect[0] + margin, line_rect[1] + margin
         smooth_line_image = super_sampled_image.resize(resized_size, resample=Image.LANCZOS)
         map_image.paste(smooth_line_image, paste_coord, smooth_line_image)
-
-    @staticmethod
-    def calculate_label_paste_position(label_anchor, label_image, label_image_rect):
-        label_bbox = label_image.getbbox()
-        label_paste_pos = []
-        match label_anchor[0]:
-            case 'l':
-                label_paste_pos.append(label_image_rect[0][0])
-            case 'm':
-                label_paste_pos.append(round((label_image_rect[0][0] + label_image_rect[1][0] - label_image.size[0]) / 2))
-            case 'r':
-                label_paste_pos.append(label_image_rect[1][0] - label_image.size[0])
-        match label_anchor[1]:
-            case 't':
-                label_paste_pos.append(label_image_rect[0][1])
-            case 'm':
-                label_paste_pos.append(round((label_image_rect[0][1] + label_image_rect[1][1] - label_bbox[3] + label_bbox[1]) / 2))
-            case 'b':
-                label_paste_pos.append(label_image_rect[1][1] - label_bbox[3] + label_bbox[1] - 4)
-        return label_paste_pos
 
 
 def get_wrapped_text_lines(text: str, font: FreeTypeFont, line_length: int):

@@ -27,8 +27,14 @@ def parse_arguments():
     parser.add_argument('--lang', default='en', help="Language to generate the map in (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
+    parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    if not args.continent and not args.layout:
+        setattr(args, 'layout', 'TyriaWorld')
+
+    print(f"Arguments: {args}")
+    return args
 
 
 def generate_maps(args):
@@ -45,6 +51,7 @@ def generate_maps(args):
         print(f"Generating map for zoom {zoom}...")
         part_images = []
 
+        map_coord = None
         for part in map_layout.parts:
             sector = part[1]
             map_params = continent_map_params[sector.continent_id]
@@ -56,11 +63,14 @@ def generate_maps(args):
             part_top_left = map_coord.continent_to_full_image_coord(part[0])
             part_images.append((part_top_left, part_image))
 
-        output_file_name = f'{args.output}/zones_{zoom}.png'
-        if len(part_images) == 1:
-            part_images[0][1].save(output_file_name)
-        else:
-            combine_part_images(part_images).save(output_file_name)
+        output_file_name = f'continent{args.continent}' if args.continent else args.layout
+        output_path = f'{args.output}/{output_file_name}_zones_zoom{zoom}_{args.lang}.png'
+        full_image = part_images[0][1] if len(part_images) == 1 else combine_part_images(part_images)
+
+        if args.legend:
+            map_overlay.draw_legend(full_image, map_layout, map_coord)
+
+        full_image.save(output_path)
 
         print(f"Map for zoom {zoom} finished.")
 
@@ -73,7 +83,7 @@ def choose_map_layout(args) -> MapLayout:
             raise ValueError(f"Invalid map layout name '{args.layout}' supplied, available values: {list(map_layouts.keys())}")
         return map_layouts[args.layout]
     else:
-        return map_layouts['TyriaWorld']  # Default setting if nothing else was chosen
+        raise ValueError('No continent or layout chosen.')
 
 
 if __name__ == '__main__':

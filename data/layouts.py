@@ -7,7 +7,7 @@ _composite_sectors: dict[str, MapSector] = {
 
 map_layouts: dict[str, MapLayout] = {
     'Tyria': MapLayout.single_sector(MapSector(1, ((31744, 15871), (70016, 65023)))),
-    'Cantha': MapLayout.single_sector(MapSector(1, ((18688, 94944), (40959, 107775)))),
+    'Cantha': MapLayout.single_sector(MapSector(1, ((18688, 94944), (40959, 107775))), legend_align='rt'),
     'TyriaWorld': MapLayout([
         ((0, 0), _composite_sectors['Tyria']),
         ((0, _composite_sectors['Tyria'].height() - _composite_sectors['Cantha'].height()), _composite_sectors['Cantha']),

@@ -1,8 +1,11 @@
 import math
 from dataclasses import dataclass
+from typing import Literal
 
 tile_image_size = 256
 zoom_factor = 2
+
+LegendAlignment = Literal['lt', 'lb', 'rt', 'rb']
 
 
 @dataclass
@@ -29,10 +32,12 @@ class MapSector:
 @dataclass
 class MapLayout:
     parts: list[tuple[tuple[int, int], MapSector]]
+    legend_image_coord: tuple[int, int] = (10, 10)
+    legend_align: LegendAlignment = 'lt'
 
     @classmethod
-    def single_sector(cls, sector: MapSector):
-        return cls([((0, 0), sector)])
+    def single_sector(cls, sector: MapSector, legend_image_coord: tuple[int, int] = (10, 10), legend_align: LegendAlignment = 'lt'):
+        return cls([((0, 0), sector)], legend_image_coord, legend_align)
 
 
 class MapCoordinateSystem:
