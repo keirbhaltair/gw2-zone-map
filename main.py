@@ -2,11 +2,12 @@ from argparse import ArgumentParser
 
 from data.continents import continent_map_params
 from data.layouts import map_layouts
+from data.zones import conditional_zone_blacklist, conditional_zone_data_overrides
 from mapgen.data_api import load_zone_data
 from mapgen.map_composite import combine_part_images
 from mapgen.map_coordinates import MapCoordinateSystem, MapLayout, MapSector
 from mapgen.map_generator import LocalMapTileSource, MapGenerator
-from mapgen.map_overlay import ZoneMapOverlay
+from mapgen.map_overlay import ZoneMapOverlay, MapOverlay
 
 
 def main():
@@ -56,9 +57,10 @@ def generate_maps(args):
             sector = part[1]
             map_params = continent_map_params[sector.continent_id]
             map_coord = MapCoordinateSystem(map_params, zoom, sector)
+            custom_zone_data = customize_zone_data(zone_data, map_overlay)
 
             part_image = map_generator.generate_map_image(sector.continent_id, 1, map_coord)
-            map_overlay.draw_overlay(part_image, zone_data, map_coord)
+            map_overlay.draw_overlay(part_image, custom_zone_data, map_coord)
 
             part_top_left = map_coord.continent_to_full_image_coord(part[0])
             part_images.append((part_top_left, part_image))
@@ -84,6 +86,18 @@ def choose_map_layout(args) -> MapLayout:
         return map_layouts[args.layout]
     else:
         raise ValueError('No continent or layout chosen.')
+
+
+def customize_zone_data(zone_data: list[dict], map_overlay: MapOverlay):
+    custom_data = []
+    for z in zone_data:
+        if type(map_overlay) in conditional_zone_blacklist and z['id'] in conditional_zone_blacklist[type(map_overlay)]:
+            continue
+        elif type(map_overlay) in conditional_zone_data_overrides and z['id'] in conditional_zone_data_overrides[type(map_overlay)]:
+            custom_data.append(z | conditional_zone_data_overrides[type(map_overlay)][z['id']])
+        else:
+            custom_data.append(z)
+    return custom_data
 
 
 if __name__ == '__main__':

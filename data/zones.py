@@ -1,3 +1,5 @@
+from mapgen.map_overlay import ZoneMapOverlay
+
 zone_ids: dict[str, list[int]] = {
     'city': [
         18,  # Divinity's Reach
@@ -96,8 +98,8 @@ zone_ids: dict[str, list[int]] = {
         1149,  # Salvation Pass
         1156,  # Stronghold of the Faithful
         1188,  # Bastion of the Penitent
-        # 1264,  # Hall of Chains
-        # 1303,  # Mythwright Gambit
+        1264,  # Hall of Chains
+        1303,  # Mythwright Gambit
         1323,  # The Key of Ahdashim
     ],
 
@@ -118,45 +120,6 @@ Custom overrides for the data coming from the API to make the resulting map look
 second letter is vertical alignment (t = top, m = middle, b = bottom). Default is middle ('mm').
 """
 zone_data_overrides: dict[int: dict] = {
-    27: {  # Lornar's Pass
-        'label_rect': [[50432, 29696], [52224, 32938]]
-    },
-    36: {  # Ascalonian Catacombs
-        'label_rect': [[61184, 29056], [62464, 30080]],
-        'label_anchor': 'lm'
-    },
-    50: {  # Lion's Arch
-        'label_rect': [[46976, 30720], [48736, 31804]],
-        'label_anchor': 'rm'
-    },
-    64: {  # Sorrow's Embrace
-        'label_rect': [[53696, 33792], [55232, 35328]],
-        'label_anchor': 'lm'
-    },
-    67: {  # Twilight Arbor
-        'label_rect': [[42560, 32704], [43456, 33728]],
-        'label_anchor': 'lt'
-    },
-    69: {  # Citadel of Flame
-        'label_rect': [[59968, 24064], [61248, 25344]],
-        'label_anchor': 'lm'
-    },
-    71: {  # Honor of the Waves
-        'label_rect': [[55424, 24448], [56576, 25600]],
-        'label_anchor': 'lm'
-    },
-    76: {  # Caudecus's Manor
-        'label_rect': [[44672, 27776], [45866, 28800]],
-        'label_anchor': 'rm'
-    },
-    82: {  # Crucible of Eternity
-        'label_rect': [[53952, 37312], [54976, 38592]],
-        'label_anchor': 'lm'
-    },
-    139: {  # Rata Sum
-        'continent_rect': [[37376, 36096], [39936, 38654]],
-        'label_rect': [[37376, 36735], [39936, 38654]],
-    },
     335: {  # Claw Island
         'continent_rect': [[46720, 32256], [48000, 33792]]
     },
@@ -167,9 +130,6 @@ zone_data_overrides: dict[int: dict] = {
     },
     988: {  # Dry Top
         'continent_rect': [[36608, 32128], [38656, 33536]]
-    },
-    1043: {  # Auric Basin
-        'label_rect': [[33280, 32896], [35328, 35328]]
     },
     1062: {  # Spirit Vale
         'continent_rect': [[36392, 28544], [37112, 30592]],
@@ -213,20 +173,83 @@ zone_data_overrides: dict[int: dict] = {
     1288: {  # Domain of Kourna
         'continent_rect': [[63624, 59576], [67212, 63806]]
     },
-    1370: {  # Eye of the North
-        'continent_rect': [[57344, 21248], [58198, 22102]],
-        'label_rect': [[55008, 21248], [57312, 22102]],
-        'label_anchor': 'rm'
-    },
     1419: {  # Isle of Reflection
         'continent_rect': [[21319, 103785], [23239, 105705]]
     },
     1428: {  # Arborstone
-        'continent_rect': [[29185, 100890], [30141, 101657]],
-        'label_rect': [[27585, 100890], [29121, 101657]],
-        'label_anchor': 'rm'
+        'continent_rect': [[29185, 100890], [30141, 101657]]
     },
     1465: {  # Thousand Seas Pavilion
         'continent_rect': [[20900, 98253], [22052, 99405]]
     },
+}
+
+"""Map IDs to ignore for specific map overlays."""
+conditional_zone_blacklist: dict[type, list[int]] = {
+    ZoneMapOverlay: [
+        1264,  # Hall of Chains
+        1303,  # Mythwright Gambit
+    ]
+}
+
+"""Custom overrides for the data coming from the API to make the resulting map look a bit cleaner. Similar to zone_data_overrides, but it includes additional changes for 
+specific map overlays."""
+conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
+    ZoneMapOverlay: {
+        27: {  # Lornar's Pass
+            'label_rect': [[50432, 29696], [52224, 32938]]
+        },
+        36: {  # Ascalonian Catacombs
+            'label_rect': [[61184, 29056], [62464, 30080]],
+            'label_anchor': 'lm'
+        },
+        50: {  # Lion's Arch
+            'label_rect': [[46976, 30720], [48736, 31804]],
+            'label_anchor': 'rm'
+        },
+        64: {  # Sorrow's Embrace
+            'label_rect': [[53696, 33792], [55232, 35328]],
+            'label_anchor': 'lm'
+        },
+        67: {  # Twilight Arbor
+            'label_rect': [[42560, 32704], [43456, 33728]],
+            'label_anchor': 'lt'
+        },
+        69: {  # Citadel of Flame
+            'label_rect': [[59968, 24064], [61248, 25344]],
+            'label_anchor': 'lm'
+        },
+        71: {  # Honor of the Waves
+            'label_rect': [[55424, 24448], [56576, 25600]],
+            'label_anchor': 'lm'
+        },
+        76: {  # Caudecus's Manor
+            'label_rect': [[44672, 27776], [45866, 28800]],
+            'label_anchor': 'rm'
+        },
+        82: {  # Crucible of Eternity
+            'label_rect': [[53952, 37312], [54976, 38592]],
+            'label_anchor': 'lm'
+        },
+        139: {  # Rata Sum
+            'continent_rect': [[37376, 36096], [39936, 38654]],
+            'label_rect': [[37376, 36735], [39936, 38654]],
+        },
+        1043: {  # Auric Basin
+            'label_rect': [[33280, 32896], [35328, 35328]]
+        },
+        1264: {  # Hall of Chains
+            'label_rect': [[52352, 31484], [54784, 32508]],
+            'label_anchor': 'lb'
+        },
+        1370: {  # Eye of the North
+            'continent_rect': [[57344, 21248], [58198, 22102]],
+            'label_rect': [[55008, 21248], [57312, 22102]],
+            'label_anchor': 'rm'
+        },
+        1428: {  # Arborstone
+            'label_rect': [[27585, 100890], [29121, 101657]],
+            'label_anchor': 'rm'
+        },
+    }
 }
