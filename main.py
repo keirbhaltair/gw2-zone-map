@@ -24,6 +24,7 @@ def parse_arguments():
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[3], help="The zoom levels to generate the maps for")
+    parser.add_argument('--lang', default='en', help="Language to generate the map in (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
 
@@ -37,7 +38,7 @@ def generate_maps(args):
     map_layout = choose_map_layout(args)
 
     print(f"Loading data from the API...")
-    zone_data = load_zone_data(args.overrides)
+    zone_data = load_zone_data(args.overrides, args.lang)
     print(f"Data loaded.")
 
     for zoom in args.zoom:

@@ -1,6 +1,5 @@
 certifi==2023.5.7
 charset-normalizer==3.1.0
-GuildWars2-API-Client==0.5.9
 idna==3.4
 Pillow==9.5.0
 requests==2.31.0

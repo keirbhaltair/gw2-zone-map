@@ -118,8 +118,11 @@ Custom overrides for the data coming from the API to make the resulting map look
 second letter is vertical alignment (t = top, m = middle, b = bottom). Default is middle ('mm').
 """
 zone_data_overrides: dict[int: dict] = {
+    27: {  # Lornar's Pass
+        'label_rect': [[50432, 29696], [52224, 32938]]
+    },
     36: {  # Ascalonian Catacombs
-        'label_rect': [[61184, 29120], [62464, 30144]],
+        'label_rect': [[61184, 29056], [62464, 30080]],
         'label_anchor': 'lm'
     },
     50: {  # Lion's Arch
@@ -170,7 +173,7 @@ zone_data_overrides: dict[int: dict] = {
     },
     1062: {  # Spirit Vale
         'continent_rect': [[36392, 28544], [37112, 30592]],
-        'label_rect': [[36872, 28592], [38376, 29696]],
+        'label_rect': [[37000, 28592], [38504, 29696]],
         'label_anchor': 'lt'
     },
     1069: {  # Lost Precipice
@@ -179,7 +182,7 @@ zone_data_overrides: dict[int: dict] = {
     },
     1149: {  # Salvation Pass
         'continent_rect': [[35582, 28544], [36392, 30338]],
-        'label_rect': [[35582, 28592], [36392, 30306]],
+        'label_rect': [[35710, 28592], [36264, 30306]],
         'label_anchor': 'mt'
     },
     1155: {  # Lion's Arch Aerodrome
@@ -189,7 +192,7 @@ zone_data_overrides: dict[int: dict] = {
     },
     1156: {  # Stronghold of the Faithful
         'continent_rect': [[34729, 28544], [35582, 30338]],
-        'label_rect': [[33204, 28592], [35013, 29696]],
+        'label_rect': [[33076, 28592], [34885, 29696]],
         'label_anchor': 'rt'
     },
     1175: {  # Ember Bay
