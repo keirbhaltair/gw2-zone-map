@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 
 from data.continents import continent_map_params
 from data.layouts import map_layouts
-from data.zones import conditional_zone_blacklist, conditional_zone_data_overrides, zone_data_overrides
+from data.zones import conditional_zone_blacklist, conditional_zone_data_overrides, zone_data_overrides, conditional_custom_zones
 from mapgen.data_api import load_zone_data
 from mapgen.map_composite import combine_part_images
 from mapgen.map_coordinates import MapCoordinateSystem, MapLayout, MapSector
@@ -99,13 +99,23 @@ def choose_map_layout(args) -> MapLayout:
 
 def override_zone_data(zone_data: list[dict], map_overlay: MapOverlay):
     custom_data = []
+
     for z in zone_data:
         if type(map_overlay) in conditional_zone_blacklist and z['id'] in conditional_zone_blacklist[type(map_overlay)]:
             continue
+
         d = z | zone_data_overrides[z['id']] if z['id'] in zone_data_overrides else z
+
         if type(map_overlay) in conditional_zone_data_overrides and z['id'] in conditional_zone_data_overrides[type(map_overlay)]:
             d = d | conditional_zone_data_overrides[type(map_overlay)][z['id']]
         custom_data.append(d)
+
+    if type(map_overlay) in conditional_custom_zones:
+        for z in conditional_custom_zones[type(map_overlay)]:
+            if 'id' not in z:
+                z['id'] = -1
+            custom_data.append(z)
+
     return custom_data
 
 
