@@ -25,7 +25,7 @@ def parse_arguments():
 
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
-    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery', 'none'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
+    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
     parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[3], help="The zoom levels to generate the maps for")
     parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
