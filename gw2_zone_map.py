@@ -25,6 +25,7 @@ def parse_arguments():
 
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
+    parser.add_argument('-f', '--format', default='jpg', help="Output file format")
     parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
     parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[3], help="The zoom levels to generate the maps for")
     parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
@@ -79,13 +80,13 @@ def generate_maps(args):
 
         for overlay_name in part_images.keys():
             layout_name = f'continent{args.continent}' if args.continent else args.layout
-            output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom}_{args.lang}.png'
+            output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom}_{args.lang}.{args.format}'
             full_image = part_images[overlay_name][0][1] if len(part_images[overlay_name]) == 1 else combine_part_images(part_images[overlay_name])
 
             if args.legend:
                 map_overlay_types[overlay_name]().draw_legend(full_image, map_layout, map_coord)
 
-            full_image.save(output_path)
+            full_image.save(output_path, quality=95 if args.format == 'jpg' else None)
 
         print(f"Maps for zoom {zoom} finished.")
 
