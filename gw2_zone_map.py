@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from pathlib import Path
 
 from data.continents import continent_map_params
 from data.layouts import map_layouts
@@ -20,13 +21,13 @@ def parse_arguments():
 
     sector_group = parser.add_mutually_exclusive_group()
     sector_group.add_argument('-c', '--continent', type=int, help="ID of the continent to generate the map for")
-    sector_group.add_argument('-l', '--layout', help="Name of the layout to generate the map for")
+    sector_group.add_argument('-l', '--layout', help=f"Name of the layout to generate the map for. Allowed values are: {list(map_layouts.keys())}")
 
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
-    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
+    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery', 'none'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
     parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[3], help="The zoom levels to generate the maps for")
-    parser.add_argument('--lang', default='en', help="Language to generate the map in (en, es, de, fr). Default is en. (Not fully supported yet.)")
+    parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
     parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
@@ -40,6 +41,9 @@ def parse_arguments():
 
 
 def generate_maps(args):
+    output_path = Path(args.output)
+    output_path.mkdir(exist_ok=True)
+
     tile_source = LocalMapTileSource(args.tiles)
     map_generator = MapGenerator(tile_source)
     map_layout = choose_map_layout(args)
