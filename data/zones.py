@@ -193,7 +193,7 @@ zone_data_overrides: dict[int: dict] = {
     },
     1062: {  # Spirit Vale
         'continent_rect': [[36392, 28544], [37112, 30592]],
-        'label_rect': [[37000, 28592], [38504, 29696]],
+        'label_rect': [[36872, 28592], [38504, 29696]],
         'label_anchor': 'lt'
     },
     1069: {  # Lost Precipice
@@ -207,7 +207,7 @@ zone_data_overrides: dict[int: dict] = {
     },
     1156: {  # Stronghold of the Faithful
         'continent_rect': [[34729, 28544], [35582, 30338]],
-        'label_rect': [[33076, 28592], [34885, 29696]],
+        'label_rect': [[33076, 28592], [35013, 29696]],
         'label_anchor': 'rt'
     },
     1175: {  # Ember Bay
@@ -299,7 +299,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_rect': [[37376, 36735], [39936, 38654]],
         },
         336: {  # Chantry of Secrets
-            'label_rect': [[49696, 32320], [50720, 33152]],
+            'label_rect': [[49696, 32288], [50720, 33120]],
             'label_anchor': 'lb',
             'label_size': 0.75
         },
@@ -336,13 +336,13 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_anchor': 'rm'
         },
         1480: {  # The Twisted Marionette
-            'label_rect': [[51382, 33042], [52128, 33618]],
+            'label_rect': [[51382, 33010], [52128, 33586]],
             'label_anchor': 'rt',
             'label_size': 0.75
         },
         1482: {  # The Battle for Lion's Arch
             'name': "The Battle for Lion's Arch",
-            'continent_rect': [[48032, 30752], [50400, 32224]],
+            'continent_rect': [[48064, 30784], [50368, 32192]],
             'label_rect': [[49065, 30464], [50985, 30976]],
             'label_anchor': 'lb',
             'label_size': 0.75
@@ -399,7 +399,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
         1485: {  # Old Lion's Court
             'continent_rect': [[48288, 32128], [50144, 33088]],
-            'label_rect': [[48608, 32128], [49824, 33088]],
+            'label_rect': [[48544, 32128], [49888, 33088]],
         },
     }
 }

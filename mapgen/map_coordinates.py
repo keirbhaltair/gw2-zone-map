@@ -66,17 +66,20 @@ class MapCoordinateSystem:
     def with_int_zoom(self):
         return MapCoordinateSystem(self.map_params, math.ceil(self.zoom), self.sector)
 
-    def continent_to_tile_coord(self, continent_coord: tuple[float, float]) -> tuple[int, int]:
-        return (math.floor(self.continent_to_tile_multiplier * continent_coord[0]),
-                math.floor(self.continent_to_tile_multiplier * continent_coord[1]))
+    def continent_to_tile_coord(self, continent_coord: tuple[float, float], round_down: bool = True) -> tuple[int, int]:
+        round_func = math.floor if round_down else math.ceil
+        return (round_func(self.continent_to_tile_multiplier * continent_coord[0]),
+                round_func(self.continent_to_tile_multiplier * continent_coord[1]))
 
-    def continent_to_full_image_coord(self, continent_coord: tuple[float, float]) -> tuple[int, int]:
-        return (math.floor(self.continent_to_image_multiplier * continent_coord[0]),
-                math.floor(self.continent_to_image_multiplier * continent_coord[1]))
+    def continent_to_full_image_coord(self, continent_coord: tuple[float, float], round_down: bool = True) -> tuple[int, int]:
+        round_func = math.floor if round_down else math.ceil
+        return (round_func(self.continent_to_image_multiplier * continent_coord[0]),
+                round_func(self.continent_to_image_multiplier * continent_coord[1]))
 
-    def continent_to_sector_image_coord(self, continent_coord: tuple[float, float]) -> tuple[int, int]:
-        return (math.floor(self.continent_to_image_multiplier * (continent_coord[0] - self.sector_top_left[0])),
-                math.floor(self.continent_to_image_multiplier * (continent_coord[1] - self.sector_top_left[1])))
+    def continent_to_sector_image_coord(self, continent_coord: tuple[float, float], round_down: bool = True) -> tuple[int, int]:
+        round_func = math.floor if round_down else math.ceil
+        return (round_func(self.continent_to_image_multiplier * (continent_coord[0] - self.sector_top_left[0])),
+                round_func(self.continent_to_image_multiplier * (continent_coord[1] - self.sector_top_left[1])))
 
     def continent_to_sector_image_rect(self, continent_rect: tuple[tuple[float, float], tuple[float, float]]) -> tuple[tuple[float, float], tuple[float, float]]:
         return (self.continent_to_sector_image_coord(continent_rect[0]),

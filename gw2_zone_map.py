@@ -27,7 +27,8 @@ def parse_arguments():
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
     parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
-    parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3, 3.5],
+    parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
+    parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.3],
                         help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
     parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
@@ -59,11 +60,12 @@ def generate_maps(args):
         part_images = {}
 
         map_coord = None
+        scale_factor = args.scale
         for part in map_layout.parts:
             sector = part[1]
             map_params = continent_map_params[sector.continent_id]
             map_coord = MapCoordinateSystem(map_params, zoom, sector)
-            part_top_left = map_coord.continent_to_full_image_coord(part[0])
+            part_top_left = map_coord.continent_to_full_image_coord(part[0], False)
 
             part_image = map_generator.generate_map_image(sector.continent_id, 1, map_coord)
 
@@ -73,7 +75,7 @@ def generate_maps(args):
                 map_overlay = map_overlay_types[overlay_name]()
                 overridden_zone_data = override_zone_data(zone_data, map_overlay) if args.overrides else zone_data
                 part_image_copy = part_image.copy() if i < len(args.overlay) else part_image
-                map_overlay.draw_overlay(part_image_copy, overridden_zone_data, map_coord)
+                map_overlay.draw_overlay(part_image_copy, overridden_zone_data, map_coord, scale_factor)
 
                 if overlay_name not in part_images:
                     part_images[overlay_name] = []
@@ -83,12 +85,16 @@ def generate_maps(args):
             layout_name = f'continent{args.continent}' if args.continent else args.layout
             zoom_text = str(zoom).replace('.', '-')
             output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom_text}_{args.lang}.{args.format}'
-            full_image = part_images[overlay_name][0][1] if len(part_images[overlay_name]) == 1 else combine_part_images(part_images[overlay_name])
+
+            if len(part_images[overlay_name]) == 1:
+                full_image = part_images[overlay_name][0][1]
+            else:
+                full_image = combine_part_images(part_images[overlay_name], map_coord, scale_factor)
 
             if args.legend:
-                map_overlay_types[overlay_name]().draw_legend(full_image, map_layout, map_coord)
+                map_overlay_types[overlay_name]().draw_legend(full_image, map_layout, map_coord, scale_factor)
 
-            full_image.save(output_path, quality=95 if args.format == 'jpg' else None)
+            full_image.save(output_path, quality=92 if args.format == 'jpg' else None)
 
         print(f"Maps for zoom {zoom} finished.")
 
