@@ -27,7 +27,8 @@ def parse_arguments():
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
     parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
-    parser.add_argument('-z', '--zoom', nargs='+', type=int, default=[3], help="The zoom levels to generate the maps for")
+    parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3, 3.5],
+                        help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
     parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
@@ -80,7 +81,8 @@ def generate_maps(args):
 
         for overlay_name in part_images.keys():
             layout_name = f'continent{args.continent}' if args.continent else args.layout
-            output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom}_{args.lang}.{args.format}'
+            zoom_text = str(zoom).replace('.', '-')
+            output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom_text}_{args.lang}.{args.format}'
             full_image = part_images[overlay_name][0][1] if len(part_images[overlay_name]) == 1 else combine_part_images(part_images[overlay_name])
 
             if args.legend:

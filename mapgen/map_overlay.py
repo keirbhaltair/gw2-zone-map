@@ -262,7 +262,7 @@ class ZoneMapOverlay(MapOverlay):
             legend_draw_text = self.portal_settings[portal_type]['legend']
             legend_text_bbox = legend_draw.textbbox(legend_draw_coord, legend_draw_text, font=font, stroke_width=1, anchor='lm')
             legend_draw.text(legend_draw_coord, legend_draw_text, font=font, fill='white', stroke_width=1, stroke_fill='black', anchor='lm')
-            legend_label_y = legend_label_y + max(icon_size, legend_text_bbox[3] - legend_text_bbox[1]) + map_coord.zoom
+            legend_label_y = legend_label_y + round(max(icon_size, legend_text_bbox[3] - legend_text_bbox[1]) + map_coord.zoom)
         legend_bbox = legend_image.getbbox()
         legend_image = legend_image.crop((legend_bbox[0] - legend_padding, legend_bbox[1] - legend_padding, legend_bbox[2] + legend_padding, legend_bbox[3] + legend_padding))
 

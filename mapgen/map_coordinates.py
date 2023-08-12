@@ -41,7 +41,7 @@ class MapLayout:
 
 
 class MapCoordinateSystem:
-    def __init__(self, map_params: MapParameters, zoom: int, sector: MapSector = None):
+    def __init__(self, map_params: MapParameters, zoom: float, sector: MapSector = None):
         if zoom < map_params.min_zoom or zoom > map_params.max_zoom:
             raise ValueError(f"Zoom must be in the interval [{map_params.min_zoom}, {map_params.max_zoom}]")
 
@@ -54,6 +54,7 @@ class MapCoordinateSystem:
 
         self.map_params = map_params
         self.zoom = zoom
+        self.sector = sector
 
         self.tile_dimensions = (zoom_factor ** (map_params.max_zoom - zoom)) * map_params.max_zoom_tile_dimensions
         self.continent_to_tile_multiplier = 1 / self.tile_dimensions
@@ -62,15 +63,18 @@ class MapCoordinateSystem:
         self.sector_top_left = sector_rect[0][0], sector_rect[0][1]
         self.sector_bottom_right = sector_rect[1][0], sector_rect[1][1]
 
-    def continent_to_tile_coord(self, continent_coord: tuple[float, float]) -> tuple[float, float]:
+    def with_int_zoom(self):
+        return MapCoordinateSystem(self.map_params, math.ceil(self.zoom), self.sector)
+
+    def continent_to_tile_coord(self, continent_coord: tuple[float, float]) -> tuple[int, int]:
         return (math.floor(self.continent_to_tile_multiplier * continent_coord[0]),
                 math.floor(self.continent_to_tile_multiplier * continent_coord[1]))
 
-    def continent_to_full_image_coord(self, continent_coord: tuple[float, float]) -> tuple[float, float]:
+    def continent_to_full_image_coord(self, continent_coord: tuple[float, float]) -> tuple[int, int]:
         return (math.floor(self.continent_to_image_multiplier * continent_coord[0]),
                 math.floor(self.continent_to_image_multiplier * continent_coord[1]))
 
-    def continent_to_sector_image_coord(self, continent_coord: tuple[float, float]) -> tuple[float, float]:
+    def continent_to_sector_image_coord(self, continent_coord: tuple[float, float]) -> tuple[int, int]:
         return (math.floor(self.continent_to_image_multiplier * (continent_coord[0] - self.sector_top_left[0])),
                 math.floor(self.continent_to_image_multiplier * (continent_coord[1] - self.sector_top_left[1])))
 
