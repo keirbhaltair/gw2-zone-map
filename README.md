@@ -3,7 +3,7 @@ This is a tool for generation of map images for _Guild Wars 2_, primarily intend
 # Usage
 
 By default, create a directory _tiles_ in the script's directory, unzip [that_shaman's API tiles](https://thatshaman.com/files/maps/) into it, and then
-run [gw2_zone_map.py](gw2_zone_map.py) with Python. Make sure the [requirements.pip](requirements.pip) are installed.
+run [gw2_zone_map.py](gw2_zone_map.py) with Python. Make sure the [requirements.txt](requirements.txt) are installed.
 
 ## Parameters
 
