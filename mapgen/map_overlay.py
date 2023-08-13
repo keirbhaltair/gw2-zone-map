@@ -140,6 +140,7 @@ class ZoneMapOverlay(MapOverlay):
 
     category_settings = {
         'city': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'City'},
+        'lobby': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'Lobby'},
         'open_world': {'boundary_order': 0, 'label_order': 1, 'special': False, 'show_level': True, 'label': None},
         'festival': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Festival zone'},
         'guild_hall': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Guild hall'},
@@ -148,6 +149,7 @@ class ZoneMapOverlay(MapOverlay):
         'strike': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Strike mission'},
         'story': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Story'},
         'hybrid_instance': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Boss instance'},
+        'lounge': {'boundary_order': 0, 'label_order': 0, 'special': False, 'show_level': False, 'label': 'Lounge'},
         'misc': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': None},
     }
 
@@ -211,7 +213,7 @@ class ZoneMapOverlay(MapOverlay):
             label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else 0.9 if settings['special'] else 1)
             main_label_font = get_font(get_main_label_font_size(map_coord, label_size_multiplier), True)
             sub_label_font = get_font(get_sub_label_font_size(map_coord, label_size_multiplier), False)
-            label_margin = get_main_label_font_size(map_coord, label_size_multiplier) // 10
+            label_margin = get_main_label_font_size(map_coord, label_size_multiplier) // 8
             outline_width = get_text_outline_width(map_coord, label_size_multiplier)
 
             # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden
@@ -241,10 +243,13 @@ class ZoneMapOverlay(MapOverlay):
             # Draw label for the zone name
             label_pos_x = label_image.size[0] / 2 if label_anchor[0] == 'm' else 2 if label_anchor[0] == 'l' else label_image.size[0] - 2
             label_pos_y = 0
+            lines_to_draw = []
             for line in wrapped_zone_name_lines:
-                label_draw.text((label_pos_x, label_pos_y), line,
-                                font=main_label_font, anchor=label_draw_text_anchor, align='center', stroke_width=outline_width, fill=label_color, stroke_fill='black')
+                lines_to_draw.append((line, label_pos_y))
                 label_pos_y = label_pos_y + main_label_font.getmetrics()[0] + label_margin
+            for line in reversed(lines_to_draw):
+                label_draw.text((label_pos_x, line[1]), line[0],
+                                font=main_label_font, anchor=label_draw_text_anchor, align='center', stroke_width=outline_width, fill=label_color, stroke_fill='black')
             label_pos_y = label_pos_y + main_label_font.getmetrics()[1]
 
             # Draw the zone's description label (City, Dungeon etc.)
@@ -340,6 +345,7 @@ class MasteryRegionMapOverlay(MapOverlay):
 
     category_settings = {
         'city': {'order': 0, 'label_size': 1},
+        'lobby': {'order': 0, 'label_size': 1},
         'open_world': {'order': 0, 'label_size': 1},
         'festival': {'order': 1, 'label_size': 0.9},
         'guild_hall': {'order': 1, 'label_size': 0.9},
@@ -348,6 +354,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         'strike': {'order': 3, 'label_size': 0.75},
         'story': {'order': 0, 'label_size': 0.9},
         'hybrid_instance': {'order': 2, 'label_size': 0.9},
+        'lounge': {'order': 0, 'label_size': 0.75},
         'misc': {'order': 1, 'label_size': 0.75},
     }
 
@@ -380,7 +387,7 @@ class MasteryRegionMapOverlay(MapOverlay):
             label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else settings['label_size'])
             main_label_font = get_font(get_main_label_font_size(map_coord, label_size_multiplier), True)
             sub_label_font = get_font(get_sub_label_font_size(map_coord, label_size_multiplier), False)
-            label_margin = get_main_label_font_size(map_coord, label_size_multiplier) // 10
+            label_margin = get_main_label_font_size(map_coord, label_size_multiplier) // 8
             outline_width = get_text_outline_width(map_coord, label_size_multiplier)
 
             # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden
@@ -409,10 +416,13 @@ class MasteryRegionMapOverlay(MapOverlay):
             # Draw label for the zone name
             label_pos_x = label_image.size[0] / 2 if label_anchor[0] == 'm' else 2 if label_anchor[0] == 'l' else label_image.size[0] - 2
             label_pos_y = 0
+            lines_to_draw = []
             for line in wrapped_zone_name_lines:
-                label_draw.text((label_pos_x, label_pos_y), line,
-                                font=main_label_font, anchor=label_draw_text_anchor, align='center', stroke_width=outline_width, fill='white', stroke_fill='black')
+                lines_to_draw.append((line, label_pos_y))
                 label_pos_y = label_pos_y + main_label_font.getmetrics()[0] + label_margin
+            for line in reversed(lines_to_draw):
+                label_draw.text((label_pos_x, line[1]), line[0],
+                                font=main_label_font, anchor=label_draw_text_anchor, align='center', stroke_width=outline_width, fill='white', stroke_fill='black')
             label_pos_y = label_pos_y + main_label_font.getmetrics()[1]
 
             # Draw the mastery region

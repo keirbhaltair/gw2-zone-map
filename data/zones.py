@@ -8,10 +8,12 @@ zone_ids: dict[str, list[int]] = {
         139,  # Rata Sum
         218,  # Black Citadel
         326,  # Hoelbrak
+    ],
+
+    'lobby': [
         1155,  # Lion's Arch Aerodrome
         1370,  # Eye of the North
         1428,  # Arborstone
-        1465,  # Thousand Seas Pavilion
         # 1483,  # Memory of Old Lion's Arch
     ],
 
@@ -137,6 +139,10 @@ zone_ids: dict[str, list[int]] = {
         1480,  # The Twisted Marionette
     ],
 
+    'lounge': [
+        1465,  # Thousand Seas Pavilion
+    ],
+
     'misc': [
         336,  # Chantry of Secrets
     ],
@@ -197,7 +203,7 @@ zone_data_overrides: dict[int: dict] = {
         'label_anchor': 'lt'
     },
     1069: {  # Lost Precipice
-        'label_rect': [[32416, 29696], [33696, 30976]],
+        'label_rect': [[32416, 29696], [34208, 30976]],
         'label_anchor': 'rm'
     },
     1149: {  # Salvation Pass
@@ -305,13 +311,13 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
         872: {  # Fractals of the Mists
             'continent_rect': [[49392.2, 31889.7], [49392.2, 31889.7]],
-            'label_rect': [[47006, 31804], [49118, 32188]],
+            'label_rect': [[47006, 31804], [49022, 32188]],
             'label_anchor': 'rb',
             'label_size': 0.75
         },
         1155: {  # Lion's Arch Aerodrome
             'continent_rect': [[49054, 31868], [49641, 32374]],
-            'label_rect': [[47006, 32124], [49022, 32758]],
+            'label_rect': [[47006, 32188], [49022, 32822]],
             'label_anchor': 'rt',
             'label_size': 0.75
         },
@@ -336,7 +342,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_anchor': 'rm'
         },
         1480: {  # The Twisted Marionette
-            'label_rect': [[51382, 33010], [52128, 33586]],
+            'label_rect': [[51382, 32946], [52128, 33522]],
             'label_anchor': 'rt',
             'label_size': 0.75
         },

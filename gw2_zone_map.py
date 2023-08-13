@@ -94,7 +94,7 @@ def generate_maps(args):
             if args.legend:
                 map_overlay_types[overlay_name]().draw_legend(full_image, map_layout, map_coord, scale_factor)
 
-            full_image.save(output_path, quality=92 if args.format == 'jpg' else None)
+            full_image.save(output_path, quality=95 if args.format == 'jpg' else None)
 
         print(f"Maps for zoom {zoom} finished.")
 
