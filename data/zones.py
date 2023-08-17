@@ -194,12 +194,9 @@ zone_data_overrides: dict[int: dict] = {
         'name': "The Tower of Nightmares",
         'continent_rect': [[42884, 31084], [43908, 32108]]
     },
-    1043: {  # Auric Basin
-        'label_rect': [[33280, 32896], [35328, 35328]]
-    },
     1062: {  # Spirit Vale
         'continent_rect': [[36392, 28544], [37112, 30592]],
-        'label_rect': [[36872, 28592], [38504, 29696]],
+        'label_rect': [[36808, 28592], [38504, 29696]],
         'label_anchor': 'lt'
     },
     1069: {  # Lost Precipice
@@ -213,7 +210,7 @@ zone_data_overrides: dict[int: dict] = {
     },
     1156: {  # Stronghold of the Faithful
         'continent_rect': [[34729, 28544], [35582, 30338]],
-        'label_rect': [[33076, 28592], [35013, 29696]],
+        'label_rect': [[33076, 28592], [35077, 29696]],
         'label_anchor': 'rt'
     },
     1175: {  # Ember Bay
@@ -315,6 +312,9 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_anchor': 'rb',
             'label_size': 0.75
         },
+        1043: {  # Auric Basin
+            'label_rect': [[33280, 32896], [35328, 35328]]
+        },
         1155: {  # Lion's Arch Aerodrome
             'continent_rect': [[49054, 31868], [49641, 32374]],
             'label_rect': [[47006, 32188], [49022, 32822]],
@@ -355,14 +355,11 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
     },
     MasteryRegionMapOverlay: {
-        17: {  # Harathi Hinterlands
-            'label_rect': [[46208, 25856], [49408, 27990]],
-        },
         26: {  # Dredgehaunt Cliffs
             'label_rect': [[52224, 32892], [54528, 33792]],
         },
         39: {  # Mount Maelstrom
-            'label_rect': [[50560, 38720], [54400, 40192]],
+            'label_rect': [[50688, 37760], [53056, 40192]],
         },
         50: {  # Lion's Arch
             'label_rect': [[48256, 30912], [50432, 32128]]
@@ -394,7 +391,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'continent_rect': [[26024, 100660], [27816, 101684]],
         },
         1480: {  # The Twisted Marionette
-            'label_rect': [[51030, 32249], [51776, 33170]],
+            'label_rect': [[50774, 32249], [51776, 33170]],
             'label_anchor': 'rm',
             'label_size': 0.75
         },
@@ -405,7 +402,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
         1485: {  # Old Lion's Court
             'continent_rect': [[48288, 32128], [50144, 33088]],
-            'label_rect': [[48544, 32128], [49888, 33088]],
+            'label_rect': [[48576, 32128], [49856, 33088]],
         },
     }
 }
@@ -434,15 +431,16 @@ conditional_custom_zones: dict[type, list[dict]] = {
                 "Strike Missions:",
                 "   Shiverpeaks Pass",
                 "   Fraenir of Jormag",
-                "   Voice of the Fallen and Claw of the Fallen",
+                "   Voice of the Fallen",
+                "      and Claw of the Fallen",
                 "   Boneskinner",
                 "   Whisper of Jormag",
                 "   Forging Steel",
                 "   Cold War",
             ]),
             'category': 'strike',
-            'continent_rect': [[59222, 20512], [62550, 23104]],
-            'label_rect': [[59350, 20512], [65110, 23104]],
+            'continent_rect': [[59222, 20384], [62230, 23232]],
+            'label_rect': [[59350, 20384], [62102, 23232]],
             'label_anchor': 'lm',
             'mastery_region': 'Icebrood Saga',
         },
