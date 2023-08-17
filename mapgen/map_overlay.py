@@ -26,11 +26,11 @@ def get_zoom_size_multiplier(map_coord: MapCoordinateSystem, size_multiplier):
 
 
 def get_main_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
-    return min(32, max(8, round(2.5 * get_zoom_size_multiplier(map_coord, size_multiplier))))
+    return min(64, max(8, round(2.5 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
 def get_sub_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
-    return min(28, max(8, round(2 * get_zoom_size_multiplier(map_coord, size_multiplier))))
+    return min(32, max(8, round(2 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
 def get_legend_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
@@ -51,8 +51,8 @@ def get_text_outline_width(font_size: float):
 
 def get_wrapped_text_lines(text: str, font: FreeTypeFont, line_length: int):
     lines = ['']
-    for word in text.split():
-        line = f'{lines[-1]} {word}'.strip()
+    for i, word in enumerate(text.split(' ')):
+        line = f'{lines[-1]} {word}' if i > 0 else word
         if font.getlength(line) <= line_length or len(lines[-1]) < 3:
             lines[-1] = line
         else:
@@ -60,24 +60,35 @@ def get_wrapped_text_lines(text: str, font: FreeTypeFont, line_length: int):
     return lines
 
 
-def wrap_zone_name(zone, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor):
-    if '\n' in zone['name']:
-        return zone['name'].split('\n')
-    return wrap_label(zone['name'], font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
-
-
 def wrap_label(label, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor, width_tolerance_factor=1.0):
     font_metrics = font.getmetrics()
-    label_box_image_width = width_tolerance_factor * (label_image_rect[1][0] - label_image_rect[0][0])
+    label_box_image_width = label_image_rect[1][0] - label_image_rect[0][0]
     label_box_image_height = label_image_rect[1][1] - label_image_rect[0][1]
     height_for_max_width = 2.75 * (sum(font_metrics) + label_margin)
     height_for_min_width = 1 * (font_metrics[0] + label_margin) + height_for_max_width
     height_diff_ratio = (label_box_image_height - height_for_max_width) / (height_for_min_width - height_for_max_width)
     main_label_ideal_width = (2 - max(0, min(1, height_diff_ratio))) * label_box_image_width - get_zoom_size_multiplier(map_coord, scale_factor)
-    main_label_min_width = 4 * font_metrics[0]
+    main_label_min_width = max(4 * font_metrics[0], width_tolerance_factor * (label_box_image_width - get_zoom_size_multiplier(map_coord, scale_factor)))
     main_label_bounded_ideal_width = min(label_image_size[0], max(main_label_min_width, main_label_ideal_width))
-    wrapped_zone_name_lines = get_wrapped_text_lines(label, font, main_label_bounded_ideal_width)
+
+    wrapped_zone_name_lines = []
+    for input_line in label.splitlines():
+        wrapped_zone_name_lines.extend(get_wrapped_text_lines(input_line, font, main_label_bounded_ideal_width))
+
     return wrapped_zone_name_lines
+
+
+def draw_title(title_text, image, map_coord, map_layout, scale_factor):
+    font_size = 2 * get_main_label_font_size(map_coord, scale_factor)
+    font = get_font(font_size, True)
+    outline_width = get_text_outline_width(font_size)
+    legend_padding = 16
+    draw = ImageDraw.Draw(image)
+    text_bbox = draw.textbbox((0, 0), title_text, font=font, stroke_width=outline_width, anchor='la')
+    legend_size = (text_bbox[2] - text_bbox[0] + 2 * legend_padding, text_bbox[3] - text_bbox[1] + 2 * legend_padding)
+    legend_coord = calculate_legend_paste_position(image, legend_size, map_layout)
+    draw.text((legend_coord[0] + legend_padding, legend_coord[1] + legend_padding), title_text, font=font, fill='white', stroke_width=outline_width, stroke_fill='black',
+              anchor='la')
 
 
 def calculate_zone_label_paste_position(label_anchor, label_image: Image, label_image_rect: tuple[tuple[float, float], tuple[float, float]]):
@@ -113,6 +124,20 @@ def calculate_legend_paste_position(image: Image, legend_size: tuple[int, int], 
         case 'b':
             coord.append(image.size[1] - map_layout.legend_image_coord[1] - legend_size[1])
     return coord[0], coord[1], coord[0] + legend_size[0], coord[1] + legend_size[1]
+
+
+def get_zone_pos(map_coord, zone, zone_image_rect):
+    if 'label_rect' in zone:
+        label_image_rect = map_coord.continent_to_sector_image_rect(zone['label_rect'])
+    else:
+        label_image_rect = zone_image_rect
+    if 'label_anchor' in zone:
+        label_anchor = zone['label_anchor']
+        if len(label_anchor) != 2 or label_anchor[0] not in 'lmr' or label_anchor[1] not in 'tmb':
+            raise ValueError(f"Invalid label anchor: {label_anchor}")
+    else:
+        label_anchor = 'mm'
+    return label_anchor, label_image_rect
 
 
 class MapOverlay(ABC):
@@ -218,17 +243,8 @@ class ZoneMapOverlay(MapOverlay):
             sub_label_font = get_font(sub_label_font_size, False)
             sub_label_outline_width = get_text_outline_width(sub_label_font_size)
 
-            # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden
-            if 'label_rect' in zone:
-                label_image_rect = map_coord.continent_to_sector_image_rect(zone['label_rect'])
-            else:
-                label_image_rect = zone_image_rect
-            if 'label_anchor' in zone:
-                label_anchor = zone['label_anchor']
-                if len(label_anchor) != 2 or label_anchor[0] not in 'lmr' or label_anchor[1] not in 'tmb':
-                    raise ValueError(f"Invalid label anchor: {label_anchor}")
-            else:
-                label_anchor = 'mm'
+            # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden)
+            label_anchor, label_image_rect = get_zone_pos(map_coord, zone, zone_image_rect)
 
             # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
             zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)
@@ -243,7 +259,7 @@ class ZoneMapOverlay(MapOverlay):
             lines_to_draw = []
 
             # Find the ideal line wrapping for the zone's name and shape
-            wrapped_zone_name_lines = wrap_zone_name(zone, main_label_font, main_label_line_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+            wrapped_zone_name_lines = wrap_label(zone['name'], main_label_font, main_label_line_margin, label_image_rect, label_image_size, map_coord, scale_factor)
 
             # Draw label for the zone name
             label_pos_x = label_image.size[0] / 2 if label_anchor[0] == 'm' else 2 if label_anchor[0] == 'l' else label_image.size[0] - 2
@@ -340,16 +356,16 @@ class ZoneMapOverlay(MapOverlay):
 
 class MasteryRegionMapOverlay(MapOverlay):
     mastery_settings = {
-        'Central Tyria': {'color': (240, 51, 7)},
-        'Heart of Thorns': {'color': (0, 255, 92)},
-        'Path of Fire': {'color': (202, 5, 237)},
-        'Icebrood Saga': {'color': (20, 153, 255)},
-        'End of Dragons': {'color': (10, 240, 221)},
+        'Central Tyria': {'color': (240, 51, 7, 160)},
+        'Heart of Thorns': {'color': (0, 255, 92, 160)},
+        'Path of Fire': {'color': (202, 5, 237, 160)},
+        'Icebrood Saga': {'color': (20, 153, 255, 160)},
+        'End of Dragons': {'color': (10, 240, 221, 160)},
     }
 
     category_settings = {
-        'city': {'order': 0, 'label_size': 1},
-        'lobby': {'order': 0, 'label_size': 1},
+        'city': {'order': 1, 'label_size': 1},
+        'lobby': {'order': 1, 'label_size': 1},
         'open_world': {'order': 0, 'label_size': 1},
         'festival': {'order': 1, 'label_size': 0.9},
         'guild_hall': {'order': 1, 'label_size': 0.9},
@@ -379,9 +395,8 @@ class MasteryRegionMapOverlay(MapOverlay):
             outline_rect = ((zone_image_rect[0][0] - math.floor((line_width - 1) / 2), zone_image_rect[0][1] - math.floor((line_width - 1) / 2)),
                             (zone_image_rect[1][0] + math.floor(line_width / 2), zone_image_rect[1][1] + math.floor(line_width / 2)))
 
-            mastery_color = self.mastery_settings[zone['mastery_region']]['color']
-            mastery_color = mastery_color[0], mastery_color[1], mastery_color[2], 160
-            draw.rectangle(outline_rect, outline='white', width=get_line_width(map_coord, scale_factor), fill=mastery_color)
+            bg_color = self.mastery_settings[zone['mastery_region']]['color']
+            draw.rectangle(outline_rect, outline='white', width=get_line_width(map_coord, scale_factor), fill=bg_color)
             settings = self.category_settings[zone['category']]
 
             drawn_zones.append((zone, zone_image_rect, settings))
@@ -398,17 +413,8 @@ class MasteryRegionMapOverlay(MapOverlay):
             sub_label_line_margin = sub_label_font_size // 8
             sub_label_outline_width = get_text_outline_width(sub_label_font_size)
 
-            # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden
-            if 'label_rect' in zone:
-                label_image_rect = map_coord.continent_to_sector_image_rect(zone['label_rect'])
-            else:
-                label_image_rect = zone_image_rect
-            if 'label_anchor' in zone:
-                label_anchor = zone['label_anchor']
-                if len(label_anchor) != 2 or label_anchor[0] not in 'lmr' or label_anchor[1] not in 'tmb':
-                    raise ValueError(f"Invalid label anchor: {label_anchor}")
-            else:
-                label_anchor = 'mm'
+            # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden)
+            label_anchor, label_image_rect = get_zone_pos(map_coord, zone, zone_image_rect)
 
             # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
             zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)
@@ -422,7 +428,7 @@ class MasteryRegionMapOverlay(MapOverlay):
             lines_to_draw = []
 
             # Find the ideal line wrapping for the zone's name and shape
-            wrapped_zone_name_lines = wrap_zone_name(zone, main_label_font, main_label_line_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+            wrapped_zone_name_lines = wrap_label(zone['name'], main_label_font, main_label_line_margin, label_image_rect, label_image_size, map_coord, scale_factor)
 
             # Draw label for the zone name
             label_pos_x = round(label_image_size[0] / 2) if label_anchor[0] == 'm' else 2 if label_anchor[0] == 'l' else label_image_size[0] - 2
@@ -448,23 +454,126 @@ class MasteryRegionMapOverlay(MapOverlay):
             image.paste(label_image, label_paste_pos, label_image)
 
     def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
-        font_size = get_main_label_font_size(map_coord, 1.4 * scale_factor)
-        font = get_font(font_size, True)
-        outline_width = get_text_outline_width(font_size)
+        draw_title('Mastery Regions', image, map_coord, map_layout, scale_factor)
 
-        title_text = 'Mastery regions'
-        legend_padding = 16
 
-        draw = ImageDraw.Draw(image)
-        text_bbox = draw.textbbox((0, 0), title_text, font=font, stroke_width=outline_width, anchor='la')
-        legend_size = (text_bbox[2] - text_bbox[0] + 2 * legend_padding, text_bbox[3] - text_bbox[1] + 2 * legend_padding)
-        legend_coord = calculate_legend_paste_position(image, legend_size, map_layout)
-        draw.text((legend_coord[0] + legend_padding, legend_coord[1] + legend_padding), title_text, font=font, fill='white', stroke_width=outline_width, stroke_fill='black',
-                  anchor='la')
+class AccessRequirementMapOverlay(MapOverlay):
+    access_settings = {
+        'gw2': {'color': (240, 51, 7, 160), 'label': 'Guild\u00A0Wars\u00A02'},
+        'lw1': {'color': (240, 51, 7, 160), 'label': 'Guild\u00A0Wars\u00A02'},
+        'lw2': {'color': (240, 51, 7, 160), 'label': 'Guild\u00A0Wars\u00A02'},
+        'hot': {'color': (0, 255, 92, 160), 'label': 'Heart\u00A0of Thorns'},
+        'lw3': {'color': (20, 166, 73, 130), 'label': 'Heart\u00A0of Thorns\u00A0+\nLiving World Season\u00A03'},
+        'pof': {'color': (202, 5, 237, 160), 'label': 'Path\u00A0of Fire'},
+        'lw4': {'color': (115, 17, 133, 130), 'label': 'Path\u00A0of\u00A0Fire\u00A0+\nLiving\u00A0World\u00A0Season\u00A04'},
+        'lw5': {'color': (115, 17, 133, 130), 'label': 'Path\u00A0of\u00A0Fire\u00A0+ The\u00A0Icebrood\u00A0Saga'},
+        'eod': {'color': (10, 240, 221, 160), 'label': 'End\u00A0of Dragons'},
+        'festival': {'color': (255, 119, 0, 175), 'label': 'Festival'},
+        'guild_hall': {'color': (176, 45, 14, 140), 'label': 'Guild'},
+        'lounge': {'color': (176, 45, 14, 140), 'label': 'Gem Store'},
+    }
+
+    category_settings = {
+        'city': {'order': 1, 'label_size': 1},
+        'lobby': {'order': 1, 'label_size': 1},
+        'open_world': {'order': 0, 'label_size': 1},
+        'festival': {'order': 1, 'label_size': 0.9},
+        'guild_hall': {'order': 1, 'label_size': 0.9},
+        'dungeon': {'order': 3, 'label_size': 0.9},
+        'raid': {'order': 3, 'label_size': 0.9},
+        'strike': {'order': 3, 'label_size': 0.75},
+        'story': {'order': 0, 'label_size': 0.9},
+        'hybrid_instance': {'order': 2, 'label_size': 0.9},
+        'lounge': {'order': 0, 'label_size': 0.75},
+        'misc': {'order': 1, 'label_size': 0.75},
+    }
+
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
+        draw = ImageDraw.Draw(image, 'RGBA')
+
+        # Draw zone boundaries
+        zone_data.sort(key=lambda z: (self.category_settings[z['category']]['order'], z['id']))
+        drawn_zones = []  # list[tuple[zone, zone_image_bounds, zone_settings]]
+        for zone in zone_data:
+            continent_rect = zone['continent_rect']
+
+            if not map_coord.is_rect_contained_in_sector(continent_rect):
+                continue
+
+            zone_image_rect = map_coord.continent_to_sector_image_rect(continent_rect)
+            line_width = get_line_width(map_coord, scale_factor)
+            outline_rect = ((zone_image_rect[0][0] - math.floor((line_width - 1) / 2), zone_image_rect[0][1] - math.floor((line_width - 1) / 2)),
+                            (zone_image_rect[1][0] + math.floor(line_width / 2), zone_image_rect[1][1] + math.floor(line_width / 2)))
+
+            if zone['category'] in ['guild_hall', 'lounge']:
+                req_code = zone['category']
+            else:
+                req_code = zone['access_req']
+
+            access_req = self.access_settings[req_code]
+            draw.rectangle(outline_rect, outline='white', width=get_line_width(map_coord, scale_factor), fill=access_req['color'])
+            settings = self.category_settings[zone['category']]
+
+            drawn_zones.append((zone, zone_image_rect, settings, access_req))
+
+        for zone, zone_image_rect, settings, access_req in drawn_zones:
+            # Choose the fonts to draw the labels with
+            label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else settings['label_size'])
+            main_label_font_size = get_main_label_font_size(map_coord, label_size_multiplier)
+            main_label_font = get_font(main_label_font_size, True)
+            main_label_line_margin = main_label_font_size // 8
+            main_label_outline_width = get_text_outline_width(main_label_font_size)
+            sub_label_font_size = get_sub_label_font_size(map_coord, label_size_multiplier)
+            sub_label_font = get_font(sub_label_font_size, False)
+            sub_label_line_margin = sub_label_font_size // 8
+            sub_label_outline_width = get_text_outline_width(sub_label_font_size)
+
+            # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden)
+            label_anchor, label_image_rect = get_zone_pos(map_coord, zone, zone_image_rect)
+
+            # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
+            zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)
+            label_image_size = (max(250, zone_name_label_bbox[2] + 10, round(2 * label_image_rect[1][0] + 20)),
+                                max(250, 10 * zone_name_label_bbox[3] + 10, round(2 * label_image_rect[1][1] + 20)))
+            label_image = Image.new('RGBA', label_image_size, (255, 255, 255, 0))
+            label_draw = ImageDraw.Draw(label_image, 'RGBA')
+            label_draw_text_anchor = label_anchor[0] + 'a'
+
+            # Collect all lines to draw so that they can be drawn in reverse order to keep earlier lines on top
+            lines_to_draw = []
+
+            # Find the ideal line wrapping for the zone's name and shape
+            wrapped_zone_name_lines = wrap_label(zone['name'], main_label_font, main_label_line_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+
+            # Draw label for the zone name
+            label_pos_x = round(label_image_size[0] / 2) if label_anchor[0] == 'm' else 2 if label_anchor[0] == 'l' else label_image_size[0] - 2
+            label_pos_y = 0
+            for line in wrapped_zone_name_lines:
+                lines_to_draw.append((line, label_pos_y, main_label_font, main_label_outline_width))
+                label_pos_y = label_pos_y + main_label_font.getmetrics()[0] + main_label_line_margin
+            label_pos_y = label_pos_y + max(0, main_label_font.getmetrics()[1] - main_label_line_margin)
+
+            # Draw the access requirement
+            wrapped_req_lines = wrap_label(access_req['label'], sub_label_font, sub_label_line_margin, label_image_rect, label_image_size, map_coord, scale_factor, 1.1)
+            for line in wrapped_req_lines:
+                lines_to_draw.append((line, label_pos_y, sub_label_font, sub_label_outline_width))
+                label_pos_y = label_pos_y + sub_label_font.getmetrics()[0] + sub_label_line_margin
+
+            # Perform the actual draws
+            for (line, pos_y, font, outline_width) in reversed(lines_to_draw):
+                label_draw.text((label_pos_x, pos_y), line, font=font, anchor=label_draw_text_anchor, align='center', stroke_width=outline_width, fill='white', stroke_fill='black')
+
+            # Paste the resulting label into the actual map image
+            label_paste_pos = calculate_zone_label_paste_position(label_anchor, label_image, label_image_rect)
+            image.paste(label_image, label_paste_pos, label_image)
+
+    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+        draw_title('Access Requirements', image, map_coord, map_layout, scale_factor)
 
 
 map_overlay_types = {
     'zone': ZoneMapOverlay,
     'mastery': MasteryRegionMapOverlay,
+    'access': AccessRequirementMapOverlay,
     'none': NoMapOverlay
 }

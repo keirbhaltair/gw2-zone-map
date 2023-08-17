@@ -3,7 +3,7 @@ from pathlib import Path
 
 from data.continents import continent_map_params
 from data.layouts import map_layouts
-from data.zones import conditional_zone_blacklist, conditional_zone_data_overrides, zone_data_overrides, conditional_custom_zones
+from data.zones import conditional_zone_blacklist, conditional_zone_data_overrides, all_zone_data_overrides, conditional_custom_zones
 from mapgen.data_api import load_zone_data
 from mapgen.map_composite import combine_part_images
 from mapgen.map_coordinates import MapCoordinateSystem, MapLayout, MapSector
@@ -26,7 +26,7 @@ def parse_arguments():
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
-    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
+    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery', 'access'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
     parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
     parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.3],
                         help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
@@ -117,7 +117,7 @@ def override_zone_data(zone_data: list[dict], map_overlay: MapOverlay):
         if type(map_overlay) in conditional_zone_blacklist and z['id'] in conditional_zone_blacklist[type(map_overlay)]:
             continue
 
-        d = z | zone_data_overrides[z['id']] if z['id'] in zone_data_overrides else z
+        d = z | all_zone_data_overrides[z['id']] if z['id'] in all_zone_data_overrides else z
 
         if type(map_overlay) in conditional_zone_data_overrides and z['id'] in conditional_zone_data_overrides[type(map_overlay)]:
             d = d | conditional_zone_data_overrides[type(map_overlay)][z['id']]
