@@ -1,4 +1,4 @@
-from mapgen.map_overlay import ZoneMapOverlay, MasteryRegionMapOverlay, AccessRequirementMapOverlay
+from mapgen.map_overlay import ZoneMapOverlay, MasteryRegionMapOverlay
 
 zone_ids: dict[str, list[int]] = {
     'city': [
@@ -200,7 +200,8 @@ all_zone_data_overrides: dict[int: dict] = {
     },
     943: {  # The Tower of Nightmares
         'name': "The Tower of Nightmares",
-        'continent_rect': [[42884, 31084], [43908, 32108]]
+        'continent_rect': [[42884, 31084], [43908, 32108]],
+        'label_rect': [[42756, 31084], [44036, 32108]]
     },
     1062: {  # Spirit Vale
         'continent_rect': [[36392, 28544], [37112, 30592]],
@@ -264,243 +265,229 @@ all_zone_data_overrides: dict[int: dict] = {
     },
 }
 
-_zone_map_data_overrides = {
-    26: {  # Dredgehaunt Cliffs
-        'label_rect': [[52736, 32764], [54016, 33792]],
-    },
-    29: {  # Timberline Falls
-        'label_rect': [[51712, 35328], [54016, 37760]]
-    },
-    36: {  # Ascalonian Catacombs
-        'label_rect': [[61184, 29056], [62464, 30080]],
-        'label_anchor': 'lm'
-    },
-    50: {  # Lion's Arch
-        'label_rect': [[46976, 30752], [48736, 31804]],
-        'label_anchor': 'rt'
-    },
-    64: {  # Sorrow's Embrace
-        'label_rect': [[52352, 34688], [53376, 35328]],
-        'label_anchor': 'mt'
-    },
-    67: {  # Twilight Arbor
-        'label_rect': [[42560, 32704], [43456, 33728]],
-        'label_anchor': 'lt'
-    },
-    69: {  # Citadel of Flame
-        'label_rect': [[59968, 24064], [61248, 25344]],
-        'label_anchor': 'lm'
-    },
-    71: {  # Honor of the Waves
-        'label_rect': [[55424, 24448], [56576, 25600]],
-        'label_anchor': 'lm'
-    },
-    76: {  # Caudecus's Manor
-        'label_rect': [[44672, 27776], [45866, 28800]],
-        'label_anchor': 'rm'
-    },
-    82: {  # Crucible of Eternity
-        'label_rect': [[53952, 37312], [54976, 38592]],
-        'label_anchor': 'lm'
-    },
-    139: {  # Rata Sum
-        'continent_rect': [[37376, 36096], [39936, 38654]],
-        'label_rect': [[37376, 36735], [39936, 38654]],
-    },
-    336: {  # Chantry of Secrets
-        'label_rect': [[49696, 32288], [50720, 33120]],
-        'label_anchor': 'lb',
-        'label_size': 0.75
-    },
-    872: {  # Fractals of the Mists
-        'continent_rect': [[49392.2, 31889.7], [49392.2, 31889.7]],
-        'label_rect': [[47006, 31804], [49022, 32188]],
-        'label_anchor': 'rb',
-        'label_size': 0.75
-    },
-    1043: {  # Auric Basin
-        'label_rect': [[33280, 32896], [35328, 35328]]
-    },
-    1155: {  # Lion's Arch Aerodrome
-        'continent_rect': [[49054, 31868], [49641, 32374]],
-        'label_rect': [[47006, 32188], [49022, 32822]],
-        'label_anchor': 'rt',
-        'label_size': 0.75
-    },
-    1264: {  # Hall of Chains
-        'continent_rect': [[51935.2, 32267.7], [51935.2, 32267.7]],
-        'label_rect': [[52160, 32092], [54784, 32598]],
-        'label_anchor': 'lm',
-        'label_size': 0.75
-    },
-    1303: {  # Mythwright Gambit
-        'continent_rect': [[49331.4, 32136.9], [49331.4, 32136.9]],
-        'label_rect': [[49753, 31836], [51753, 32342]],
-        'label_anchor': 'lm',
-        'label_size': 0.75
-    },
-    1370: {  # Eye of the North
-        'label_rect': [[55008, 21248], [57312, 22102]],
-        'label_anchor': 'rm'
-    },
-    1428: {  # Arborstone
-        'label_rect': [[27585, 100890], [29121, 101657]],
-        'label_anchor': 'rm'
-    },
-    1480: {  # The Twisted Marionette
-        'label_rect': [[51382, 32946], [52128, 33522]],
-        'label_anchor': 'rt',
-        'label_size': 0.75
-    },
-    1482: {  # The Battle for Lion's Arch
-        'name': "The Battle for Lion's Arch",
-        'continent_rect': [[48064, 30784], [50368, 32192]],
-        'label_rect': [[49065, 30464], [50985, 30976]],
-        'label_anchor': 'lb',
-        'label_size': 0.75
-    },
-}
-
-_category_map_data_overrides = {
-    26: {  # Dredgehaunt Cliffs
-        'label_rect': [[52224, 32892], [54528, 33792]],
-    },
-    39: {  # Mount Maelstrom
-        'label_rect': [[50688, 37760], [53056, 40192]],
-    },
-    50: {  # Lion's Arch
-        'label_rect': [[48256, 30912], [50432, 32128]]
-    },
-    335: {  # Claw Island
-        'continent_rect': [[46720, 32512], [48000, 33792]]
-    },
-    872: {  # Fractals of the Mists
-        'continent_rect': [[46336, 30912], [48128, 31680]],
-        'label_size': 0.75
-    },
-    1165: {  # Bloodstone Fen
-        'label_size': 0.85,
-    },
-    1264: {  # Hall of Chains
-        'access_req': 'pof'
-    },
-    1303: {  # Mythwright Gambit
-        'continent_rect': [[46336, 31680], [48128, 32448]],
-        'label_size': 0.75,
-        'access_req': 'pof'
-    },
-    1323: {  # The Key of Ahdashim
-        'access_req': 'pof'
-    },
-    1370: {  # Eye of the North
-        'label_rect': [[57088, 21248], [58454, 22102]],
-        'access_req': 'gw2'
-    },
-    1428: {  # Arborstone
-        'label_rect': [[28929, 100890], [30397, 101657]]
-    },
-    1432: {  # Aetherblade Hideout
-        'continent_rect': [[23367, 103145], [25543, 104169]],
-    },
-    1437: {  # Harvest Temple
-        'continent_rect': [[33382, 105550], [35046, 106574]],
-    },
-    1450: {  # Xunlai Jade Junkyard
-        'continent_rect': [[30209, 99866], [32001, 100890]],
-    },
-    1451: {  # Kaineng Overlook
-        'continent_rect': [[26024, 100660], [27816, 101684]],
-    },
-    1480: {  # The Twisted Marionette
-        'label_rect': [[50646, 32249], [51776, 33170]],
-        'label_anchor': 'rm',
-        'label_size': 0.75
-    },
-    1482: {  # The Battle for Lion's Arch
-        'name': "The Battle for Lion's Arch",
-        'continent_rect': [[47616, 30144], [50560, 30912]],
-        'label_size': 0.75
-    },
-    1485: {  # Old Lion's Court
-        'continent_rect': [[48288, 32128], [50144, 33088]],
-        'label_rect': [[48576, 32128], [49856, 33088]],
-    },
-}
-
-_access_req_map_data_overrides = {
-    335: {  # Claw Island,
-        'label_size': 0.8
-    },
-    1185: {  # Lake Doric,
-        'label_size': 0.8
-    },
-    1188: {  # Bastion of the Penitent
-        'access_req': 'hot'
-    },
-    1268: {  # Fahranur, the First City
-        'label_size': 0.8
-    },
-}
-
 """Custom overrides for the data coming from the API to make the resulting map look a bit cleaner. Similar to zone_data_overrides, but it includes additional changes for 
 specific map overlays."""
 conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
-    ZoneMapOverlay: _zone_map_data_overrides,
-    MasteryRegionMapOverlay: _category_map_data_overrides,
-    AccessRequirementMapOverlay: {**_category_map_data_overrides, **_access_req_map_data_overrides},
+    ZoneMapOverlay: {
+        26: {  # Dredgehaunt Cliffs
+            'label_rect': [[52736, 32764], [54016, 33792]],
+        },
+        29: {  # Timberline Falls
+            'label_rect': [[51712, 35328], [54016, 37760]]
+        },
+        36: {  # Ascalonian Catacombs
+            'label_rect': [[61184, 29056], [62464, 30080]],
+            'label_anchor': 'lm'
+        },
+        50: {  # Lion's Arch
+            'label_rect': [[46976, 30752], [48736, 31804]],
+            'label_anchor': 'rt'
+        },
+        64: {  # Sorrow's Embrace
+            'label_rect': [[52352, 34688], [53376, 35328]],
+            'label_anchor': 'mt'
+        },
+        67: {  # Twilight Arbor
+            'label_rect': [[42560, 32704], [43456, 33728]],
+            'label_anchor': 'lt'
+        },
+        69: {  # Citadel of Flame
+            'label_rect': [[59968, 24064], [61248, 25344]],
+            'label_anchor': 'lm'
+        },
+        71: {  # Honor of the Waves
+            'label_rect': [[55424, 24448], [56576, 25600]],
+            'label_anchor': 'lm'
+        },
+        76: {  # Caudecus's Manor
+            'label_rect': [[44672, 27776], [45866, 28800]],
+            'label_anchor': 'rm'
+        },
+        82: {  # Crucible of Eternity
+            'label_rect': [[53952, 37312], [54976, 38592]],
+            'label_anchor': 'lm'
+        },
+        139: {  # Rata Sum
+            'continent_rect': [[37376, 36096], [39936, 38654]],
+            'label_rect': [[37376, 36735], [39936, 38654]],
+        },
+        336: {  # Chantry of Secrets
+            'label_rect': [[49696, 32288], [50720, 33120]],
+            'label_anchor': 'lb',
+            'label_size': 0.75
+        },
+        872: {  # Fractals of the Mists
+            'continent_rect': [[49392.2, 31889.7], [49392.2, 31889.7]],
+            'label_rect': [[47006, 31804], [49022, 32188]],
+            'label_anchor': 'rb',
+            'label_size': 0.75
+        },
+        1043: {  # Auric Basin
+            'label_rect': [[33280, 32896], [35328, 35328]]
+        },
+        1155: {  # Lion's Arch Aerodrome
+            'continent_rect': [[49054, 31868], [49641, 32374]],
+            'label_rect': [[47006, 32188], [49022, 32822]],
+            'label_anchor': 'rt',
+            'label_size': 0.75
+        },
+        1264: {  # Hall of Chains
+            'continent_rect': [[51935.2, 32267.7], [51935.2, 32267.7]],
+            'label_rect': [[52160, 32092], [54784, 32598]],
+            'label_anchor': 'lm',
+            'label_size': 0.75
+        },
+        1303: {  # Mythwright Gambit
+            'continent_rect': [[49331.4, 32136.9], [49331.4, 32136.9]],
+            'label_rect': [[49753, 31836], [51753, 32342]],
+            'label_anchor': 'lm',
+            'label_size': 0.75
+        },
+        1370: {  # Eye of the North
+            'label_rect': [[55008, 21248], [57312, 22102]],
+            'label_anchor': 'rm'
+        },
+        1428: {  # Arborstone
+            'label_rect': [[27585, 100890], [29121, 101657]],
+            'label_anchor': 'rm'
+        },
+        1480: {  # The Twisted Marionette
+            'label_rect': [[51382, 32946], [52128, 33522]],
+            'label_anchor': 'rt',
+            'label_size': 0.75
+        },
+        1482: {  # The Battle for Lion's Arch
+            'name': "The Battle for Lion's Arch",
+            'continent_rect': [[48064, 30784], [50368, 32192]],
+            'label_rect': [[49065, 30464], [50985, 30976]],
+            'label_anchor': 'lb',
+            'label_size': 0.75
+        },
+    },
+    MasteryRegionMapOverlay: {
+        26: {  # Dredgehaunt Cliffs
+            'label_rect': [[52224, 32892], [54528, 33792]],
+        },
+        39: {  # Mount Maelstrom
+            'label_rect': [[50688, 37760], [53056, 40192]],
+        },
+        50: {  # Lion's Arch
+            'label_rect': [[48256, 30912], [50432, 32128]]
+        },
+        76: {  # Caudecus's Manor
+            'label_rect': [[45120, 27776], [46272, 28800]]
+        },
+        335: {  # Claw Island
+            'continent_rect': [[46720, 32512], [48000, 33792]],
+            'label_size': 0.8
+        },
+        872: {  # Fractals of the Mists
+            'continent_rect': [[46336, 30912], [48128, 31680]],
+            'label_size': 0.75
+        },
+        1165: {  # Bloodstone Fen
+            'label_size': 0.85,
+        },
+        1185: {  # Lake Doric,
+            'label_size': 0.9
+        },
+        1188: {  # Bastion of the Penitent
+            'access_req': 'hot'
+        },
+        1264: {  # Hall of Chains
+            'access_req': 'pof'
+        },
+        1268: {  # Fahranur, the First City
+            'label_size': 0.8
+        },
+        1303: {  # Mythwright Gambit
+            'continent_rect': [[46336, 31680], [48128, 32448]],
+            'label_size': 0.75,
+            'access_req': 'pof'
+        },
+        1323: {  # The Key of Ahdashim
+            'access_req': 'pof'
+        },
+        1370: {  # Eye of the North
+            'label_rect': [[57088, 21248], [58454, 22102]],
+            'mastery_region': 'Central Tyria',
+            'access_req': 'gw2'
+        },
+        1428: {  # Arborstone
+            'label_rect': [[28929, 100890], [30397, 101657]]
+        },
+        1432: {  # Aetherblade Hideout
+            'continent_rect': [[23367, 103145], [25543, 104169]],
+        },
+        1437: {  # Harvest Temple
+            'continent_rect': [[33382, 105550], [35046, 106574]],
+        },
+        1450: {  # Xunlai Jade Junkyard
+            'continent_rect': [[30209, 99866], [32001, 100890]],
+        },
+        1451: {  # Kaineng Overlook
+            'continent_rect': [[26024, 100660], [27816, 101684]],
+        },
+        1480: {  # The Twisted Marionette
+            'label_rect': [[50646, 32249], [51776, 33170]],
+            'label_anchor': 'rm',
+            'label_size': 0.75
+        },
+        1482: {  # The Battle for Lion's Arch
+            'name': "The Battle for Lion's Arch",
+            'continent_rect': [[47616, 30144], [50560, 30912]],
+            'label_size': 0.75
+        },
+        1485: {  # Old Lion's Court
+            'continent_rect': [[48288, 32128], [50144, 33088]],
+            'label_rect': [[48576, 32128], [49856, 33088]],
+        },
+    }
 }
-
-_zone_map_blacklist = [
-    1352,  # Secret Lair of the Snowmen
-    1432,  # Aetherblade Hideout
-    1450,  # Xunlai Jade Junkyard
-    1451,  # Kaineng Overlook
-    1437,  # Harvest Temple
-    1485,  # Old Lion's Court
-]
-
-_category_map_data_blacklist = [
-    336,  # Chantry of Secrets
-    1155,  # Lion's Arch Aerodrome
-]
 
 """Map IDs to ignore for specific map overlays."""
 conditional_zone_blacklist: dict[type, list[int]] = {
-    ZoneMapOverlay: _zone_map_blacklist,
-    MasteryRegionMapOverlay: _category_map_data_blacklist,
-    AccessRequirementMapOverlay: _category_map_data_blacklist
+    ZoneMapOverlay: [
+        1352,  # Secret Lair of the Snowmen
+        1432,  # Aetherblade Hideout
+        1450,  # Xunlai Jade Junkyard
+        1451,  # Kaineng Overlook
+        1437,  # Harvest Temple
+        1485,  # Old Lion's Court
+    ],
+    MasteryRegionMapOverlay: [
+        336,  # Chantry of Secrets
+        1155,  # Lion's Arch Aerodrome
+    ]
 }
 
-_category_map_data_custom_zones = [
-    {
-        'name': '\n'.join([
-            "Strike Missions:",
-            "   Shiverpeaks Pass",
-            "   Fraenir of Jormag",
-            "   Voice of the Fallen",
-            "      and Claw of the Fallen",
-            "   Boneskinner",
-            "   Whisper of Jormag",
-            "   Forging Steel",
-            "   Cold War",
-        ]),
-        'category': 'strike',
-        'continent_rect': [[59222, 20384], [62358, 23232]],
-        'label_rect': [[59350, 20384], [62230, 23232]],
-        'label_anchor': 'lm',
-        'mastery_region': 'Icebrood Saga',
-        'access_req': 'lw5',
-    },
-    {
-        'name': "Dragon Response Missions",
-        'category': 'misc',
-        'continent_rect': [[55382, 20288], [58838, 21056]],
-        'mastery_region': 'Icebrood Saga',
-        'access_req': 'lw5',
-    },
-]
-
 conditional_custom_zones: dict[type, list[dict]] = {
-    MasteryRegionMapOverlay: _category_map_data_custom_zones,
-    AccessRequirementMapOverlay: _category_map_data_custom_zones,
+    MasteryRegionMapOverlay: [
+        {
+            'name': '\n'.join([
+                "Strike Missions:",
+                "   Shiverpeaks Pass",
+                "   Fraenir of Jormag",
+                "   Voice of the Fallen",
+                "      and Claw of the Fallen",
+                "   Boneskinner",
+                "   Whisper of Jormag",
+                "   Forging Steel",
+                "   Cold War",
+            ]),
+            'category': 'strike',
+            'continent_rect': [[59222, 20384], [62614, 23232]],
+            'label_rect': [[59350, 20384], [62486, 23232]],
+            'label_anchor': 'lm',
+            'mastery_region': 'Icebrood Saga',
+            'access_req': 'lw5',
+        },
+        {
+            'name': "Dragon Response Missions",
+            'category': 'misc',
+            'continent_rect': [[55382, 20288], [58838, 21056]],
+            'mastery_region': 'Icebrood Saga',
+            'access_req': 'lw5',
+        },
+    ],
 }

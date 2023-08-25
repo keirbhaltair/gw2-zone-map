@@ -8,7 +8,7 @@ from mapgen.data_api import load_zone_data
 from mapgen.map_composite import combine_part_images
 from mapgen.map_coordinates import MapCoordinateSystem, MapLayout, MapSector
 from mapgen.map_generator import LocalMapTileSource, MapGenerator
-from mapgen.map_overlay import MapOverlay, map_overlay_types
+from mapgen.map_overlay import MapOverlay, map_overlays
 
 
 def main():
@@ -26,7 +26,7 @@ def parse_arguments():
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
-    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery', 'access'], help=f"Map overlays to generate. Allowed values are: {list(map_overlay_types.keys())}")
+    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
     parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
     parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.3],
                         help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
@@ -70,9 +70,9 @@ def generate_maps(args):
             part_image = map_generator.generate_map_image(sector.continent_id, 1, map_coord)
 
             for i, overlay_name in enumerate(args.overlay, start=1):
-                if overlay_name not in map_overlay_types:
-                    raise ValueError(f"Invalid overlay name specified ({overlay_name}). Allowed values are: {list(map_overlay_types.keys())}")
-                map_overlay = map_overlay_types[overlay_name]()
+                if overlay_name not in map_overlays:
+                    raise ValueError(f"Invalid overlay name specified ({overlay_name}). Allowed values are: {list(map_overlays.keys())}")
+                map_overlay = map_overlays[overlay_name]
                 overridden_zone_data = override_zone_data(zone_data, map_overlay) if args.overrides else zone_data
                 part_image_copy = part_image.copy() if i < len(args.overlay) else part_image
                 map_overlay.draw_overlay(part_image_copy, overridden_zone_data, map_coord, scale_factor)
@@ -92,7 +92,7 @@ def generate_maps(args):
                 full_image = combine_part_images(part_images[overlay_name], map_coord, scale_factor)
 
             if args.legend:
-                map_overlay_types[overlay_name]().draw_legend(full_image, map_layout, map_coord, scale_factor)
+                map_overlays[overlay_name].draw_legend(full_image, map_layout, map_coord, scale_factor)
 
             full_image.save(output_path, quality=95 if args.format == 'jpg' else None)
 
