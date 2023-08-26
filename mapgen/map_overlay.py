@@ -184,7 +184,7 @@ class ZoneMapOverlay(MapOverlay):
         'neighbor': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/a/ae/Asura_gate_starter_area_%28map_icon%29.png")), 'line_color': (45, 185, 227, 150),
                      'legend': 'Zone portal'},
         'asura_gate': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/6/6c/Asura_gate_%28map_icon%29.png")), 'line_color': None,
-                       'legend': 'Asura gate'},
+                       'legend': 'Asura gate / Long distance portal'},
         'dungeon': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/3/3c/Dungeon_%28map_icon%29.png")), 'line_color': None,
                     'legend': 'Dungeon'},
         'fractal': {'icon': Image.open(urlopen("https://wiki.guildwars2.com/images/9/9f/Fractals_of_the_Mists_%28map_icon%29.png")), 'line_color': None,
@@ -371,6 +371,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         'Path of Fire': {'color': (202, 5, 237, 160)},
         'Icebrood Saga': {'color': (20, 153, 255, 160)},
         'End of Dragons': {'color': (10, 240, 221, 160)},
+        'Secrets of the Obscure': {'color': (255, 207, 13, 160)},
     }
 
     category_settings = {
@@ -388,16 +389,10 @@ class MasteryRegionMapOverlay(MapOverlay):
         'misc': {'order': 1, 'label_size': 0.75},
     }
 
+    default_access_settings = {'label': None}
     access_settings = {
-        'gw2': {'label': None},
-        'lw1': {'label': None},
-        'lw2': {'label': None},
-        'hot': {'label': None},
         'lw3': {'label': 'Living\u00A0World Season\u00A03'},
-        'pof': {'label': None},
         'lw4': {'label': 'Living\u00A0World Season\u00A04'},
-        'lw5': {'label': None},
-        'eod': {'label': None},
         'festival': {'label': 'Festival'},
         'guild_hall': {'label': 'Guild hall'},
         'lounge': {'label': 'Gem Store'},
@@ -428,7 +423,7 @@ class MasteryRegionMapOverlay(MapOverlay):
             bg_color = self.mastery_settings[zone['mastery_region']]['color']
             draw.rectangle(outline_rect, outline='white', width=get_line_width(map_coord, scale_factor), fill=bg_color)
             settings = self.category_settings[zone['category']]
-            access_req = self.access_settings[req_code]
+            access_req = self.access_settings[req_code] if req_code in self.access_settings else self.default_access_settings
 
             drawn_zones.append((zone, zone_image_rect, settings, access_req))
 

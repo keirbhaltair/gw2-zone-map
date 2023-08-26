@@ -1,5 +1,6 @@
 portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]] = {
     'neighbor': [
+        (23917, 21207, 24102, 22074),  # Amnytas - The Wizard's Tower
         (29185, 100890, 28630, 100660),  # Arborstone - New Kaineng City
         (29386, 101353),  # Arborstone - The Echovald Wilds (W)
         (30027, 101563),  # Arborstone - The Echovald Wilds (E)
@@ -74,6 +75,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (52332, 37760),  # Mount Maelstrom - Timberline Falls
         (25000, 99779, 23880, 100457),  # New Kaineng City - Seitung Province
         (28840, 99952, 30909, 100890),  # New Kaineng City - The Echovald Wilds
+        (26837, 24641, 24102, 22607),  # Skywatch Archipelago - The Wizard's Tower
         (54528, 27951),  # Snowden Drifts - Wayfarer Foothills
         (50560, 38111),  # Sparkfly Fen - Mount Maelstrom
         (49736, 38784),  # Sparkfly Fen - Straits of Devastation
@@ -115,6 +117,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (26196, 99894),  # New Kaineng City -> Kaineng Overlook
         (34433, 105132),  # Dragon's End -> Harvest Temple
         (49006.9, 31189.1),  # Lion's Arch -> Old Lion's Court
+        (24168, 22416),  # The Wizard's Tower hub
     ],
     'asura_gate': [
         # (29833.7, 101567.3),  # Arborstone -> Lion's Arch
@@ -133,6 +136,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (46642, 36713),  # Southsun Cove -> Lion's Arch
         (50184, 39787),  # Straits of Devastation -> Order Headquarters
         (43218.1, 37296.54),  # The Grove -> Lion's Arch
+        (24560, 22335),  # The Wizard's Tower -> Lion's Arch
     ],
 }
 

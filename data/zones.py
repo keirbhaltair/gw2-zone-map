@@ -15,6 +15,7 @@ zone_ids: dict[str, list[int]] = {
         1370,  # Eye of the North
         1428,  # Arborstone
         # 1483,  # Memory of Old Lion's Arch
+        1509,  # The Wizard's Tower
     ],
 
     'open_world': [
@@ -75,6 +76,8 @@ zone_ids: dict[str, list[int]] = {
         1442,  # Seitung Province
         1452,  # The Echovald Wilds
         1490,  # Gyala Delve
+        1510,  # Skywatch Archipelago
+        1517,  # Amnytas
     ],
 
     'festival': [
@@ -125,6 +128,8 @@ zone_ids: dict[str, list[int]] = {
         1451,  # Kaineng Overlook
         1437,  # Harvest Temple
         1485,  # Old Lion's Court
+        1515,  # Cosmic Observatory
+        1520,  # Temple of Febe
     ],
 
     'story': [
@@ -160,6 +165,7 @@ source_thresholds = {
     1415: {'mastery_region': 'End of Dragons', 'access_req': 'eod'},
     1466: {'mastery_region': 'Central Tyria', 'access_req': 'lw1'},
     1488: {'mastery_region': 'End of Dragons', 'access_req': 'eod'},
+    1501: {'mastery_region': 'Secrets of the Obscure', 'access_req': 'soto'},
 }
 
 """
@@ -363,6 +369,10 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_anchor': 'lb',
             'label_size': 0.75
         },
+        1509: {  # The Wizard's Tower
+            'label_rect': [[24839, 21882], [27303, 22634]],
+            'label_anchor': 'lm',
+        },
     },
     MasteryRegionMapOverlay: {
         26: {  # Dredgehaunt Cliffs
@@ -416,17 +426,19 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         1428: {  # Arborstone
             'label_rect': [[28929, 100890], [30397, 101657]]
         },
-        1432: {  # Aetherblade Hideout
+        1432: {  # Strike Mission: Aetherblade Hideout
             'continent_rect': [[23367, 103145], [25543, 104169]],
         },
-        1437: {  # Harvest Temple
+        1437: {  # Strike Mission: Harvest Temple
             'continent_rect': [[33382, 105550], [35046, 106574]],
         },
-        1450: {  # Xunlai Jade Junkyard
-            'continent_rect': [[30209, 99866], [32001, 100890]],
+        1450: {  # Strike Mission: Xunlai Jade Junkyard
+            'continent_rect': [[30049, 99866], [32161, 100890]],
+            'label_rect': [[30217, 99866], [31993, 100890]],
         },
-        1451: {  # Kaineng Overlook
-            'continent_rect': [[26024, 100660], [27816, 101684]],
+        1451: {  # Strike Mission: Kaineng Overlook
+            'continent_rect': [[25928, 100660], [27912, 101684]],
+            'label_rect': [[25992, 100660], [27848, 101684]],
         },
         1480: {  # The Twisted Marionette
             'label_rect': [[50646, 32249], [51776, 33170]],
@@ -442,6 +454,17 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'continent_rect': [[48288, 32128], [50144, 33088]],
             'label_rect': [[48576, 32128], [49856, 33088]],
         },
+        1509: {  # The Wizard's Tower
+            'label_rect': [[22887, 21882], [25319, 22618]],
+        },
+        1515: {  # Strike Mission: Cosmic Observatory
+            'continent_rect': [[27302, 22650], [29482, 23674]],
+            'label_rect': [[27444, 22650], [29340, 23674]],
+        },
+        1520: {  # Strike Mission: Temple of Febe
+            'continent_rect': [[25558, 21626], [27738, 22650]],
+            'label_rect': [[25776, 21626], [27520, 22650]],
+        },
     }
 }
 
@@ -454,6 +477,8 @@ conditional_zone_blacklist: dict[type, list[int]] = {
         1451,  # Kaineng Overlook
         1437,  # Harvest Temple
         1485,  # Old Lion's Court
+        1515,  # Cosmic Observatory
+        1520,  # Temple of Febe
     ],
     MasteryRegionMapOverlay: [
         336,  # Chantry of Secrets
