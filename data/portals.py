@@ -117,7 +117,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (26196, 99894),  # New Kaineng City -> Kaineng Overlook
         (34433, 105132),  # Dragon's End -> Harvest Temple
         (49006.9, 31189.1),  # Lion's Arch -> Old Lion's Court
-        (24168, 22416),  # The Wizard's Tower hub
+        (24108, 22416),  # The Wizard's Tower hub
     ],
     'asura_gate': [
         # (29833.7, 101567.3),  # Arborstone -> Lion's Arch

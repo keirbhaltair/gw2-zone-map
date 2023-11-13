@@ -12,9 +12,12 @@ zone_ids: dict[str, list[int]] = {
 
     'lobby': [
         1155,  # Lion's Arch Aerodrome
+        # 1483,  # Memory of Old Lion's Arch
+    ],
+
+    'outpost': [
         1370,  # Eye of the North
         1428,  # Arborstone
-        # 1483,  # Memory of Old Lion's Arch
         1509,  # The Wizard's Tower
     ],
 
@@ -78,6 +81,7 @@ zone_ids: dict[str, list[int]] = {
         1490,  # Gyala Delve
         1510,  # Skywatch Archipelago
         1517,  # Amnytas
+        1526,  # Inner Nayos
     ],
 
     'festival': [
@@ -142,6 +146,7 @@ zone_ids: dict[str, list[int]] = {
         1412,  # Dragonstorm
         1482,  # The Battle for Lion's Arch
         1480,  # The Twisted Marionette
+        1523,  # Convergences
     ],
 
     'lounge': [
@@ -373,6 +378,13 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_rect': [[24839, 21882], [27303, 22634]],
             'label_anchor': 'lm',
         },
+        1523: {  # Convergences
+            'name': "Convergences",
+            'continent_rect': [[24108, 22416], [24108, 22416]],
+            'label_rect': [[22700, 22224], [23852, 22592]],
+            'label_anchor': 'rb',
+            'label_size': 0.8
+        },
     },
     MasteryRegionMapOverlay: {
         26: {  # Dredgehaunt Cliffs
@@ -455,15 +467,23 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_rect': [[48576, 32128], [49856, 33088]],
         },
         1509: {  # The Wizard's Tower
-            'label_rect': [[22887, 21882], [25319, 22618]],
+            'label_rect': [[23463, 21882], [27303, 22634]],
+            'label_anchor': 'lm',
+            'label_size': 0.9
         },
         1515: {  # Strike Mission: Cosmic Observatory
             'continent_rect': [[27302, 22650], [29482, 23674]],
             'label_rect': [[27444, 22650], [29340, 23674]],
         },
         1520: {  # Strike Mission: Temple of Febe
-            'continent_rect': [[25558, 21626], [27738, 22650]],
-            'label_rect': [[25776, 21626], [27520, 22650]],
+            'continent_rect': [[19691, 24076], [21871, 25100]],
+            'label_rect': [[19865, 24076], [21697, 25100]],
+        },
+        1523: {  # Convergences
+            'name': "Convergences",
+            'continent_rect': [[19691, 21004], [21871, 21900]],
+            'label_rect': [[19691, 21004], [21871, 21900]],
+            'label_size': 0.75
         },
     }
 }

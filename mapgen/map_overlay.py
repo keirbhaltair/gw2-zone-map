@@ -168,6 +168,7 @@ class ZoneMapOverlay(MapOverlay):
     category_settings = {
         'city': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'City'},
         'lobby': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'Lobby'},
+        'outpost': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'Outpost'},
         'open_world': {'boundary_order': 0, 'label_order': 1, 'special': False, 'show_level': True, 'label': None},
         'festival': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Festival zone'},
         'guild_hall': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Guild hall'},
@@ -377,6 +378,7 @@ class MasteryRegionMapOverlay(MapOverlay):
     category_settings = {
         'city': {'order': 1, 'label_size': 1},
         'lobby': {'order': 1, 'label_size': 1},
+        'outpost': {'order': 1, 'label_size': 1},
         'open_world': {'order': 0, 'label_size': 1},
         'festival': {'order': 1, 'label_size': 0.9},
         'guild_hall': {'order': 1, 'label_size': 0.9},
