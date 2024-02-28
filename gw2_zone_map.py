@@ -28,7 +28,7 @@ def parse_arguments():
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
     parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
     parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
-    parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.3],
+    parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.5],
                         help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
     parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
