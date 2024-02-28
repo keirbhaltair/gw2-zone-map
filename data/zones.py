@@ -467,7 +467,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_rect': [[48576, 32128], [49856, 33088]],
         },
         1509: {  # The Wizard's Tower
-            'label_rect': [[23463, 21882], [27303, 22634]],
+            'label_rect': [[23463, 21882], [27303, 22594]],
             'label_anchor': 'lm',
             'label_size': 0.9
         },

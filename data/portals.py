@@ -60,6 +60,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (37396, 100747, 28541, 100046),  # Gyala Delve - New Kaineng City
         (46208, 26478),  # Harathi Hinterlands - Lake Doric
         (54528, 30863),  # Hoelbrak - Wayfarer Foothills
+        (22285, 23842, 23646, 22331),  # Inner Nayos - The Wizard's Tower
         (21825, 104390, 24354, 102531),  # Isle of Reflection - Seitung Province
         (60989, 29952),  # Iron Marches - Plains of Ashford
         (43136, 30464),  # Kessex Hills - Queensdale (W)
