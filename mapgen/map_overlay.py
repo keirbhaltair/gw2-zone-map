@@ -25,26 +25,32 @@ def get_zoom_size_multiplier(map_coord: MapCoordinateSystem, size_multiplier):
     return size_multiplier * (zoom_factor ** map_coord.zoom)
 
 
+@cache
 def get_main_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
     return min(64, max(8, round(2.5 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
+@cache
 def get_sub_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
     return min(32, max(8, round(2 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
+@cache
 def get_legend_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
     return min(28, max(10, round(2 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
+@cache
 def get_icon_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
     return min(32, max(12, round(3 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
+@cache
 def get_line_width(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
     return min(32, max(1, round(0.3 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
+@cache
 def get_text_outline_width(font_size: float):
     return min(8, max(1, round(0.1 * font_size)))
 
@@ -70,8 +76,8 @@ def wrap_label(label, font, label_margin, label_image_rect, label_image_size, ma
     height_for_max_width = 2.75 * (sum(font_metrics) + label_margin)
     height_for_min_width = 1 * (font_metrics[0] + label_margin) + height_for_max_width
     height_diff_ratio = (label_box_image_height - height_for_max_width) / (height_for_min_width - height_for_max_width)
-    main_label_ideal_width = (2 - max(0, min(1, height_diff_ratio))) * label_box_image_width - get_zoom_size_multiplier(map_coord, scale_factor)
-    main_label_min_width = max(4 * font_metrics[0], width_tolerance_factor * (label_box_image_width - get_zoom_size_multiplier(map_coord, scale_factor)))
+    main_label_ideal_width = (2 - max(0, min(1, height_diff_ratio))) * label_box_image_width - get_zoom_size_multiplier(map_coord, 2 * scale_factor)
+    main_label_min_width = max(4 * font_metrics[0], width_tolerance_factor * (label_box_image_width - get_zoom_size_multiplier(map_coord, 2 * scale_factor)))
     main_label_bounded_ideal_width = min(label_image_size[0], max(main_label_min_width, main_label_ideal_width))
 
     wrapped_zone_name_lines = []
@@ -96,36 +102,36 @@ def draw_title(title_text, image, map_coord, map_layout, scale_factor):
 
 def calculate_zone_label_paste_position(label_anchor, label_image: Image, label_image_rect: tuple[tuple[float, float], tuple[float, float]]):
     label_bbox = label_image.getbbox()
-    label_paste_pos = []
+    label_paste_pos = [0, 0]
     match label_anchor[0]:
         case 'l':
-            label_paste_pos.append(label_image_rect[0][0])
+            label_paste_pos[0] = label_image_rect[0][0]
         case 'm':
-            label_paste_pos.append(round((label_image_rect[0][0] + label_image_rect[1][0]) / 2) - round(label_image.size[0] / 2))
+            label_paste_pos[0] = round((label_image_rect[0][0] + label_image_rect[1][0] - label_image.size[0] + 1) / 2)
         case 'r':
-            label_paste_pos.append(label_image_rect[1][0] - label_image.size[0])
+            label_paste_pos[0] = label_image_rect[1][0] - label_image.size[0]
     match label_anchor[1]:
         case 't':
-            label_paste_pos.append(label_image_rect[0][1])
+            label_paste_pos[1] = label_image_rect[0][1]
         case 'm':
-            label_paste_pos.append(round((label_image_rect[0][1] + label_image_rect[1][1]) / 2) - round((label_bbox[3] - label_bbox[1]) / 2))
+            label_paste_pos[1] = round((label_image_rect[0][1] + label_image_rect[1][1] - label_bbox[3] + label_bbox[1]) / 2) - 2
         case 'b':
-            label_paste_pos.append(label_image_rect[1][1] - label_bbox[3] + label_bbox[1] - 4)
+            label_paste_pos[1] = label_image_rect[1][1] - label_bbox[3] + label_bbox[1] - 4
     return label_paste_pos
 
 
 def calculate_legend_paste_position(image: Image, legend_size: tuple[int, int], map_layout: MapLayout):
-    coord = []
+    coord = [0, 0]
     match map_layout.legend_align[0]:
         case 'l':
-            coord.append(map_layout.legend_image_coord[0])
+            coord[0] = map_layout.legend_image_coord[0]
         case 'r':
-            coord.append(image.size[0] - map_layout.legend_image_coord[0] - legend_size[0])
+            coord[0] = image.size[0] - map_layout.legend_image_coord[0] - legend_size[0]
     match map_layout.legend_align[1]:
         case 't':
-            coord.append(map_layout.legend_image_coord[1])
+            coord[1] = map_layout.legend_image_coord[1]
         case 'b':
-            coord.append(image.size[1] - map_layout.legend_image_coord[1] - legend_size[1])
+            coord[1] = image.size[1] - map_layout.legend_image_coord[1] - legend_size[1]
     return coord[0], coord[1], coord[0] + legend_size[0], coord[1] + legend_size[1]
 
 

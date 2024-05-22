@@ -186,7 +186,7 @@ all_zone_data_overrides: dict[int: dict] = {
         'label_rect': [[44352, 30464], [45760, 32512]]
     },
     27: {  # Lornar's Pass
-        'label_rect': [[50816, 30784], [51840, 31644]]
+        'label_rect': [[50944, 30816], [51712, 31676]]
     },
     335: {  # Claw Island
         'continent_rect': [[46720, 32256], [48000, 33792]]
@@ -281,10 +281,10 @@ specific map overlays."""
 conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
     ZoneMapOverlay: {
         26: {  # Dredgehaunt Cliffs
-            'label_rect': [[52736, 32764], [54016, 33792]],
+            'label_rect': [[52736, 32636], [54016, 33664]],
         },
         29: {  # Timberline Falls
-            'label_rect': [[51712, 35328], [54016, 37760]]
+            'label_rect': [[51712, 35072], [54016, 37760]]
         },
         36: {  # Ascalonian Catacombs
             'label_rect': [[61184, 29056], [62464, 30080]],
@@ -309,6 +309,9 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         71: {  # Honor of the Waves
             'label_rect': [[55424, 24448], [56576, 25600]],
             'label_anchor': 'lm'
+        },
+        73: {  # Bloodtide Coast
+            'label_rect': [[48000, 32768], [50432, 35456]],
         },
         76: {  # Caudecus's Manor
             'label_rect': [[44672, 27776], [45866, 28800]],
@@ -363,7 +366,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_anchor': 'rm'
         },
         1480: {  # The Twisted Marionette
-            'label_rect': [[51382, 32946], [52128, 33522]],
+            'label_rect': [[51126, 32946], [52128, 33522]],
             'label_anchor': 'rt',
             'label_size': 0.75
         },
@@ -375,14 +378,14 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_size': 0.75
         },
         1509: {  # The Wizard's Tower
-            'label_rect': [[24839, 21882], [27303, 22634]],
+            'label_rect': [[24839, 21882], [27303, 22682]],
             'label_anchor': 'lm',
         },
         1523: {  # Convergences
             'name': "Convergences",
             'continent_rect': [[24108, 22416], [24108, 22416]],
-            'label_rect': [[22700, 22224], [23852, 22592]],
-            'label_anchor': 'rb',
+            'label_rect': [[22700, 22256], [23900, 22720]],
+            'label_anchor': 'rt',
             'label_size': 0.8
         },
     },
@@ -467,7 +470,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_rect': [[48576, 32128], [49856, 33088]],
         },
         1509: {  # The Wizard's Tower
-            'label_rect': [[23463, 21882], [27303, 22594]],
+            'label_rect': [[23463, 21882], [27303, 22642]],
             'label_anchor': 'lm',
             'label_size': 0.9
         },
