@@ -202,13 +202,9 @@ all_zone_data_overrides: dict[int: dict] = {
     988: {  # Dry Top
         'continent_rect': [[36608, 32128], [38656, 33536]]
     },
-    922: {  # Labyrinthine Cliffs
-        'access_req': 'festival',
-    },
     929: {  # The Crown Pavilion
         'label_rect': [[41914, 26880], [42938, 27648]],
         'label_anchor': 'rm',
-        'access_req': 'festival',
     },
     943: {  # The Tower of Nightmares
         'name': "The Tower of Nightmares",
@@ -255,7 +251,6 @@ all_zone_data_overrides: dict[int: dict] = {
     1352: {  # Secret Lair of the Snowmen
         'name': "Strike Mission: Secret Lair of the Snowmen",
         'mastery_region': 'Central Tyria',
-        'access_req': 'festival',
         'label_rect': [[51180, 24384], [53484, 25664]],
         'label_anchor': 'rm'
     },

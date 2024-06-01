@@ -6,7 +6,8 @@ from mapgen.overlay.overlay_util import NoMapOverlay
 from mapgen.overlay.zone_overlay import ZoneMapOverlay
 
 map_overlays = {
-    'zone': ZoneMapOverlay(),
+    'zone': ZoneMapOverlay(False),
+    'zone_access': ZoneMapOverlay(True),
     'mastery': MasteryRegionMapOverlay(False),
     'mastery_access': MasteryRegionMapOverlay(True),
     'none': NoMapOverlay()

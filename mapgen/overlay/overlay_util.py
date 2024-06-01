@@ -1,10 +1,30 @@
 from abc import ABC, abstractmethod
 from functools import cache
+from urllib.request import urlopen
 
+import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 from PIL.ImageFont import FreeTypeFont
 
 from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor, MapLayout
+
+
+class MapOverlay(ABC):
+    @abstractmethod
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
+        pass
+
+    @abstractmethod
+    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+        pass
+
+
+class NoMapOverlay(MapOverlay):
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
+        pass
+
+    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+        pass
 
 
 @cache
@@ -15,6 +35,11 @@ def get_font(size: int, bold: bool):
         font_url = 'assets/fonts/FiraSans/FiraSans-Regular.ttf'
     with open(font_url, 'rb') as font_file:
         return ImageFont.truetype(font_file, size)
+
+
+@cache
+def get_image(url: str):
+    return Image.open(urlopen(url))
 
 
 @cache
@@ -146,19 +171,30 @@ def get_zone_pos(map_coord, zone, zone_image_rect):
     return label_anchor, label_image_rect
 
 
-class MapOverlay(ABC):
-    @abstractmethod
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
-        pass
-
-    @abstractmethod
-    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
-        pass
+@cache
+def create_stroke_stamp(radius: int):
+    distances = np.fromfunction(lambda i, j: np.sqrt(np.square(i - radius) + np.square(j - radius)), (2 * radius + 1, 2 * radius + 1))
+    return (radius + 1) - distances.clip(radius, radius + 1)
 
 
-class NoMapOverlay(MapOverlay):
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
-        pass
+def add_stroke_around_alpha(image: Image, stroke_width: int = 1, stroke_color: tuple[float, float, float, float] = (0, 0, 0, 255), alpha_threshold: int = 32) -> Image:
+    image_array = np.asarray(image)
+    input_alpha = image_array[..., 3]
+    input_over_threshold = np.sign(np.maximum(input_alpha, np.full(input_alpha.shape, alpha_threshold)) - alpha_threshold)
+    output_alpha = np.zeros(np.array(input_over_threshold.shape) + 2 * stroke_width, dtype=float)
 
-    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
-        pass
+    # For each point of the input image with alpha over the threshold, stamp a circle of width `stroke_width` around it
+    stamp = create_stroke_stamp(stroke_width)
+    stamp_size = np.size(stamp, 0)
+    for i in range(np.size(input_over_threshold, 0)):
+        for j in range(np.size(input_over_threshold, 1)):
+            if input_over_threshold[i, j]:
+                output_slice = output_alpha[i:i + stamp_size, j:j + stamp_size]
+                np.maximum(output_slice, stamp, out=output_slice)
+
+    # Create the final image
+    output_array = np.full(image_array.shape + np.array((2 * stroke_width, 2 * stroke_width, 0)), stroke_color, dtype=float)
+    output_array[..., 3] *= output_alpha
+    output = Image.fromarray(output_array.astype(np.uint8))
+    output.paste(image, (stroke_width, stroke_width), image)
+    return output
