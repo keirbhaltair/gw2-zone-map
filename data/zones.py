@@ -1,4 +1,5 @@
-from mapgen.map_overlay import ZoneMapOverlay, MasteryRegionMapOverlay
+from mapgen.overlay.mastery_overlay import MasteryRegionMapOverlay
+from mapgen.overlay.zone_overlay import ZoneMapOverlay
 
 zone_ids: dict[str, list[int]] = {
     'city': [

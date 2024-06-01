@@ -6,9 +6,10 @@ from data.layouts import map_layouts
 from data.zones import conditional_zone_blacklist, conditional_zone_data_overrides, all_zone_data_overrides, conditional_custom_zones
 from mapgen.data_api import load_zone_data
 from mapgen.map_composite import combine_part_images
-from mapgen.map_coordinates import MapCoordinateSystem, MapLayout, MapSector
+from mapgen.map_coordinates import MapSector, MapCoordinateSystem, MapLayout
 from mapgen.map_generator import LocalMapTileSource, MapGenerator
-from mapgen.map_overlay import MapOverlay, map_overlays
+from mapgen.overlay import map_overlays
+from mapgen.overlay.overlay_util import MapOverlay
 
 
 def main():
