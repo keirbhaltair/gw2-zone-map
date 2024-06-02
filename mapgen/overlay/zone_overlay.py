@@ -17,12 +17,12 @@ class ZoneMapOverlay(MapOverlay):
         'gw2': {'label': 'Core', 'icon': get_image("https://wiki.guildwars2.com/images/d/df/GW2Logo_new.png")},
         'lw1': {'label': 'Core', 'icon': get_image("https://wiki.guildwars2.com/images/d/df/GW2Logo_new.png")},
         'lw2': {'label': 'Core', 'icon': get_image("https://wiki.guildwars2.com/images/d/df/GW2Logo_new.png")},
-        'hot': {'label': 'HoT', 'icon': get_image("https://wiki.guildwars2.com/images/5/52/HoT_Texture_Centered_Trans.png")},
-        'lw3': {'label': 'LW3', 'icon': get_image("https://wiki.guildwars2.com/images/c/ca/Living_World_Season_3_logo.png")},
+        'hot': {'label': 'HoT', 'icon': get_image("https://wiki.guildwars2.com/images/thumb/5/52/HoT_Texture_Centered_Trans.png/240px-HoT_Texture_Centered_Trans.png")},
+        'lw3': {'label': 'LW3', 'icon': get_image("https://wiki.guildwars2.com/images/thumb/c/ca/Living_World_Season_3_logo.png/320px-Living_World_Season_3_logo.png")},
         'pof': {'label': 'PoF', 'icon': get_image("https://wiki.guildwars2.com/images/a/a7/PoF_Texture_Trans.png")},
         'lw4': {'label': 'LW4', 'icon': get_image("https://wiki.guildwars2.com/images/a/a1/Living_World_Season_4_logo.png")},
         'lw5': {'label': 'IBS', 'icon': get_image("https://wiki.guildwars2.com/images/1/19/Living_World_Season_5_logo.png")},
-        'eod': {'label': 'EoD', 'icon': get_image("https://wiki.guildwars2.com/images/c/cc/EoD_Texture_Trans.png")},
+        'eod': {'label': 'EoD', 'icon': get_image("https://wiki.guildwars2.com/images/thumb/c/cc/EoD_Texture_Trans.png/240px-EoD_Texture_Trans.png")},
         'soto': {'label': 'SotO', 'icon': get_image("https://wiki.guildwars2.com/images/4/44/Secrets_of_the_Obscure_logo.png")},
     }
 
@@ -194,13 +194,15 @@ class ZoneMapOverlay(MapOverlay):
     def draw_text_line(self, line: TextLine, label_pos_x, label_color, label_image, label_draw, label_draw_text_anchor):
         pos_x_text_offset = 0
         icon_height = line.font.getmetrics()[0]
-        icon = self.get_access_icon(line.access_req, icon_height, line.outline_width)
+        icon = self.get_access_icon(line.access_req, icon_height, 1)
         text = f' {line.text}' if icon else line.text
 
         if icon:
             icon_offset_multiplier = 1 if label_draw_text_anchor[0] == 'r' else 0.5 if label_draw_text_anchor[0] == 'm' else 0
-            line_length = line.font.getlength(text) + icon.size[0]
-            icon_coord = (round(label_pos_x - icon_offset_multiplier * line_length), line.pos_y)
+            icon_coord = (
+                round(label_pos_x - icon_offset_multiplier * (line.font.getlength(text) + icon.size[0])),
+                round(line.pos_y - (icon.size[1] - sum(line.font.getmetrics())) / 2)
+            )
             label_image.paste(icon, icon_coord, icon)
             pos_x_text_offset = (1 - icon_offset_multiplier) * icon.size[0]
 
@@ -235,19 +237,30 @@ class ZoneMapOverlay(MapOverlay):
         image.paste(legend_image, legend_coord, legend_image)
 
     @cache
-    def get_access_icon(self, access_req, icon_size, stroke_width):
+    def get_access_icon(self, access_req: str, icon_size: int, stroke_width: int | None):
         if not access_req:
             return None
         template_icon = self.access_settings[access_req]['icon']
         if not template_icon:
             return None
         template_icon = template_icon.crop(template_icon.getbbox())
+
+        # Resize, while increasing the channel alpha, since the logos have very thin lines, which become very transparent after downscaling
         (width, height) = (round(template_icon.width * icon_size / template_icon.height), icon_size)
         icon = template_icon.resize((width, height), resample=Image.Resampling.LANCZOS)
-        return add_stroke_around_alpha(icon, stroke_width)
+        icon_alpha = np.asarray(icon)[..., 3]
+        icon_alpha = np.cbrt(icon_alpha.astype(float) / 255) * 255
+        icon_alpha = np.clip(icon_alpha, 0, 255).astype(np.uint8)
+        icon_alpha_image = Image.fromarray(icon_alpha, 'L')
+        icon.putalpha(icon_alpha_image)
+
+        if stroke_width is None:
+            return icon
+        else:
+            return add_stroke_around_alpha(icon, stroke_width=stroke_width, alpha_threshold=64)
 
     @cache
-    def get_portal_icon(self, portal_type, icon_size):
+    def get_portal_icon(self, portal_type: str, icon_size: int):
         if '/' not in portal_type:
             template_icon = self.portal_settings[portal_type]['icon']
             return template_icon.resize((icon_size, icon_size), resample=Image.Resampling.LANCZOS)
