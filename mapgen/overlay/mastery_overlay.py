@@ -78,15 +78,15 @@ class MasteryRegionMapOverlay(MapOverlay):
             # Choose the fonts to draw the labels with
             label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else settings['label_size'])
             main_label_font_size = get_main_label_font_size(map_coord, 1 * label_size_multiplier)
-            main_label_font = get_font(main_label_font_size, True)
+            main_label_font = get_font(main_label_font_size, True, False)
             main_label_line_margin = main_label_font_size // 8
             main_label_outline_width = get_text_outline_width(main_label_font_size)
             mastery_region_font_size = get_sub_label_font_size(map_coord, 1 * label_size_multiplier)
-            mastery_region_font = get_font(mastery_region_font_size, False)
+            mastery_region_font = get_font(mastery_region_font_size, False, True)
             mastery_region_margin = mastery_region_font_size // 8
             mastery_region_outline_width = get_text_outline_width(mastery_region_font_size)
             access_req_font_size = get_sub_label_font_size(map_coord, 0.8 * label_size_multiplier)
-            access_req_font = get_font(access_req_font_size, False)
+            access_req_font = get_font(access_req_font_size, False, True)
             access_req_line_margin = access_req_font_size // 8
             access_req_outline_width = mastery_region_outline_width
 

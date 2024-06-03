@@ -225,6 +225,9 @@ all_zone_data_overrides: dict[int: dict] = {
         'label_rect': [[35710, 28592], [36264, 30306]],
         'label_anchor': 'mt'
     },
+    1155: {  # Lion's Arch Aerodrome
+        'access_req': 'gw2'
+    },
     1156: {  # Stronghold of the Faithful
         'continent_rect': [[34729, 28544], [35582, 30338]],
         'label_rect': [[33076, 28592], [35077, 29696]],
@@ -232,6 +235,9 @@ all_zone_data_overrides: dict[int: dict] = {
     },
     1175: {  # Ember Bay
         'continent_rect': [[37374, 44676], [41214, 47358]]
+    },
+    1188: {  # Bastion of the Penitent
+        'access_req': 'hot'
     },
     1195: {  # Draconis Mons
         'continent_rect': [[35228, 40290], [38176, 43134]]
@@ -245,8 +251,17 @@ all_zone_data_overrides: dict[int: dict] = {
     1263: {  # Domain of Istan
         'continent_rect': [[55318, 59966], [58858, 63406]]
     },
+    1264: {  # Hall of Chains
+        'access_req': 'pof'
+    },
     1288: {  # Domain of Kourna
         'continent_rect': [[63624, 59576], [67212, 63806]]
+    },
+    1303: {  # Mythwright Gambit
+        'access_req': 'pof'
+    },
+    1323: {  # The Key of Ahdashim
+        'access_req': 'pof'
     },
     1352: {  # Secret Lair of the Snowmen
         'name': "Strike Mission: Secret Lair of the Snowmen",
@@ -355,7 +370,8 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
         1370: {  # Eye of the North
             'label_rect': [[55008, 21248], [57312, 22102]],
-            'label_anchor': 'rm'
+            'label_anchor': 'rm',
+            'access_req': 'gw2'
         },
         1428: {  # Arborstone
             'label_rect': [[27585, 100890], [29121, 101657]],
@@ -412,27 +428,16 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         1185: {  # Lake Doric,
             'label_size': 0.9
         },
-        1188: {  # Bastion of the Penitent
-            'access_req': 'hot'
-        },
-        1264: {  # Hall of Chains
-            'access_req': 'pof'
-        },
         1268: {  # Fahranur, the First City
             'label_size': 0.8
         },
         1303: {  # Mythwright Gambit
             'continent_rect': [[46336, 31680], [48128, 32448]],
             'label_size': 0.75,
-            'access_req': 'pof'
-        },
-        1323: {  # The Key of Ahdashim
-            'access_req': 'pof'
         },
         1370: {  # Eye of the North
             'label_rect': [[57088, 21248], [58454, 22102]],
-            'mastery_region': 'Central Tyria',
-            'access_req': 'gw2'
+            'mastery_region': 'Central Tyria'
         },
         1428: {  # Arborstone
             'label_rect': [[28929, 100890], [30397, 101657]]

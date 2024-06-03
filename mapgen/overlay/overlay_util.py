@@ -30,11 +30,8 @@ class NoMapOverlay(MapOverlay):
 
 
 @cache
-def get_font(size: int, bold: bool):
-    if bold:
-        font_url = 'assets/fonts/FiraSans/FiraSans-SemiBold.ttf'
-    else:
-        font_url = 'assets/fonts/FiraSans/FiraSans-Regular.ttf'
+def get_font(size: int, bold: bool = False, condensed: bool = False):
+    font_url = f'assets/fonts/FiraSans/FiraSans{'Condensed' if condensed else ''}-{'SemiBold' if bold else 'Regular'}.ttf'
     with open(font_url, 'rb') as font_file:
         return ImageFont.truetype(font_file, size)
 
@@ -66,7 +63,7 @@ def get_main_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: fl
 
 @cache
 def get_sub_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
-    return min(32, max(8, round(2 * get_zoom_size_multiplier(map_coord, size_multiplier))))
+    return min(32, max(8, round(1.85 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
 @cache

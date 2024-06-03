@@ -5,25 +5,39 @@ from data.portals import portals
 from mapgen.overlay.overlay_util import *
 
 
+@dataclass
+class TextLineSegment:
+    text: str
+    color: tuple[int, ...] | None = None
+
+
+@dataclass
+class TextLine:
+    text_segments: list[TextLineSegment]
+    pos_y: float
+    font: FreeTypeFont
+    outline_width: int
+
+
 class ZoneMapOverlay(MapOverlay):
     def __init__(self, show_access_requirements: bool):
         super().__init__()
         self.show_access_requirements = show_access_requirements
 
     base_line_color = (255, 255, 255, 255)
-    special_line_color = (255, 160, 15, 255)
+    special_line_color = (255, 174, 0, 255)
 
     access_settings = {
-        'gw2': {'label': 'Core', 'icon': get_image("https://wiki.guildwars2.com/images/d/df/GW2Logo_new.png")},
-        'lw1': {'label': 'Core', 'icon': get_image("https://wiki.guildwars2.com/images/d/df/GW2Logo_new.png")},
-        'lw2': {'label': 'Core', 'icon': get_image("https://wiki.guildwars2.com/images/d/df/GW2Logo_new.png")},
-        'hot': {'label': 'HoT', 'icon': get_image("https://wiki.guildwars2.com/images/thumb/5/52/HoT_Texture_Centered_Trans.png/240px-HoT_Texture_Centered_Trans.png")},
-        'lw3': {'label': 'LW3', 'icon': get_image("https://wiki.guildwars2.com/images/thumb/c/ca/Living_World_Season_3_logo.png/320px-Living_World_Season_3_logo.png")},
-        'pof': {'label': 'PoF', 'icon': get_image("https://wiki.guildwars2.com/images/a/a7/PoF_Texture_Trans.png")},
-        'lw4': {'label': 'LW4', 'icon': get_image("https://wiki.guildwars2.com/images/a/a1/Living_World_Season_4_logo.png")},
-        'lw5': {'label': 'IBS', 'icon': get_image("https://wiki.guildwars2.com/images/1/19/Living_World_Season_5_logo.png")},
-        'eod': {'label': 'EoD', 'icon': get_image("https://wiki.guildwars2.com/images/thumb/c/cc/EoD_Texture_Trans.png/240px-EoD_Texture_Trans.png")},
-        'soto': {'label': 'SotO', 'icon': get_image("https://wiki.guildwars2.com/images/4/44/Secrets_of_the_Obscure_logo.png")},
+        'gw2': {'label': 'Core', 'color': (255, 168, 153, 255)},
+        'lw1': {'label': 'Core', 'color': (255, 168, 153, 255)},
+        'lw2': {'label': 'Core', 'color': (255, 168, 153, 255)},
+        'hot': {'label': 'Heart\u00A0of Thorns', 'color': (153, 255, 189, 255)},
+        'lw3': {'label': 'Living\u00A0World Season\u00A03', 'color': (179, 255, 206, 255)},
+        'pof': {'label': 'Path\u00A0of Fire', 'color': (239, 153, 255, 255)},
+        'lw4': {'label': 'Living\u00A0World Season\u00A04', 'color': (243, 179, 255, 255)},
+        'lw5': {'label': 'The\u00A0Icebrood Saga', 'color': (179, 221, 255, 255)},
+        'eod': {'label': 'End\u00A0of Dragons', 'color': (153, 255, 246, 255)},
+        'soto': {'label': 'Secrets\u00A0of the\u00A0Obscure', 'color': (255, 234, 153, 255)},
     }
 
     category_settings = {
@@ -75,14 +89,6 @@ class ZoneMapOverlay(MapOverlay):
         },
     }
 
-    @dataclass
-    class TextLine:
-        text: str
-        pos_y: float
-        font: FreeTypeFont
-        outline_width: int
-        access_req: str = None
-
     def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
         draw = ImageDraw.Draw(image, 'RGBA')
 
@@ -127,11 +133,12 @@ class ZoneMapOverlay(MapOverlay):
             # Choose the fonts to draw the labels with
             label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else 0.9 if settings['special'] else 1)
             main_label_font_size = get_main_label_font_size(map_coord, label_size_multiplier)
-            main_label_font = get_font(main_label_font_size, True)
+            main_label_font = get_font(main_label_font_size, True, False)
             main_label_line_margin = main_label_font_size // 8
             main_label_outline_width = get_text_outline_width(main_label_font_size)
             sub_label_font_size = get_sub_label_font_size(map_coord, label_size_multiplier)
-            sub_label_font = get_font(sub_label_font_size, False)
+            sub_label_font = get_font(sub_label_font_size, False, True)
+            sub_label_line_margin = sub_label_font_size // 8
             sub_label_outline_width = get_text_outline_width(sub_label_font_size)
 
             # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden)
@@ -147,7 +154,7 @@ class ZoneMapOverlay(MapOverlay):
             label_color = self.special_line_color if settings['special'] else 'white'
 
             # Collect all lines to draw so that they can be drawn in reverse order to keep earlier lines on top
-            lines_to_draw: list[ZoneMapOverlay.TextLine] = []
+            lines_to_draw: list[TextLine] = []
 
             # Find the ideal line wrapping for the zone's name and shape
             wrapped_zone_name_lines = wrap_label(zone['name'], main_label_font, main_label_line_margin, label_image_rect, label_image_size, map_coord, scale_factor)
@@ -156,61 +163,65 @@ class ZoneMapOverlay(MapOverlay):
             label_pos_x = label_image.size[0] / 2 if label_anchor[0] == 'm' else 2 if label_anchor[0] == 'l' else label_image.size[0] - 2
             label_pos_y = 0
             for line in wrapped_zone_name_lines:
-                lines_to_draw.append(self.TextLine(line, label_pos_y, main_label_font, main_label_outline_width))
+                lines_to_draw.append(TextLine([TextLineSegment(line)], label_pos_y, main_label_font, main_label_outline_width))
                 label_pos_y = label_pos_y + main_label_font.getmetrics()[0] + main_label_line_margin
             label_pos_y = label_pos_y + max(0, main_label_font.getmetrics()[1] - main_label_line_margin)
 
-            sub_label_lines = self.get_sub_label_lines(zone, settings)
-            for (line_text, icon) in sub_label_lines:
-                lines_to_draw.append(self.TextLine(line_text, label_pos_y, sub_label_font, sub_label_outline_width, icon))
-                label_pos_y = label_pos_y + sum(sub_label_font.getmetrics()) + main_label_line_margin
+            wrapped_sub_label_lines = self.get_sub_label_lines(zone, settings, sub_label_font, sub_label_line_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+            for text_lines in wrapped_sub_label_lines:
+                lines_to_draw.append(TextLine(text_lines, label_pos_y, sub_label_font, sub_label_outline_width))
+                label_pos_y = label_pos_y + sum(sub_label_font.getmetrics()) + sub_label_line_margin
 
             # Perform the actual draws
             for line in reversed(lines_to_draw):
-                self.draw_text_line(line, label_pos_x, label_color, label_image, label_draw, label_draw_text_anchor)
+                self.draw_text_line(line, label_pos_x, label_color, label_draw, label_draw_text_anchor)
 
             # Paste the resulting label into the actual map image
             label_paste_pos = calculate_zone_label_paste_position(label_anchor, label_image, label_image_rect)
             image.paste(label_image, label_paste_pos, label_image)
 
-    def get_sub_label_lines(self, zone, settings) -> list[tuple[str, Image]]:
-        sub_label_text = None
-        access_req = None
-
+    def get_sub_label_lines(self, zone, settings, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor) -> list[list[TextLineSegment]]:
+        type_text = None
         if settings['label']:
             # Zone's description label (City, Dungeon etc.)
-            sub_label_text = settings['label']
+            type_text = settings['label']
         elif settings['show_level']:
             # Zone's level distribution label
-            sub_label_text = str(zone['min_level']) if zone['min_level'] == zone['max_level'] else f"{zone['min_level']}–{zone['max_level']}"
+            type_text = f'{zone['min_level']}' if zone['min_level'] == zone['max_level'] else f'{zone['min_level']}–{zone['max_level']}'
 
+        # If we don't show access requirements, simply return lines for the type/levels instead
         if self.show_access_requirements:
-            access_req = zone['access_req']
-            access = self.access_settings[access_req]
-            sub_label_text = f'{access['label']} · {sub_label_text}' if sub_label_text else access['label']
+            access = self.access_settings[zone['access_req']]
+        else:
+            return [[TextLineSegment(t)] for t in wrap_label(type_text, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)]
 
-        return [(sub_label_text, access_req)] if sub_label_text else []
+        # If everything fits on one line, return it
+        sub_label_lines = wrap_label(f'{access['label']} · {type_text}', font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+        if len(sub_label_lines) == 1:
+            return [[TextLineSegment(access['label'], access['color']), TextLineSegment(f' · {type_text}')]]
 
-    def draw_text_line(self, line: TextLine, label_pos_x, label_color, label_image, label_draw, label_draw_text_anchor):
-        pos_x_text_offset = 0
-        icon_height = line.font.getmetrics()[0]
-        icon = self.get_access_icon(line.access_req, icon_height, 1)
-        text = f' {line.text}' if icon else line.text
+        # Otherwise, split it into multiple lines as necessary
+        wrapped_access_text = wrap_label(access['label'], font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+        wrapped_type_text = wrap_label(type_text, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+        access_text_lines = [[TextLineSegment(t, access['color'])] for t in wrapped_access_text]
+        type_text_lines = [[TextLineSegment(t)] for t in wrapped_type_text]
+        return [*access_text_lines, *type_text_lines]
 
-        if icon:
-            icon_offset_multiplier = 1 if label_draw_text_anchor[0] == 'r' else 0.5 if label_draw_text_anchor[0] == 'm' else 0
-            icon_coord = (
-                round(label_pos_x - icon_offset_multiplier * (line.font.getlength(text) + icon.size[0])),
-                round(line.pos_y - (icon.size[1] - sum(line.font.getmetrics())) / 2)
-            )
-            label_image.paste(icon, icon_coord, icon)
-            pos_x_text_offset = (1 - icon_offset_multiplier) * icon.size[0]
+    @staticmethod
+    def draw_text_line(line: TextLine, label_pos_x, default_color, label_draw, label_draw_text_anchor):
+        h_align = label_draw_text_anchor[0]
+        anchor = 'l' + label_draw_text_anchor[1:]
+        full_line_length = line.font.getlength(''.join(t.text for t in line.text_segments))
+        pos_x_offset = 0 if h_align == 'l' else -full_line_length / 2 if h_align == 'm' else -full_line_length
 
-        label_draw.text((label_pos_x + pos_x_text_offset, line.pos_y), text,
-                        font=line.font, anchor=label_draw_text_anchor, align='center', stroke_width=line.outline_width, fill=label_color, stroke_fill='black')
+        for segment in line.text_segments:
+            color = segment.color if segment.color else default_color
+            label_draw.text((label_pos_x + pos_x_offset, line.pos_y), segment.text,
+                            font=line.font, anchor=anchor, align='center', stroke_width=line.outline_width, fill=color, stroke_fill='black')
+            pos_x_offset = pos_x_offset + line.font.getlength(segment.text)
 
     def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
-        font = get_font(get_legend_font_size(map_coord, scale_factor), False)
+        font = get_font(get_legend_font_size(map_coord, scale_factor))
         icon_size = get_icon_size(map_coord, scale_factor)
 
         legend_image = Image.new('RGBA', (100 * sum(font.getmetrics()), 20 * sum(font.getmetrics())))
@@ -235,29 +246,6 @@ class ZoneMapOverlay(MapOverlay):
         legend_draw = ImageDraw.Draw(image, 'RGBA')
         legend_draw.rectangle(legend_coord, fill=(0, 0, 0, 160), width=get_line_width(map_coord, scale_factor), outline=(255, 255, 255, 160))
         image.paste(legend_image, legend_coord, legend_image)
-
-    @cache
-    def get_access_icon(self, access_req: str, icon_size: int, stroke_width: int | None):
-        if not access_req:
-            return None
-        template_icon = self.access_settings[access_req]['icon']
-        if not template_icon:
-            return None
-        template_icon = template_icon.crop(template_icon.getbbox())
-
-        # Resize, while increasing the channel alpha, since the logos have very thin lines, which become very transparent after downscaling
-        (width, height) = (round(template_icon.width * icon_size / template_icon.height), icon_size)
-        icon = template_icon.resize((width, height), resample=Image.Resampling.LANCZOS)
-        icon_alpha = np.asarray(icon)[..., 3]
-        icon_alpha = np.cbrt(icon_alpha.astype(float) / 255) * 255
-        icon_alpha = np.clip(icon_alpha, 0, 255).astype(np.uint8)
-        icon_alpha_image = Image.fromarray(icon_alpha, 'L')
-        icon.putalpha(icon_alpha_image)
-
-        if stroke_width is None:
-            return icon
-        else:
-            return add_stroke_around_alpha(icon, stroke_width=stroke_width, alpha_threshold=64)
 
     @cache
     def get_portal_icon(self, portal_type: str, icon_size: int):
