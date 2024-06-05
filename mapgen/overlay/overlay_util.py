@@ -1,20 +1,54 @@
 from abc import ABC, abstractmethod
 from functools import cache
+from http.client import IncompleteRead
+from time import sleep
+from urllib.request import urlopen
 
+import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 from PIL.ImageFont import FreeTypeFont
 
 from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor, MapLayout
 
 
+class MapOverlay(ABC):
+    @abstractmethod
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool):
+        pass
+
+    @abstractmethod
+    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+        pass
+
+
+class NoMapOverlay(MapOverlay):
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
+        pass
+
+    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+        pass
+
+
 @cache
-def get_font(size: int, bold: bool):
-    if bold:
-        font_url = 'assets/fonts/FiraSans/FiraSans-SemiBold.ttf'
-    else:
-        font_url = 'assets/fonts/FiraSans/FiraSans-Regular.ttf'
+def get_font(size: int, bold: bool = False, condensed: bool = False):
+    font_url = f'assets/fonts/FiraSans/FiraSans{'Condensed' if condensed else ''}-{'SemiBold' if bold else 'Regular'}.ttf'
     with open(font_url, 'rb') as font_file:
         return ImageFont.truetype(font_file, size)
+
+
+@cache
+def get_image(url: str):
+    max_attempts = 5
+    for i in range(max_attempts):
+        try:
+            return Image.open(urlopen(url))
+        except IncompleteRead as e:
+            # Sometimes the loading fails, try it again a couple of times if it does
+            print(f"Loading of image '{url}' failed (attempt {i + 1}/{max_attempts}): {e}")
+            if i < max_attempts - 1:
+                sleep(0.3)
+            else:
+                raise
 
 
 @cache
@@ -29,7 +63,7 @@ def get_main_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: fl
 
 @cache
 def get_sub_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
-    return min(32, max(8, round(2 * get_zoom_size_multiplier(map_coord, size_multiplier))))
+    return min(32, max(8, round(1.8 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
 @cache
@@ -146,19 +180,34 @@ def get_zone_pos(map_coord, zone, zone_image_rect):
     return label_anchor, label_image_rect
 
 
-class MapOverlay(ABC):
-    @abstractmethod
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
-        pass
-
-    @abstractmethod
-    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
-        pass
+@cache
+def create_stroke_stamp(radius: int):
+    distances = np.fromfunction(lambda i, j: np.sqrt(np.square(i - radius) + np.square(j - radius)), (2 * radius + 1, 2 * radius + 1))
+    return (radius + 1) - distances.clip(radius, radius + 1)
 
 
-class NoMapOverlay(MapOverlay):
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
-        pass
+def add_stroke_around_alpha(image: Image, stroke_width: int = 1, stroke_color: tuple[float, float, float, float] = (0, 0, 0, 255), alpha_threshold: int = 64) -> Image:
+    image_array = np.asarray(image)
+    input_alpha = image_array[..., 3]
+    output_alpha = np.zeros(np.array(input_alpha.shape) + 2 * stroke_width, dtype=float)
 
-    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
-        pass
+    # For each point of the input image with alpha over the threshold, stamp a circle of width `stroke_width` around it
+    stamp = create_stroke_stamp(stroke_width)
+    stamp_size = np.size(stamp, 0)
+    for i in range(np.size(input_alpha, 0)):
+        for j in range(np.size(input_alpha, 1)):
+            if input_alpha[i, j] >= alpha_threshold:
+                output_slice = output_alpha[i:i + stamp_size, j:j + stamp_size]
+                np.add(output_slice, stamp, out=output_slice)
+
+    # Prepare the stroke image
+    np.clip(output_alpha, 0, 1, out=output_alpha)
+    output_array = np.full(image_array.shape + np.array((2 * stroke_width, 2 * stroke_width, 0)), stroke_color, dtype=float)
+    output_array[..., 3] *= output_alpha
+    output_stroke = Image.fromarray(output_array.round().astype(np.uint8))
+
+    # Create the final image
+    extended_image = Image.new('RGBA', output_stroke.size)
+    extended_image.paste(image, (stroke_width, stroke_width), image)
+    composite_image = Image.alpha_composite(output_stroke, extended_image)
+    return composite_image.crop(composite_image.getbbox())

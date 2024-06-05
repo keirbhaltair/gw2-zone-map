@@ -27,14 +27,15 @@ def parse_arguments():
     parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
-    parser.add_argument('-v', '--overlay', nargs='+', default=['zone', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
+    parser.add_argument('-v', '--overlay', nargs='+', default=['zone_access', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
     parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
-    parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.5],
+    parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.6],
                         help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
     parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
     parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
+    parser.add_argument('--debug', action='store_true', help="Renders debugging overlays, such as text label regions.")
 
     args = parser.parse_args()
     if not args.continent and not args.layout:
@@ -76,7 +77,7 @@ def generate_maps(args):
                 map_overlay = map_overlays[overlay_name]
                 overridden_zone_data = override_zone_data(zone_data, map_overlay) if args.overrides else zone_data
                 part_image_copy = part_image.copy() if i < len(args.overlay) else part_image
-                map_overlay.draw_overlay(part_image_copy, overridden_zone_data, map_coord, scale_factor)
+                map_overlay.draw_overlay(part_image_copy, overridden_zone_data, map_coord, scale_factor, debug=args.debug)
 
                 if overlay_name not in part_images:
                     part_images[overlay_name] = []
