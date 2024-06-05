@@ -13,7 +13,7 @@ from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor, MapLayout
 
 class MapOverlay(ABC):
     @abstractmethod
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool):
         pass
 
     @abstractmethod
@@ -22,7 +22,7 @@ class MapOverlay(ABC):
 
 
 class NoMapOverlay(MapOverlay):
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
         pass
 
     def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
@@ -63,7 +63,7 @@ def get_main_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: fl
 
 @cache
 def get_sub_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
-    return min(32, max(8, round(1.85 * get_zoom_size_multiplier(map_coord, size_multiplier))))
+    return min(32, max(8, round(1.8 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
 @cache

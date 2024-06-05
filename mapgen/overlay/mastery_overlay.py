@@ -10,6 +10,7 @@ class MasteryRegionMapOverlay(MapOverlay):
 
     base_text_color = (255, 255, 255, 255)
     sub_text_color = (255, 255, 255, 255)
+    debug_color = (255, 0, 195, 255)
 
     mastery_settings = {
         'Central Tyria': {'color': (240, 51, 7, 160)},
@@ -42,10 +43,10 @@ class MasteryRegionMapOverlay(MapOverlay):
         'lw4': {'label': 'Living\u00A0World Season\u00A04'},
         'festival': {'label': 'Festival'},
         'guild_hall': {'label': 'Guild hall'},
-        'lounge': {'label': 'Gem Store'},
+        'gem': {'label': 'Gem Store'},
     }
 
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
         draw = ImageDraw.Draw(image, 'RGBA')
 
         # Draw zone boundaries
@@ -92,6 +93,9 @@ class MasteryRegionMapOverlay(MapOverlay):
 
             # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden)
             label_anchor, label_image_rect = get_zone_pos(map_coord, zone, zone_image_rect)
+
+            if debug:
+                draw.rectangle(label_image_rect, outline=self.debug_color, width=1)
 
             # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
             zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)

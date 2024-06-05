@@ -16,7 +16,8 @@ run [gw2_zone_map.py](gw2_zone_map.py) with Python. Make sure the [requirements.
 | -f --format    | jpg          | File format of the output maps.                                                                                                                         |
 | -v --overlay   | zone mastery | Map overlay types to generate. Allowed values are: zone, zone_access, mastery, mastery_access, none                                                     |
 | -s --scale     | 1            | Scaling factor for overlays.                                                                                                                            |
-| -z --zoom      | 3.5          | The zoom levels to generate the maps for. If given a decimal number, the next integer is used for map data and the map is then scaled down accordingly. |
+| -z --zoom      | 3.6          | The zoom levels to generate the maps for. If given a decimal number, the next integer is used for map data and the map is then scaled down accordingly. |
 | --lang         | en           | Experimental. The language to generate the map for: en, es, de, fr. Not fully supported yet.                                                            |
 | --no-overrides |              | Turns off custom data overrides and generates the map entirely based on the official map API data.                                                      |
 | --no-legend    |              | Turns off generation of map overlay legends.                                                                                                            |
+| --debug        |              | Renders additional debugging overlays, e.g. regions for placing zone labels.                                                                            |

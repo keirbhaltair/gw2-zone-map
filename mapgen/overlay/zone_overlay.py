@@ -26,18 +26,20 @@ class ZoneMapOverlay(MapOverlay):
 
     base_line_color = (255, 255, 255, 255)
     special_line_color = (255, 174, 0, 255)
+    debug_color = (255, 0, 195, 255)
 
     access_settings = {
-        'gw2': {'label': 'Core', 'color': (255, 168, 153, 255)},
-        'lw1': {'label': 'Core', 'color': (255, 168, 153, 255)},
-        'lw2': {'label': 'Core', 'color': (255, 168, 153, 255)},
-        'hot': {'label': 'Heart\u00A0of Thorns', 'color': (153, 255, 189, 255)},
-        'lw3': {'label': 'Living\u00A0World Season\u00A03', 'color': (179, 255, 206, 255)},
-        'pof': {'label': 'Path\u00A0of Fire', 'color': (239, 153, 255, 255)},
-        'lw4': {'label': 'Living\u00A0World Season\u00A04', 'color': (243, 179, 255, 255)},
-        'lw5': {'label': 'The\u00A0Icebrood Saga', 'color': (179, 221, 255, 255)},
-        'eod': {'label': 'End\u00A0of Dragons', 'color': (153, 255, 246, 255)},
-        'soto': {'label': 'Secrets\u00A0of the\u00A0Obscure', 'color': (255, 234, 153, 255)},
+        'gw2': {'label': 'Core', 'color': (255, 157, 140, 255)},
+        'lw1': {'label': 'Core', 'color': (255, 157, 140, 255)},
+        'lw2': {'label': 'Core', 'color': (255, 157, 140, 255)},
+        'hot': {'label': 'Heart\u00A0of\u00A0Thorns', 'color': (153, 255, 164, 255)},
+        'lw3': {'label': 'Living\u00A0World Season\u00A03', 'color': (186, 255, 193, 255)},
+        'pof': {'label': 'Path\u00A0of\u00A0Fire', 'color': (239, 153, 255, 255)},
+        'lw4': {'label': 'Living\u00A0World Season\u00A04', 'color': (246, 196, 255, 255)},
+        'lw5': {'label': 'The\u00A0Icebrood Saga', 'color': (180, 217, 240, 255)},
+        'eod': {'label': 'End\u00A0of Dragons', 'color': (140, 255, 245, 255)},
+        'soto': {'label': 'Secrets\u00A0of the\u00A0Obscure', 'color': (255, 226, 115, 255)},
+        'gem': {'label': 'Gem\u00A0Store', 'color': (182, 196, 204, 255)},
     }
 
     category_settings = {
@@ -89,7 +91,7 @@ class ZoneMapOverlay(MapOverlay):
         },
     }
 
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float):
+    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
         draw = ImageDraw.Draw(image, 'RGBA')
 
         # Draw zone boundaries
@@ -131,18 +133,21 @@ class ZoneMapOverlay(MapOverlay):
         drawn_zones.sort(key=lambda z: (self.category_settings[z[0]['category']]['label_order'], z[0]['id']))
         for zone, zone_image_rect, settings in drawn_zones:
             # Choose the fonts to draw the labels with
-            label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else 0.9 if settings['special'] else 1)
+            label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else 0.85 if settings['special'] else 1)
             main_label_font_size = get_main_label_font_size(map_coord, label_size_multiplier)
             main_label_font = get_font(main_label_font_size, True, False)
             main_label_line_margin = main_label_font_size // 8
             main_label_outline_width = get_text_outline_width(main_label_font_size)
             sub_label_font_size = get_sub_label_font_size(map_coord, label_size_multiplier)
             sub_label_font = get_font(sub_label_font_size, False, True)
-            sub_label_line_margin = sub_label_font_size // 8
+            sub_label_line_margin = sub_label_font_size // -8
             sub_label_outline_width = get_text_outline_width(sub_label_font_size)
 
             # Choose the location and alignment where we want to display the zone's label (center of the zone boundary unless overridden)
             label_anchor, label_image_rect = get_zone_pos(map_coord, zone, zone_image_rect)
+
+            if debug:
+                draw.rectangle(label_image_rect, outline=self.debug_color, width=1)
 
             # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
             zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)
@@ -192,13 +197,20 @@ class ZoneMapOverlay(MapOverlay):
         # If we don't show access requirements, simply return lines for the type/levels instead
         if self.show_access_requirements:
             access = self.access_settings[zone['access_req']]
-        else:
+        elif type_text:
             return [[TextLineSegment(t)] for t in wrap_label(type_text, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)]
+        else:
+            return []
 
         # If everything fits on one line, return it
-        sub_label_lines = wrap_label(f'{access['label']} · {type_text}', font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+        single_line_sub_text = f'{access['label']} · {type_text}' if type_text else access['label']
+        sub_label_lines = wrap_label(single_line_sub_text, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor,
+                                     width_tolerance_factor=1.2)
         if len(sub_label_lines) == 1:
-            return [[TextLineSegment(access['label'], access['color']), TextLineSegment(f' · {type_text}')]]
+            line_segments = [TextLineSegment(access['label'], access['color'])]
+            if type_text:
+                line_segments.append(TextLineSegment(f' · {type_text}'))
+            return [line_segments]
 
         # Otherwise, split it into multiple lines as necessary
         wrapped_access_text = wrap_label(access['label'], font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
