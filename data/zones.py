@@ -83,11 +83,17 @@ zone_ids: dict[str, list[int]] = {
         1510,  # Skywatch Archipelago
         1517,  # Amnytas
         1526,  # Inner Nayos
+        1550,  # Lowland Shore
+        1554,  # Janthir Syntri
     ],
 
     'festival': [
         922,  # Labyrinthine Cliffs
         929,  # The Crown Pavilion
+    ],
+
+    'homestead': [
+        1558,  # Hearth's Glow
     ],
 
     'guild_hall': [
@@ -172,6 +178,7 @@ source_thresholds = {
     1466: {'mastery_region': 'Central Tyria', 'access_req': 'lw1'},
     1488: {'mastery_region': 'End of Dragons', 'access_req': 'eod'},
     1501: {'mastery_region': 'Secrets of the Obscure', 'access_req': 'soto'},
+    1541: {'mastery_region': 'Janthir Wilds', 'access_req': 'jw'},
 }
 
 """

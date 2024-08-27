@@ -36,9 +36,10 @@ class ZoneMapOverlay(MapOverlay):
         'lw3': {'label': 'Living\u00A0World Season\u00A03', 'color': (186, 255, 193, 255)},
         'pof': {'label': 'Path\u00A0of\u00A0Fire', 'color': (239, 153, 255, 255)},
         'lw4': {'label': 'Living\u00A0World Season\u00A04', 'color': (246, 196, 255, 255)},
-        'lw5': {'label': 'The\u00A0Icebrood Saga', 'color': (180, 217, 240, 255)},
+        'lw5': {'label': 'The\u00A0Icebrood Saga', 'color': (168, 212, 240, 255)},
         'eod': {'label': 'End\u00A0of Dragons', 'color': (140, 255, 245, 255)},
         'soto': {'label': 'Secrets\u00A0of the\u00A0Obscure', 'color': (255, 226, 115, 255)},
+        'jw': {'label': 'Janthir\u00A0Wilds', 'color': (149, 162, 219, 255)},
         'gem': {'label': 'Gem\u00A0Store', 'color': (182, 196, 204, 255)},
     }
 
@@ -48,6 +49,7 @@ class ZoneMapOverlay(MapOverlay):
         'outpost': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'Outpost'},
         'open_world': {'boundary_order': 0, 'label_order': 1, 'special': False, 'show_level': True, 'label': None},
         'festival': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Festival zone'},
+        'homestead': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Homestead'},
         'guild_hall': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Guild hall'},
         'dungeon': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Dungeon'},
         'raid': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid'},

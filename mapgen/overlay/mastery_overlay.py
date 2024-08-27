@@ -15,6 +15,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         'Icebrood Saga': {'color': (20, 153, 255, 160)},
         'End of Dragons': {'color': (10, 240, 221, 160)},
         'Secrets of the Obscure': {'color': (255, 207, 13, 160)},
+        'Janthir Wilds': {'color': (28, 44, 116, 160)},
     }
 
     category_settings = {
@@ -23,6 +24,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         'outpost': {'order': 1, 'label_size': 1},
         'open_world': {'order': 0, 'label_size': 1},
         'festival': {'order': 1, 'label_size': 0.9},
+        'homestead': {'order': 1, 'label_size': 0.9},
         'guild_hall': {'order': 1, 'label_size': 0.9},
         'dungeon': {'order': 3, 'label_size': 0.9},
         'raid': {'order': 3, 'label_size': 0.9},
