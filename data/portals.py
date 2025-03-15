@@ -33,6 +33,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (59530, 29952),  # Diessa Plateau - Plains of Ashford
         (56320, 28375),  # Diessa Plateau - Wayfarer Foothills
         (44928, 26911),  # Divinity's Reach - Lake Doric
+        (43994, 26969, 42968, 23710),  # Divinity's Reach - Lowland Shore
         (43932, 28032),  # Divinity's Reach - Queensdale
         (65535, 59576),  # Domain of Kourna - Domain of Vabbi
         (67060, 55552, 66275, 56376),  # Domain of Vabbi - Jahai Bluffs
@@ -130,6 +131,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         # (57853.3, 21830.8),  # Eye of the North
         (61826, 34803),  # Fields of Ruin -> Divinity's Reach
         (49473.9, 29003.23),  # Gendarran Fields -> Straits of Devastation
+        (34387, 21244),  # Hearth's Glow gates
         (53266, 30656),  # Hoelbrak -> Lion's Arch
         (49399.7, 31138),  # Lion's Arch -> Cities
         (49415.9, 31729.1),  # Lion's Arch -> Mist Portals
