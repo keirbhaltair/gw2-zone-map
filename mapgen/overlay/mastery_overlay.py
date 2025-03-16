@@ -28,6 +28,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         'guild_hall': {'order': 1, 'label_size': 0.8},
         'dungeon': {'order': 3, 'label_size': 0.8},
         'raid': {'order': 3, 'label_size': 0.8},
+        'raid_convergence': {'order': 3, 'label_size': 0.8},
         'strike': {'order': 3, 'label_size': 0.75},
         'story': {'order': 0, 'label_size': 0.8},
         'public_instance': {'order': 2, 'label_size': 0.8},

@@ -85,6 +85,7 @@ zone_ids: dict[str, list[int]] = {
         1526,  # Inner Nayos
         1550,  # Lowland Shore
         1554,  # Janthir Syntri
+        1575,  # Mistburned Barrens
     ],
 
     'festival': [
@@ -123,6 +124,11 @@ zone_ids: dict[str, list[int]] = {
         1264,  # Hall of Chains
         1303,  # Mythwright Gambit
         1323,  # The Key of Ahdashim
+        # 1564,  # Mount Balrior
+    ],
+
+    'raid_convergence': [
+        1564,  # Mount Balrior
     ],
 
     'strike': [
@@ -143,17 +149,18 @@ zone_ids: dict[str, list[int]] = {
         1520,  # Temple of Febe
     ],
 
-    'story': [
-        335,  # Claw Island
-        1268,  # Fahranur, the First City
-    ],
-
     'public_instance': [
         943,  # The Tower of Nightmares
         1412,  # Dragonstorm
         1482,  # The Battle for Lion's Arch
         1480,  # The Twisted Marionette
-        1523,  # Convergences
+        1523,  # Convergence: Outer Nayos
+        # 1562,  # Convergence: Mount Balrior
+    ],
+
+    'story': [
+        335,  # Claw Island
+        1268,  # Fahranur, the First City
     ],
 
     'lounge': [
@@ -294,6 +301,10 @@ all_zone_data_overrides: dict[int: dict] = {
     1480: {  # The Twisted Marionette
         'continent_rect': [[51446, 32249], [52224, 33170]]
     },
+    1575: {  # Mistburned Barrens
+        'continent_rect': [[34063, 10361], [35823, 12921]],
+        'label_rect': [[34127, 10361], [35759, 12921]]
+    },
 }
 
 """Custom overrides for the data coming from the API to make the resulting map look a bit cleaner. Similar to zone_data_overrides, but it includes additional changes for 
@@ -416,10 +427,10 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'label_rect': [[24839, 21882], [28071, 22682]],
             'label_anchor': 'lm',
         },
-        1523: {  # Convergences
-            'name': "Convergences",
+        1523: {  # Convergence: Outer Nayos
+            'name': "Convergence: Outer Nayos",
             'continent_rect': [[24108, 22416], [24108, 22416]],
-            'label_rect': [[21804, 22032], [23900, 22720]],
+            'label_rect': [[21676, 21968], [23868, 22720]],
             'label_anchor': 'rt',
             'label_size': 0.8
         },
@@ -446,6 +457,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
         872: {  # Fractals of the Mists
             'continent_rect': [[46336, 31008], [48128, 31680]],
+            'label_rect': [[46336, 31072], [48128, 31680]],
             'label_size': 0.75
         },
         1185: {  # Lake Doric,
@@ -459,6 +471,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
         1303: {  # Mythwright Gambit
             'continent_rect': [[46336, 31680], [48128, 32352]],
+            'label_rect': [[46336, 31712], [48128, 32352]],
             'label_size': 0.75,
         },
         1370: {  # Eye of the North
@@ -518,12 +531,14 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
             'continent_rect': [[19691, 24076], [21871, 25100]],
             'label_rect': [[19865, 24076], [21697, 25100]],
         },
-        1523: {  # Convergences
-            'name': "Convergences",
-            'continent_rect': [[19691, 21004], [21871, 21900]],
-            'label_rect': [[19691, 21004], [21871, 21900]],
+        1523: {  # Convergence: Outer Nayos
+            'name': "Convergence:\nOuter Nayos",
+            'continent_rect': [[19691, 20876], [21871, 21900]],
             'label_size': 0.75
         },
+        1564: {  # Mount Balrior
+            'label_size': 0.9
+        }
     }
 }
 
@@ -570,6 +585,7 @@ conditional_custom_zones: dict[type, list[dict]] = {
             'name': "Dragon Response Missions",
             'category': 'misc',
             'continent_rect': [[55382, 20288], [58838, 21056]],
+            'label_rect': [[55382, 20352], [58838, 21056]],
             'mastery_region': 'Icebrood Saga',
             'access_req': 'lw5',
         },

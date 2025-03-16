@@ -30,6 +30,7 @@ class ZoneMapOverlay(MapOverlay):
 
     access_settings = {
         'gw2': {'label': 'Core', 'color': (255, 157, 140, 255)},
+        'gem': {'label': 'Gem\u00A0Store', 'color': (197, 208, 214, 255)},
         'lw1': {'label': 'Core', 'color': (255, 157, 140, 255)},
         'lw2': {'label': 'Core', 'color': (255, 157, 140, 255)},
         'hot': {'label': 'Heart\u00A0of\u00A0Thorns', 'color': (153, 255, 164, 255)},
@@ -40,7 +41,6 @@ class ZoneMapOverlay(MapOverlay):
         'eod': {'label': 'End\u00A0of Dragons', 'color': (140, 255, 245, 255)},
         'soto': {'label': 'Secrets\u00A0of the\u00A0Obscure', 'color': (255, 226, 115, 255)},
         'jw': {'label': 'Janthir\u00A0Wilds', 'color': (149, 162, 219, 255)},
-        'gem': {'label': 'Gem\u00A0Store', 'color': (197, 208, 214, 255)},
     }
 
     category_settings = {
@@ -53,6 +53,7 @@ class ZoneMapOverlay(MapOverlay):
         'guild_hall': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Guild hall'},
         'dungeon': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Dungeon'},
         'raid': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid'},
+        'raid_convergence': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid\u00A0&\nPublic instance'},
         'strike': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Strike mission'},
         'story': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Story'},
         'public_instance': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Public instance'},

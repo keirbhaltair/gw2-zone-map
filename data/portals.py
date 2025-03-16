@@ -103,6 +103,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (35494.9, 30669.7),  # Bloodstone Fen -> Bastion of the Penitent
         (51935.2, 32267.7),  # Lornar's Pass -> Hall of Chains
         (67349.2, 52779.2),  # Domain of Vabbi -> The Key of Ahdashim
+        (38430, 14530),  # Janthir Syntri -> Mount Balrior
     ],
     'strike/asura_gate': [
         (29806.9, 101538.1),  # Arborstone
