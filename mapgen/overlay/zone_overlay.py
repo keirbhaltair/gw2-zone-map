@@ -40,7 +40,7 @@ class ZoneMapOverlay(MapOverlay):
         'eod': {'label': 'End\u00A0of Dragons', 'color': (140, 255, 245, 255)},
         'soto': {'label': 'Secrets\u00A0of the\u00A0Obscure', 'color': (255, 226, 115, 255)},
         'jw': {'label': 'Janthir\u00A0Wilds', 'color': (149, 162, 219, 255)},
-        'gem': {'label': 'Gem\u00A0Store', 'color': (182, 196, 204, 255)},
+        'gem': {'label': 'Gem\u00A0Store', 'color': (197, 208, 214, 255)},
     }
 
     category_settings = {
@@ -55,7 +55,7 @@ class ZoneMapOverlay(MapOverlay):
         'raid': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid'},
         'strike': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Strike mission'},
         'story': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Story'},
-        'hybrid_instance': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Boss instance'},
+        'public_instance': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Public instance'},
         'lounge': {'boundary_order': 0, 'label_order': 0, 'special': False, 'show_level': False, 'label': 'Lounge'},
         'misc': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': None},
     }
@@ -135,7 +135,7 @@ class ZoneMapOverlay(MapOverlay):
         drawn_zones.sort(key=lambda z: (self.category_settings[z[0]['category']]['label_order'], z[0]['id']))
         for zone, zone_image_rect, settings in drawn_zones:
             # Choose the fonts to draw the labels with
-            label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else 0.85 if settings['special'] else 1)
+            label_size_multiplier = scale_factor * (zone['label_size'] if 'label_size' in zone else 0.8 if settings['special'] else 1)
             main_label_font_size = get_main_label_font_size(map_coord, label_size_multiplier)
             main_label_font = get_font(main_label_font_size, True, False)
             main_label_line_margin = main_label_font_size // 8

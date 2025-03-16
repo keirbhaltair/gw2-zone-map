@@ -58,12 +58,12 @@ def get_zoom_size_multiplier(map_coord: MapCoordinateSystem, size_multiplier):
 
 @cache
 def get_main_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
-    return min(64, max(8, round(2.5 * get_zoom_size_multiplier(map_coord, size_multiplier))))
+    return min(64, max(8, round(2.6 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
 @cache
 def get_sub_label_font_size(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
-    return min(32, max(8, round(1.8 * get_zoom_size_multiplier(map_coord, size_multiplier))))
+    return min(32, max(8, round(2.0 * get_zoom_size_multiplier(map_coord, size_multiplier))))
 
 
 @cache
@@ -83,7 +83,7 @@ def get_line_width(map_coord: MapCoordinateSystem, size_multiplier: float = 1):
 
 @cache
 def get_text_outline_width(font_size: float):
-    return min(8, max(1, round(0.1 * font_size)))
+    return min(8, max(2, round(0.11 * font_size)))
 
 
 def get_wrapped_text_lines(text: str, font: FreeTypeFont, line_length: int):
