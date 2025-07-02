@@ -7,6 +7,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (34667, 33685, 35414, 33650),  # Auric Basin - Gilded Hollow
         (35328, 35000),  # Auric Basin - Tangled Depths
         (33601, 32512),  # Auric Basin - Verdant Brink
+        (35720, 11633),  # Bava Nisos - Mistburned Barrens
         (54109, 24576),  # Bitterfrost Frontier - Frostgorge Sound
         (56957, 29952),  # Black Citadel - Diessa Plateau
         (57856, 30642),  # Black Citadel - Plains of Ashford
@@ -137,6 +138,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (49399.7, 31138),  # Lion's Arch -> Cities
         (49415.9, 31729.1),  # Lion's Arch -> Mist Portals
         (50586, 31388.5),  # Lornar's Pass -> Straits of Devastation
+        (34268, 11530),  # Mistburned Barrens -> Divinity's Reach
         (38774.3, 36917.39),  # Rata Sum -> Lion's Arch
         (46642, 36713),  # Southsun Cove -> Lion's Arch
         (50184, 39787),  # Straits of Devastation -> Order Headquarters

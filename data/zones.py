@@ -85,6 +85,7 @@ zone_ids: dict[str, list[int]] = {
         1526,  # Inner Nayos
         1550,  # Lowland Shore
         1554,  # Janthir Syntri
+        1574,  # Bava Nisos
         1575,  # Mistburned Barrens
     ],
 
@@ -302,8 +303,9 @@ all_zone_data_overrides: dict[int: dict] = {
         'continent_rect': [[51446, 32249], [52224, 33170]]
     },
     1575: {  # Mistburned Barrens
-        'continent_rect': [[34063, 10361], [35823, 12921]],
-        'label_rect': [[34127, 10361], [35759, 12921]]
+        'continent_rect': [[34063, 10361], [35720, 12921]],
+        'label_rect': [[34127, 10361], [35656, 12921]],
+        'label_size': 0.9,
     },
 }
 
@@ -538,7 +540,7 @@ conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
         },
         1564: {  # Mount Balrior
             'label_size': 0.9
-        }
+        },
     }
 }
 
