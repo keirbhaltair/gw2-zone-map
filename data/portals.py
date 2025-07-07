@@ -66,6 +66,7 @@ portals: dict[str, list[tuple[float, float] | tuple[float, float, float, float]]
         (21825, 104390, 24354, 102531),  # Isle of Reflection - Seitung Province
         (60989, 29952),  # Iron Marches - Plains of Ashford
         (40533, 16970, 43174, 21806),  # Janthir Syntri - Lowland Shore
+        (40086, 14216, 34513, 12762),  # Janthir Syntri - Mistburned Barrens
         (43136, 30464),  # Kessex Hills - Queensdale (W)
         (44986, 30464),  # Kessex Hills - Queensdale (E)
         (50432, 31472),  # Lion's Arch - Lornar's Pass
