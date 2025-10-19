@@ -7,17 +7,19 @@ run [gw2_zone_map.py](gw2_zone_map.py) with Python. Make sure the [requirements.
 
 ## Parameters
 
-| Parameter      | Default             | Description                                                                                                                                             |
-|----------------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| -c --continent | None                | ID of the continent to generate the map for. Mutually exclusive with -l.                                                                                |
-| -l --layout    | TyriaWorld          | Name of the layout to generate the map for. Mutually exclusive with -c. Allowed values are: Tyria, Cantha, TyriaWorld                                   |
-| -t --tiles     | tiles               | Name of the directory that contains the map tiles.                                                                                                      |
-| -o --output    | output              | Name of the directory to generate the output maps in.                                                                                                   |
-| -f --format    | jpg                 | File format of the output maps.                                                                                                                         |
-| -v --overlay   | zone_access mastery | Map overlay types to generate. Allowed values are: zone, zone_access, mastery, none                                                                     |
-| -s --scale     | 1                   | Scaling factor for overlays.                                                                                                                            |
-| -z --zoom      | 3.4                 | The zoom levels to generate the maps for. If given a decimal number, the next integer is used for map data and the map is then scaled down accordingly. |
-| --lang         | en                  | Experimental. The language to generate the map for: en, es, de, fr. Not fully supported yet.                                                            |
-| --no-overrides |                     | Turns off custom data overrides and generates the map entirely based on the official map API data.                                                      |
-| --no-legend    |                     | Turns off generation of map overlay legends.                                                                                                            |
-| --debug        |                     | Renders additional debugging overlays, e.g. regions for placing zone labels.                                                                            |
+| Parameter      | Default             | Description                                                                                                                                                                                           |
+|----------------|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -c --continent | None                | ID of the continent to generate the map for. Mutually exclusive with -l.                                                                                                                              |
+| -l --layout    | TyriaWorld          | Name of the layout to generate the map for. Mutually exclusive with -c. Allowed values are: Tyria, Cantha, TyriaWorld                                                                                 |
+| -f --format    | jpg                 | File format of the output maps.                                                                                                                                                                       |
+| -o --output    | output              | Name of the directory to generate the output maps in.                                                                                                                                                 |
+| -s --scale     | 1                   | Scaling factor for overlays.                                                                                                                                                                          |
+| -t --tiles     | tiles               | Name of the directory that contains the map tiles.                                                                                                                                                    |
+| -v --overlay   | zone_access mastery | Map overlay types to generate. Allowed values are: zone, zone_access, mastery, none                                                                                                                   |
+| -z --zoom      | 3.4                 | The zoom levels to generate the maps for. If given a decimal number, the next integer is used for map data and the map is then scaled down accordingly.                                               |
+| --api-load     | false               | Instead of the REST API, optionally loads the API data from a local cache located in the api-cache directory, previously saved by the --api-save parameter. Can be used when the API service is down. |
+| --api-save     | false               | Optionally saves the data downloaded from the REST API to the api-cache directory, to be loaded later by the --api-load parameter in case the API service is down.                                    |
+| --debug        | false               | Renders additional debugging overlays, e.g. regions for placing zone labels.                                                                                                                          |
+| --lang         | en                  | Experimental. The language to generate the map for: en, es, de, fr. Not fully supported yet.                                                                                                          |
+| --no-overrides |                     | Turns off custom data overrides and generates the map entirely based on the official map API data.                                                                                                    |
+| --no-legend    |                     | Turns off generation of map overlay legends.                                                                                                                                                          |
