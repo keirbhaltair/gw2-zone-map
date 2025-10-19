@@ -24,22 +24,29 @@ def parse_arguments():
     sector_group.add_argument('-c', '--continent', type=int, help="ID of the continent to generate the map for")
     sector_group.add_argument('-l', '--layout', help=f"Name of the layout to generate the map for. Allowed values are: {list(map_layouts.keys())}")
 
-    parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
-    parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
-    parser.add_argument('-v', '--overlay', nargs='+', default=['zone_access', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
+    parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
+    parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
+    parser.add_argument('-v', '--overlay', nargs='+', default=['zone_access', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
     parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.4],
                         help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
+    parser.add_argument('--api-load', action='store_true', default=False,
+                        help='Instead of the REST API, optionally loads the API data from a local cache located in the api-cache directory, previously saved by the --api-save parameter. Can be used when the API service is down.')
+    parser.add_argument('--api-save', action='store_true', default=False,
+                        help='Optionally saves the data downloaded from the REST API to the api-cache directory, to be loaded later by the --api-load parameter in case the API service is down.')
+    parser.add_argument('--debug', action='store_true', help="Renders debugging overlays, such as text label regions.")
     parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
+    parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
-    parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
-    parser.add_argument('--debug', action='store_true', help="Renders debugging overlays, such as text label regions.")
 
     args = parser.parse_args()
     if not args.continent and not args.layout:
         setattr(args, 'layout', 'TyriaWorld')
+
+    if args.api_save and args.api_load:
+        raise RuntimeError("Cannot simultaneously save and load the API cache.")
 
     print(f"Arguments: {args}")
     return args
@@ -47,14 +54,14 @@ def parse_arguments():
 
 def generate_maps(args):
     output_path = Path(args.output)
-    output_path.mkdir(exist_ok=True)
+    output_path.mkdir(parents=True, exist_ok=True)
 
     tile_source = LocalMapTileSource(args.tiles)
     map_generator = MapGenerator(tile_source)
     map_layout = choose_map_layout(args)
 
     print(f"Loading data from the API...")
-    zone_data = load_zone_data(args.lang)
+    zone_data = load_zone_data(args.lang, args.api_save, args.api_load)
     print(f"Data loaded.")
 
     for zoom in args.zoom:
