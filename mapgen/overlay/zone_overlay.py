@@ -199,28 +199,82 @@ class ZoneMapOverlay(MapOverlay):
 
         # If we don't show access requirements, simply return lines for the type/levels instead
         if self.show_access_requirements:
-            access = self.access_settings[zone['access_req']]
+            access_values: list[str] = zone['access_req'] if isinstance(zone['access_req'], list) else [zone['access_req']]
+            access_settings: list[dict] = [self.access_settings[a] for a in access_values]
         elif type_text:
             return [[TextLineSegment(t)] for t in wrap_label(type_text, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)]
         else:
             return []
 
         # If everything fits on one line, return it
-        single_line_sub_text = f'{access['label']} · {type_text}' if type_text else access['label']
+        access_text_separator = ' & '
+        simple_access_text = access_text_separator.join(a['label'] for a in access_settings)
+        single_line_sub_text = f'{simple_access_text} · {type_text}' if type_text else simple_access_text
         sub_label_lines = wrap_label(single_line_sub_text, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor,
                                      width_tolerance_factor=1.2)
+
+        colored_access_single_line_text = []
+        for i, access in enumerate(access_settings):
+            if i > 0:
+                colored_access_single_line_text.append(TextLineSegment(access_text_separator))
+            colored_access_single_line_text.append(TextLineSegment(access['label'], access['color']))
+
         if len(sub_label_lines) == 1:
-            line_segments = [TextLineSegment(access['label'], access['color'])]
+            line_segments = colored_access_single_line_text
             if type_text:
                 line_segments.append(TextLineSegment(f' · {type_text}'))
             return [line_segments]
 
         # Otherwise, split it into multiple lines as necessary
-        wrapped_access_text = wrap_label(access['label'], font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+        wrapped_uncolored_access_text = wrap_label(simple_access_text, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
+        access_text_lines = self.match_colored_access_text_lines(wrapped_uncolored_access_text, colored_access_single_line_text)
         wrapped_type_text = wrap_label(type_text, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor)
-        access_text_lines = [[TextLineSegment(t, access['color'])] for t in wrapped_access_text]
         type_text_lines = [[TextLineSegment(t)] for t in wrapped_type_text]
         return [*access_text_lines, *type_text_lines]
+
+    @staticmethod
+    def match_colored_access_text_lines(wrapped_uncolored_lines: list[str], colored_access_segments: list[TextLineSegment]) -> list[list[TextLineSegment]]:
+        result: list[list[TextLineSegment]] = []
+        segment_iter = iter(colored_access_segments)
+
+        current_segment = next(segment_iter, None)
+        segment_pos = 0  # how far we are inside current_segment.text
+
+        for uncolored_line in wrapped_uncolored_lines:
+            line_segments = []
+            remaining_uncolored = uncolored_line
+            line_start = True
+
+            while remaining_uncolored and current_segment:
+                segment_text = current_segment.text[segment_pos:]
+                if line_start:
+                    line_start = False
+                    segment_text = segment_text.lstrip()
+                    remaining_uncolored = remaining_uncolored.lstrip()
+
+                if remaining_uncolored.startswith(segment_text):
+                    # Whole segment fits
+                    line_segments.append(TextLineSegment(segment_text, current_segment.color))
+                    remaining_uncolored = remaining_uncolored[len(segment_text):]
+                    current_segment = next(segment_iter, None)
+                    segment_pos = 0
+                else:
+                    # Partial fit
+                    split_len = min(len(remaining_uncolored), len(segment_text))
+                    line_segments.append(TextLineSegment(segment_text[:split_len], current_segment.color))
+                    remaining_uncolored = remaining_uncolored[split_len:]
+                    segment_pos += split_len
+                    if segment_pos >= len(current_segment.text):
+                        current_segment = next(segment_iter, None)
+                        segment_pos = 0
+
+            if current_segment and current_segment.text[segment_pos:].isspace():
+                current_segment = next(segment_iter, None)
+                segment_pos = 0
+
+            result.append(line_segments)
+
+        return result
 
     @staticmethod
     def draw_text_line(line: TextLine, label_pos_x, default_color, label_draw, label_draw_text_anchor):

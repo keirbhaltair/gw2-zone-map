@@ -98,7 +98,7 @@ def get_wrapped_text_lines(text: str, font: FreeTypeFont, line_length: int):
     return lines
 
 
-def wrap_label(label, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor, width_tolerance_factor=1.0):
+def wrap_label(label, font, label_margin, label_image_rect, label_image_size, map_coord, scale_factor, width_tolerance_factor=1.0) -> list[str]:
     if label is None:
         return []
 

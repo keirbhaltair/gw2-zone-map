@@ -196,6 +196,7 @@ Custom overrides for the data coming from the API to make the resulting map look
 second letter is vertical alignment (t = top, m = middle, b = bottom). Default is middle ('mm').
 - label_size: Size multiplier for the labels.
 - mastery_region: Mastery experience region, if it's different from the typical chronological map ID progression based on source_thresholds.
+- access_req: Holds abbreviation for access requirement (expansion or Living World season, see source_thresholds). Can also be set to a list of strings, if multiple requirements must be met simultaneously.
 """
 all_zone_data_overrides: dict[int, dict] = {
     23: {  # Kessex Hills

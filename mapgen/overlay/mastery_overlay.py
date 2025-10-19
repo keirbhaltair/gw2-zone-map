@@ -53,11 +53,6 @@ class MasteryRegionMapOverlay(MapOverlay):
             outline_rect = ((zone_image_rect[0][0] - math.floor((line_width - 1) / 2), zone_image_rect[0][1] - math.floor((line_width - 1) / 2)),
                             (zone_image_rect[1][0] + math.floor(line_width / 2), zone_image_rect[1][1] + math.floor(line_width / 2)))
 
-            if zone['category'] in ['guild_hall', 'lounge']:
-                req_code = zone['category']
-            else:
-                req_code = zone['access_req']
-
             bg_color = self.mastery_settings[zone['mastery_region']]['color']
             draw.rectangle(outline_rect, outline='white', width=get_line_width(map_coord, scale_factor), fill=bg_color)
             settings = self.category_settings[zone['category']]
