@@ -88,5 +88,5 @@ class MapCoordinateSystem:
     def is_point_contained_in_sector(self, continent_coord: tuple[float, float]) -> bool:
         return self.sector_top_left[0] < continent_coord[0] < self.sector_bottom_right[0] and self.sector_top_left[1] < continent_coord[1] < self.sector_bottom_right[1]
 
-    def is_rect_contained_in_sector(self, continent_rect: (tuple[float, float], tuple[float, float])) -> bool:
+    def is_rect_contained_in_sector(self, continent_rect: tuple[tuple[float, float], tuple[float, float]]) -> bool:
         return self.is_point_contained_in_sector(continent_rect[0]) and self.is_point_contained_in_sector(continent_rect[1])

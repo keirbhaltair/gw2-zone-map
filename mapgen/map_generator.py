@@ -8,7 +8,7 @@ from mapgen.map_coordinates import tile_image_size, MapCoordinateSystem
 
 class MapTileSource(ABC):
     @abstractmethod
-    def get_tile_image(self, continent: int, floor: int, zoom: int, x: int, y: int) -> Image:
+    def get_tile_image(self, continent: int, floor: int, zoom: int, x: int, y: int) -> Image.Image:
         pass
 
 
@@ -18,7 +18,7 @@ class LocalMapTileSource(MapTileSource):
     def __init__(self, input_directory: str):
         self.input_directory = input_directory
 
-    def get_tile_image(self, continent: int, floor: int, zoom: int, x: int, y: int) -> Image:
+    def get_tile_image(self, continent: int, floor: int, zoom: int, x: int, y: int) -> Image.Image:
         return Image.open(f"{self.input_directory}/{continent}/{floor}/{zoom}/{x}/{y}.jpg")
 
 
@@ -26,7 +26,7 @@ class MapGenerator:
     def __init__(self, tile_source: MapTileSource):
         self.tile_source = tile_source
 
-    def generate_map_image(self, continent: int, floor: int, map_coord: MapCoordinateSystem) -> Image:
+    def generate_map_image(self, continent: int, floor: int, map_coord: MapCoordinateSystem) -> Image.Image:
         int_zoom_map_coord = map_coord.with_int_zoom()
         int_zoom: int = int_zoom_map_coord.zoom
         int_zoom_image_dimensions = int_zoom_map_coord.continent_to_full_image_coord(int_zoom_map_coord.sector_dimensions)

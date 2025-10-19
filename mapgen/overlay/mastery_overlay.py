@@ -36,7 +36,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         'misc': {'order': 1, 'label_size': 0.75},
     }
 
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
+    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
         draw = ImageDraw.Draw(image, 'RGBA')
 
         # Draw zone boundaries
@@ -84,8 +84,8 @@ class MasteryRegionMapOverlay(MapOverlay):
 
             # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
             zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)
-            label_image_size = (max(250, zone_name_label_bbox[2] + 10, round(2 * label_image_rect[1][0] + 20)),
-                                max(250, 10 * zone_name_label_bbox[3] + 10, round(2 * label_image_rect[1][1] + 20)))
+            label_image_size = (max(250, round(zone_name_label_bbox[2] + 10), round(2 * label_image_rect[1][0] + 20)),
+                                max(250, round(10 * zone_name_label_bbox[3] + 10), round(2 * label_image_rect[1][1] + 20)))
             label_image = Image.new('RGBA', label_image_size, (255, 255, 255, 0))
             label_draw = ImageDraw.Draw(label_image, 'RGBA')
             label_draw_text_anchor = label_anchor[0] + 'a'
@@ -119,5 +119,5 @@ class MasteryRegionMapOverlay(MapOverlay):
             label_paste_pos = calculate_zone_label_paste_position(label_anchor, label_image, label_image_rect)
             image.paste(label_image, label_paste_pos, label_image)
 
-    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+    def draw_legend(self, image: Image.Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
         draw_title('Mastery regions', image, map_coord, map_layout, scale_factor)

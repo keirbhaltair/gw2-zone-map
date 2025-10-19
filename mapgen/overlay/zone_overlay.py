@@ -94,7 +94,7 @@ class ZoneMapOverlay(MapOverlay):
         },
     }
 
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
+    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
         draw = ImageDraw.Draw(image, 'RGBA')
 
         # Draw zone boundaries
@@ -154,8 +154,8 @@ class ZoneMapOverlay(MapOverlay):
 
             # Create a temporary image to draw the labels in, so that we can easily center them in the final map regardless of line count
             zone_name_label_bbox = draw.textbbox((0, 0), zone['name'], font=main_label_font)
-            label_image_size = (max(250, zone_name_label_bbox[2] + 10, round(2 * label_image_rect[1][0] + 20)),
-                                max(250, 10 * zone_name_label_bbox[3] + 10, round(2 * label_image_rect[1][1] + 20)))
+            label_image_size = (max(250, round(zone_name_label_bbox[2] + 10), round(2 * label_image_rect[1][0] + 20)),
+                                max(250, round(10 * zone_name_label_bbox[3] + 10), round(2 * label_image_rect[1][1] + 20)))
             label_image = Image.new('RGBA', label_image_size, (255, 255, 255, 0))
             label_draw = ImageDraw.Draw(label_image, 'RGBA')
             label_draw_text_anchor = label_anchor[0] + 'a'
@@ -235,7 +235,7 @@ class ZoneMapOverlay(MapOverlay):
                             font=line.font, anchor=anchor, align='center', stroke_width=line.outline_width, fill=color, stroke_fill='black')
             pos_x_offset = pos_x_offset + line.font.getlength(segment.text)
 
-    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+    def draw_legend(self, image: Image.Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
         font = get_font(get_legend_font_size(map_coord, scale_factor))
         icon_size = get_icon_size(map_coord, scale_factor)
 

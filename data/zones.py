@@ -197,7 +197,7 @@ second letter is vertical alignment (t = top, m = middle, b = bottom). Default i
 - label_size: Size multiplier for the labels.
 - mastery_region: Mastery experience region, if it's different from the typical chronological map ID progression based on source_thresholds.
 """
-all_zone_data_overrides: dict[int: dict] = {
+all_zone_data_overrides: dict[int, dict] = {
     23: {  # Kessex Hills
         'label_rect': [[44448, 30464], [45856, 32512]]
     },
@@ -311,7 +311,7 @@ all_zone_data_overrides: dict[int: dict] = {
 
 """Custom overrides for the data coming from the API to make the resulting map look a bit cleaner. Similar to zone_data_overrides, but it includes additional changes for 
 specific map overlays."""
-conditional_zone_data_overrides: dict[type, dict[int: dict]] = {
+conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
     ZoneMapOverlay: {
         26: {  # Dredgehaunt Cliffs
             'label_rect': [[52672, 32524], [54080, 33664]],

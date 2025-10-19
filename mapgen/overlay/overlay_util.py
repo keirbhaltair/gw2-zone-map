@@ -13,19 +13,19 @@ from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor, MapLayout
 
 class MapOverlay(ABC):
     @abstractmethod
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool):
+    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool):
         pass
 
     @abstractmethod
-    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+    def draw_legend(self, image: Image.Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
         pass
 
 
 class NoMapOverlay(MapOverlay):
-    def draw_overlay(self, image: Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
+    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
         pass
 
-    def draw_legend(self, image: Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
+    def draw_legend(self, image: Image.Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
         pass
 
 
@@ -49,6 +49,7 @@ def get_image(url: str):
                 sleep(0.3)
             else:
                 raise
+    return None
 
 
 @cache
@@ -125,33 +126,34 @@ def draw_title(title_text, image, map_coord, map_layout, scale_factor):
     legend_padding = 16
     draw = ImageDraw.Draw(image)
     text_bbox = draw.textbbox((0, 0), title_text, font=font, stroke_width=outline_width, anchor='la')
-    legend_size = (text_bbox[2] - text_bbox[0] + 2 * legend_padding, text_bbox[3] - text_bbox[1] + 2 * legend_padding)
+    legend_size = (round(text_bbox[2] - text_bbox[0] + 2 * legend_padding),
+                   round(text_bbox[3] - text_bbox[1] + 2 * legend_padding))
     legend_coord = calculate_legend_paste_position(image, legend_size, map_layout)
-    draw.text((legend_coord[0] + legend_padding, legend_coord[1] + legend_padding), title_text, font=font, fill='white', stroke_width=outline_width, stroke_fill='black',
-              anchor='la')
+    draw.text((legend_coord[0] + legend_padding, legend_coord[1] + legend_padding), title_text,
+              font=font, fill='white', stroke_width=outline_width, stroke_fill='black', anchor='la')
 
 
-def calculate_zone_label_paste_position(label_anchor, label_image: Image, label_image_rect: tuple[tuple[float, float], tuple[float, float]]):
+def calculate_zone_label_paste_position(label_anchor, label_image: Image.Image, label_image_rect: tuple[tuple[float, float], tuple[float, float]]) -> tuple[int, int]:
     label_bbox = label_image.getbbox()
     label_paste_pos = [0, 0]
     match label_anchor[0]:
         case 'l':
-            label_paste_pos[0] = label_image_rect[0][0]
+            label_paste_pos[0] = round(label_image_rect[0][0])
         case 'm':
             label_paste_pos[0] = round((label_image_rect[0][0] + label_image_rect[1][0] - label_image.size[0] + 1) / 2)
         case 'r':
-            label_paste_pos[0] = label_image_rect[1][0] - label_image.size[0]
+            label_paste_pos[0] = round(label_image_rect[1][0] - label_image.size[0])
     match label_anchor[1]:
         case 't':
-            label_paste_pos[1] = label_image_rect[0][1]
+            label_paste_pos[1] = round(label_image_rect[0][1])
         case 'm':
             label_paste_pos[1] = round((label_image_rect[0][1] + label_image_rect[1][1] - label_bbox[3] + label_bbox[1]) / 2) - 2
         case 'b':
-            label_paste_pos[1] = label_image_rect[1][1] - label_bbox[3] + label_bbox[1] - 4
-    return label_paste_pos
+            label_paste_pos[1] = round(label_image_rect[1][1] - label_bbox[3] + label_bbox[1] - 4)
+    return label_paste_pos[0], label_paste_pos[1]
 
 
-def calculate_legend_paste_position(image: Image, legend_size: tuple[int, int], map_layout: MapLayout):
+def calculate_legend_paste_position(image: Image.Image, legend_size: tuple[int, int], map_layout: MapLayout):
     coord = [0, 0]
     match map_layout.legend_align[0]:
         case 'l':
@@ -186,7 +188,7 @@ def create_stroke_stamp(radius: int):
     return (radius + 1) - distances.clip(radius, radius + 1)
 
 
-def add_stroke_around_alpha(image: Image, stroke_width: int = 1, stroke_color: tuple[float, float, float, float] = (0, 0, 0, 255), alpha_threshold: int = 64) -> Image:
+def add_stroke_around_alpha(image: Image.Image, stroke_width: int = 1, stroke_color: tuple[float, float, float, float] = (0, 0, 0, 255), alpha_threshold: int = 64) -> Image.Image:
     image_array = np.asarray(image)
     input_alpha = image_array[..., 3]
     output_alpha = np.zeros(np.array(input_alpha.shape) + 2 * stroke_width, dtype=float)

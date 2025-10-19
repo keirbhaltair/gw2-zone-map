@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw
 from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor
 
 
-def combine_part_images(parts: list[tuple[(int, int), Image]], map_coord: MapCoordinateSystem, scale_factor: float) -> Image:
+def combine_part_images(parts: list[tuple[tuple[int, int], Image.Image]], map_coord: MapCoordinateSystem, scale_factor: float) -> Image.Image:
     total_size = (max(pi[0][0] + pi[1].size[0] for pi in parts),
                   max(pi[0][1] + pi[1].size[1] for pi in parts))
 
