@@ -36,7 +36,8 @@ class MasteryRegionMapOverlay(MapOverlay):
         'misc': {'order': 1, 'label_size': 0.75},
     }
 
-    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
+    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_layout: MapLayout, map_coord: MapCoordinateSystem,
+                     scale_factor: float, debug: bool):
         draw = ImageDraw.Draw(image, 'RGBA')
 
         # Draw zone boundaries
@@ -45,7 +46,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         for zone in zone_data:
             continent_rect = zone['continent_rect']
 
-            if not map_coord.is_rect_contained_in_sector(continent_rect):
+            if zone['id'] in map_layout.zone_blacklist or not map_coord.is_rect_contained_in_sector(continent_rect):
                 continue
 
             zone_image_rect = map_coord.continent_to_sector_image_rect(continent_rect)

@@ -1,5 +1,5 @@
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 tile_image_size = 256
@@ -34,10 +34,27 @@ class MapLayout:
     parts: list[tuple[tuple[int, int], MapSector]]
     legend_image_coord: tuple[int, int] = (10, 10)
     legend_align: LegendAlignment = 'lt'
+    zone_legend_fields: list[str] = field(default_factory=list)
+    zone_blacklist: list[int] = field(default_factory=list)
+    portal_blacklist: list[tuple[str, str]] = field(default_factory=list)
 
     @classmethod
-    def single_sector(cls, sector: MapSector, legend_image_coord: tuple[int, int] = (10, 10), legend_align: LegendAlignment = 'lt'):
-        return cls([((0, 0), sector)], legend_image_coord, legend_align)
+    def single_sector(cls,
+                      sector: MapSector,
+                      legend_image_coord: tuple[int, int] = (10, 10),
+                      legend_align: LegendAlignment = 'lt',
+                      zone_blacklist: list[int] = None,
+                      portal_blacklist: list[tuple[str, str]] = None,
+                      zone_legend_fields: list[str] = None
+                      ):
+        return cls(
+            parts=[((0, 0), sector)],
+            legend_image_coord=legend_image_coord,
+            legend_align=legend_align,
+            zone_legend_fields=zone_legend_fields if zone_legend_fields else [],
+            zone_blacklist=zone_blacklist if zone_blacklist else [],
+            portal_blacklist=portal_blacklist if portal_blacklist else []
+        )
 
 
 class MapCoordinateSystem:

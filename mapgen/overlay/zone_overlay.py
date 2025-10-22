@@ -94,7 +94,8 @@ class ZoneMapOverlay(MapOverlay):
         },
     }
 
-    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
+    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_layout: MapLayout, map_coord: MapCoordinateSystem,
+                     scale_factor: float, debug: bool):
         draw = ImageDraw.Draw(image, 'RGBA')
 
         # Draw zone boundaries
@@ -103,7 +104,7 @@ class ZoneMapOverlay(MapOverlay):
         for zone in zone_data:
             continent_rect = zone['continent_rect']
 
-            if not map_coord.is_rect_contained_in_sector(continent_rect):
+            if zone['id'] in map_layout.zone_blacklist or not map_coord.is_rect_contained_in_sector(continent_rect):
                 continue
 
             zone_image_rect = map_coord.continent_to_sector_image_rect(continent_rect)
@@ -123,10 +124,12 @@ class ZoneMapOverlay(MapOverlay):
         for portal_type in reversed(portals.keys()):
             portal_icon = self.get_portal_icon(portal_type, icon_size)
             for portal in portals[portal_type]:
-                portal_image_coord = map_coord.continent_to_sector_image_coord((portal[0], portal[1]))
+                if (portal_type, portal[0]) in map_layout.portal_blacklist:
+                    continue
+                portal_image_coord = map_coord.continent_to_sector_image_coord((portal[1], portal[2]))
                 portal_paste_coord = (round(portal_image_coord[0] - portal_icon.size[0] / 2), round(portal_image_coord[1] - portal_icon.size[1] / 2))
-                if len(portal) == 4:
-                    portal2_image_coord = map_coord.continent_to_sector_image_coord((portal[2], portal[3]))
+                if len(portal) == 5:
+                    portal2_image_coord = map_coord.continent_to_sector_image_coord((portal[3], portal[4]))
                     portal2_paste_coord = (round(portal2_image_coord[0] - portal_icon.size[0] / 2), round(portal2_image_coord[1] - portal_icon.size[1] / 2))
                     self.draw_portal_connection_line(image, portal_image_coord, portal2_image_coord, portal_type, map_coord, scale_factor)
                     image.paste(portal_icon, portal2_paste_coord, portal_icon)
@@ -298,7 +301,11 @@ class ZoneMapOverlay(MapOverlay):
         legend_label_x = legend_label_y = max(8, round(2 * get_zoom_size_multiplier(map_coord, scale_factor)))
         legend_padding = 5 + math.ceil(get_line_width(map_coord, scale_factor) / 2)
         assert legend_label_x > legend_padding < legend_label_y
-        for portal_type in self.portal_settings.keys():
+
+        if not map_layout.zone_legend_fields:
+            return
+
+        for portal_type in map_layout.zone_legend_fields:
             icon = self.get_portal_icon(portal_type, icon_size)
             legend_image.paste(icon, (legend_label_x, legend_label_y), icon)
             legend_draw_coord = legend_label_x + icon_size + 6, legend_label_y + round(icon_size / 2)

@@ -13,7 +13,8 @@ from mapgen.map_coordinates import MapCoordinateSystem, zoom_factor, MapLayout
 
 class MapOverlay(ABC):
     @abstractmethod
-    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool):
+    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_layout: MapLayout, map_coord: MapCoordinateSystem,
+                     scale_factor: float, debug: bool):
         pass
 
     @abstractmethod
@@ -22,7 +23,8 @@ class MapOverlay(ABC):
 
 
 class NoMapOverlay(MapOverlay):
-    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_coord: MapCoordinateSystem, scale_factor: float, debug: bool = False):
+    def draw_overlay(self, image: Image.Image, zone_data: list[dict], map_layout: MapLayout, map_coord: MapCoordinateSystem,
+                     scale_factor: float, debug: bool):
         pass
 
     def draw_legend(self, image: Image.Image, map_layout: MapLayout, map_coord: MapCoordinateSystem, scale_factor: float):
