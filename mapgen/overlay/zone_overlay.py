@@ -25,7 +25,7 @@ class ZoneMapOverlay(MapOverlay):
         self.show_access_requirements = show_access_requirements
 
     base_line_color = (255, 255, 255, 255)
-    special_line_color = (255, 174, 0, 255)
+    special_line_color = (255, 185, 0, 255)
     debug_color = (255, 0, 195, 255)
 
     access_settings = {
@@ -41,6 +41,7 @@ class ZoneMapOverlay(MapOverlay):
         'eod': {'label': 'End\u00A0of Dragons', 'color': (140, 255, 245, 255)},
         'soto': {'label': 'Secrets\u00A0of the\u00A0Obscure', 'color': (255, 226, 115, 255)},
         'jw': {'label': 'Janthir\u00A0Wilds', 'color': (149, 162, 219, 255)},
+        'voe': {'label': 'Visions\u00A0of Eternity', 'color': (247, 135, 22, 255)},
     }
 
     category_settings = {

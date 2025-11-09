@@ -1,7 +1,7 @@
 from mapgen.map_coordinates import MapSector, MapLayout
 
 _composite_sectors: dict[str, MapSector] = {
-    'Tyria': MapSector(1, ((0, 8569), (70528, 79134))),
+    'Tyria': MapSector(1, ((0, 8057), (71552, 79134))),
     'Cantha': MapSector(1, ((15616, 92896), (44032, 108031))),
 }
 

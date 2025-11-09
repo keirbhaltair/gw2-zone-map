@@ -16,6 +16,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         'End of Dragons': {'color': (10, 240, 221, 160)},
         'Secrets of the Obscure': {'color': (255, 207, 13, 160)},
         'Janthir Wilds': {'color': (28, 44, 116, 160)},
+        'Visions of Eternity': {'color': (235, 118, 9, 160)},
     }
 
     category_settings = {

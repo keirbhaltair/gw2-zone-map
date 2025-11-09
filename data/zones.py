@@ -87,6 +87,8 @@ zone_ids: dict[str, list[int]] = {
         1554,  # Janthir Syntri
         1574,  # Bava Nisos
         1575,  # Mistburned Barrens
+        1595,  # Shipwreck Strand
+        1593,  # Starlit Weald
     ],
 
     'festival': [
@@ -96,6 +98,7 @@ zone_ids: dict[str, list[int]] = {
 
     'homestead': [
         1558,  # Hearth's Glow
+        1596,  # Comosus Isle
     ],
 
     'guild_hall': [
@@ -187,6 +190,7 @@ source_thresholds = {
     1488: {'mastery_region': 'End of Dragons', 'access_req': 'eod'},
     1501: {'mastery_region': 'Secrets of the Obscure', 'access_req': 'soto'},
     1541: {'mastery_region': 'Janthir Wilds', 'access_req': 'jw'},
+    1591: {'mastery_region': 'Visions of Eternity', 'access_req': 'voe'},
 }
 
 """
@@ -436,6 +440,10 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_rect': [[21676, 21968], [23868, 22720]],
             'label_anchor': 'rt',
             'label_size': 0.8
+        },
+        1596: {  # Comosus Isle
+            'label_rect': [[9844, 55500], [12020, 56908]],
+            'access_req': ['jw', 'voe'],
         },
     },
     MasteryRegionMapOverlay: {
