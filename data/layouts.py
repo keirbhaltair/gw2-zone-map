@@ -1,7 +1,7 @@
 from mapgen.map_coordinates import MapSector, MapLayout
 
 _composite_sectors: dict[str, MapSector] = {
-    'Tyria': MapSector(1, ((0, 8057), (71552, 79134))),
+    'Tyria': MapSector(1, ((4096, 8192), (71552, 79134))),
     'Cantha': MapSector(1, ((15616, 92896), (44032, 108031))),
 }
 
@@ -29,7 +29,7 @@ map_layouts: dict[str, MapLayout] = {
 
     'TyriaWorld': MapLayout([
             ((0, 0), _composite_sectors['Tyria']),
-            ((16896, _composite_sectors['Tyria'].height() - _composite_sectors['Cantha'].height()), _composite_sectors['Cantha']),
+            ((16896 - _composite_sectors['Tyria'].continent_rect[0][0], _composite_sectors['Tyria'].height() - _composite_sectors['Cantha'].height()), _composite_sectors['Cantha']),
         ],
         legend_align='rt',
         zone_legend_fields=['neighbor','asura_gate','dungeon','fractal','strike','raid']
