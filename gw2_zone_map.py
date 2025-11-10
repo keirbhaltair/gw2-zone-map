@@ -8,7 +8,7 @@ from data.zones import conditional_zone_blacklist, conditional_zone_data_overrid
 from mapgen.data_api import load_zone_data
 from mapgen.map_composite import combine_part_images
 from mapgen.map_coordinates import MapSector, MapCoordinateSystem, MapLayout
-from mapgen.map_generator import LocalMapTileSource, MapGenerator
+from mapgen.map_generator import MapGenerator
 from mapgen.overlay import map_overlays
 from mapgen.overlay.overlay_util import MapOverlay
 
@@ -28,7 +28,8 @@ def parse_arguments():
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
-    parser.add_argument('-t', '--tiles', default='tiles', help="The input tiles directory, such as from that_shaman's map API")
+    parser.add_argument('-t', '--tiles', default='local',
+                        help="Source of map tile images. Allowed values are: 'local' (provided in a local directory structure, such as from that_shaman's map API), and 'api' (provided by the official tile API). Default is 'local'.")
     parser.add_argument('-v', '--overlay', nargs='+', default=['zone_access', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
     parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.4],
                         help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
@@ -41,6 +42,7 @@ def parse_arguments():
     parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
+    parser.add_argument('--tiles-dir', default='tiles', help="If tiles are set to 'local', name of the input tiles directory, such as from that_shaman's map API.")
 
     args = parser.parse_args()
     if not args.continent and not args.layout:
@@ -57,8 +59,7 @@ def generate_maps(args):
     output_path = Path(args.output)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    tile_source = LocalMapTileSource(args.tiles)
-    map_generator = MapGenerator(tile_source)
+    map_generator = MapGenerator(args)
 
     print(f"Loading data from the API...")
     zone_data = load_zone_data(args.lang, args.api_save, args.api_load)
@@ -71,15 +72,16 @@ def generate_maps(args):
 
             map_coord = None
             scale_factor = args.scale
-            for part in map_layout.parts:
+            for sector_index, part in enumerate(map_layout.parts, start=1):
                 sector = part[1]
                 map_params = continent_map_params[sector.continent_id]
                 map_coord = MapCoordinateSystem(map_params, zoom, sector)
                 part_top_left = map_coord.continent_to_full_image_coord(part[0], False)
 
-                part_image = map_generator.generate_map_image(sector.continent_id, 1, map_coord)
+                part_image = map_generator.generate_map_image(sector.continent_id, 1, map_coord, sector_index, len(map_layout.parts))
 
                 for i, overlay_name in enumerate(args.overlay, start=1):
+                    print(f"Drawing map overlay '{overlay_name}'...")
                     if overlay_name not in map_overlays:
                         raise ValueError(f"Invalid overlay name specified ({overlay_name}). Allowed values are: {list(map_overlays.keys())}")
                     map_overlay = map_overlays[overlay_name]
@@ -91,6 +93,8 @@ def generate_maps(args):
                     if overlay_name not in part_images:
                         part_images[overlay_name] = []
                     part_images[overlay_name].append((part_top_left, part_image_copy))
+
+                    print(f"Map overlay '{overlay_name}' finished.")
 
             for overlay_name in part_images.keys():
                 zoom_text = str(zoom).replace('.', '-')
@@ -106,7 +110,7 @@ def generate_maps(args):
 
                 full_image.save(output_path, quality=95 if args.format == 'jpg' else None)
 
-            print(f"Maps for layout '{layout_name}' at zoom {zoom} finished.")
+            print(f"\nMaps for layout '{layout_name}' at zoom {zoom} finished.")
 
 
 def choose_map_layouts(args) -> list[tuple[str, MapLayout]]:
