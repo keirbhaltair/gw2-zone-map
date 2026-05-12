@@ -89,6 +89,7 @@ zone_ids: dict[str, list[int]] = {
         1575,  # Mistburned Barrens
         1595,  # Shipwreck Strand
         1593,  # Starlit Weald
+        1622,  # Eternity's Garden
     ],
 
     'festival': [
@@ -168,7 +169,7 @@ zone_ids: dict[str, list[int]] = {
     ],
 
     'lounge': [
-        1465,  # Thousand Seas Pavilion
+        # 1465,  # Thousand Seas Pavilion
     ],
 
     'misc': [

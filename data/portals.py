@@ -48,6 +48,7 @@ portals: dict[str, list[tuple[str, float, float] | tuple[str, float, float, floa
         ("Dredgehaunt Cliffs - Timberline Falls", 53414, 34560),
         ("Elon Riverlands - The Desolation (W)", 60095, 48192),
         ("Elon Riverlands - The Desolation (E)", 61434, 48192),
+        ("Eternity's Garden - Starlit Weald", 4320, 62900, 7258, 59720),
         ("Fireheart Rise - Frostgorge Sound", 56576, 26174),
         ("Fireheart Rise - Iron Marches", 59904, 27082),
         ("Frostgorge Sound - Snowden Drifts", 53756, 27648),
