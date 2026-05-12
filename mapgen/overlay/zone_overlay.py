@@ -55,7 +55,7 @@ class ZoneMapOverlay(MapOverlay):
         'dungeon': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Dungeon'},
         'raid': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid'},
         'raid_convergence': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid\u00A0&\nPublic instance'},
-        'strike': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Strike mission'},
+        'strike': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid encounter'},
         'story': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Story'},
         'public_instance': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Public instance'},
         'lounge': {'boundary_order': 0, 'label_order': 0, 'special': False, 'show_level': False, 'label': 'Lounge'},
@@ -86,7 +86,7 @@ class ZoneMapOverlay(MapOverlay):
         'strike': {
             'icon': get_image("https://wiki.guildwars2.com/images/e/e7/Strike_Mission_%28map_icon%29.png"),
             'line_color': None,
-            'legend': 'Strike mission'
+            'legend': 'Raid encounter'
         },
         'raid': {
             'icon': get_image("https://wiki.guildwars2.com/images/8/86/Raid_%28map_icon%29.png"),

@@ -284,7 +284,7 @@ all_zone_data_overrides: dict[int, dict] = {
         'access_req': 'pof'
     },
     1352: {  # Secret Lair of the Snowmen
-        'name': "Strike Mission: Secret Lair of the Snowmen",
+        'name': "Secret Lair of the Snowmen",
         'mastery_region': 'Central Tyria',
         'label_rect': [[51180, 24384], [53484, 25664]],
         'label_anchor': 'rm'
@@ -487,30 +487,24 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         1370: {  # Eye of the North
             'label_rect': [[57088, 21248], [58454, 22102]],
-            'mastery_region': 'Central Tyria'
+            'mastery_region': 'Central Tyria',
+            'label_size': 0.9
         },
         1428: {  # Arborstone
-            'label_rect': [[28929, 100890], [30397, 101657]]
+            'label_rect': [[28929, 100890], [30397, 101657]],
+            'label_size': 0.9
         },
-        1432: {  # Strike Mission: Aetherblade Hideout
-            'name': "Strike Mission:\nAetherblade Hideout",
-            'continent_rect': [[23367, 103145], [25543, 104105]],
-            'label_rect': [[23367, 103209], [25543, 104105]],
+        1432: {  # Aetherblade Hideout
+            'continent_rect': [[23367, 103145], [26055, 103865]],
         },
-        1437: {  # Strike Mission: Harvest Temple
-            'name': "Strike Mission:\nHarvest Temple",
-            'continent_rect': [[33382, 105550], [35046, 106510]],
-            'label_rect': [[33382, 105614], [35046, 106510]],
+        1437: {  # Harvest Temple
+            'continent_rect': [[33222, 105550], [35206, 106270]],
         },
-        1450: {  # Strike Mission: Xunlai Jade Junkyard
-            'name': "Strike Mission:\nXunlai Jade Junkyard",
-            'continent_rect': [[30049, 99930], [32161, 100890]],
-            'label_rect': [[30217, 99994], [31993, 100890]],
+        1450: {  # Xunlai Jade Junkyard
+            'continent_rect': [[29793, 100170], [32417, 100890]],
         },
-        1451: {  # Strike Mission: Kaineng Overlook
-            'name': "Strike Mission:\nKaineng Overlook",
-            'continent_rect': [[25928, 100660], [27912, 101620]],
-            'label_rect': [[25992, 100724], [27848, 101620]],
+        1451: {  # Kaineng Overlook
+            'continent_rect': [[25768, 100660], [28072, 101380]],
         },
         1480: {  # The Twisted Marionette
             'label_rect': [[50646, 32249], [51776, 33170]],
@@ -523,24 +517,18 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_rect': [[47584, 30352], [50592, 30928]],
             'label_size': 0.75
         },
-        1485: {  # Strike Mission: Old Lion's Court
-            'name': "Strike Mission:\nOld Lion's Court",
-            'continent_rect': [[48288, 32128], [50144, 33088]],
-            'label_rect': [[48608, 32192], [49824, 33088]],
+        1485: {  # Old Lion's Court
+            'continent_rect': [[48256, 32128], [50176, 32848]],
         },
         1509: {  # The Wizard's Tower
             'label_rect': [[23271, 21882], [24935, 22650]],
             'label_size': 0.9
         },
-        1515: {  # Strike Mission: Cosmic Observatory
-            'name': "Strike Mission:\nCosmic Observatory",
-            'continent_rect': [[27302, 22650], [29482, 23674]],
-            'label_rect': [[27444, 22650], [29340, 23674]],
+        1515: {  # Cosmic Observatory
+            'continent_rect': [[27302, 22650], [29866, 23434]],
         },
-        1520: {  # Strike Mission: Temple of Febe
-            'name': "Strike Mission:\nTemple of Febe",
-            'continent_rect': [[19691, 24076], [21871, 25100]],
-            'label_rect': [[19865, 24076], [21697, 25100]],
+        1520: {  # Temple of Febe
+            'continent_rect': [[19691, 24076], [21871, 24860]],
         },
         1523: {  # Convergence: Outer Nayos
             'name': "Convergence:\nOuter Nayos",
@@ -575,7 +563,7 @@ conditional_custom_zones: dict[type, list[dict]] = {
     MasteryRegionMapOverlay: [
         {
             'name': '\n'.join([
-                "Strike Missions:",
+                "Raid Encounters:",
                 "   Shiverpeaks Pass",
                 "   Fraenir of Jormag",
                 "   Voice of the Fallen",
