@@ -38,7 +38,7 @@ def parse_arguments():
     parser.add_argument('--api-save', action='store_true', default=False,
                         help='Optionally saves the data downloaded from the REST API to the api-cache directory, to be loaded later by the --api-load parameter in case the API service is down.')
     parser.add_argument('--debug', action='store_true', help="Renders debugging overlays, such as text label regions.")
-    parser.add_argument('--lang', nargs='+', default='en', help="Languages to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
+    parser.add_argument('--lang', nargs='+', default=['en'], help="Languages to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
