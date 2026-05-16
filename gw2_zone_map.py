@@ -38,7 +38,7 @@ def parse_arguments():
     parser.add_argument('--api-save', action='store_true', default=False,
                         help='Optionally saves the data downloaded from the REST API to the api-cache directory, to be loaded later by the --api-load parameter in case the API service is down.')
     parser.add_argument('--debug', action='store_true', help="Renders debugging overlays, such as text label regions.")
-    parser.add_argument('--lang', default='en', help="Language to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
+    parser.add_argument('--lang', nargs='+', default='en', help="Languages to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
     parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
@@ -80,35 +80,40 @@ def generate_maps(args):
 
                 part_image = map_generator.generate_map_image(sector.continent_id, 1, map_coord, sector_index, len(map_layout.parts))
 
-                for i, overlay_name in enumerate(args.overlay, start=1):
-                    print(f"Drawing map overlay '{overlay_name}'...")
-                    if overlay_name not in map_overlays:
-                        raise ValueError(f"Invalid overlay name specified ({overlay_name}). Allowed values are: {list(map_overlays.keys())}")
-                    map_overlay = map_overlays[overlay_name]
-                    overridden_zone_data = override_zone_data(zone_data, map_overlay) if args.overrides else zone_data
-                    part_image_copy = part_image.copy() if i < len(args.overlay) else part_image
-                    map_overlay.draw_overlay(part_image_copy, overridden_zone_data, map_layout, map_coord, scale_factor,
-                                             debug=args.debug)
+                for lang in args.lang:
+                    for i, overlay_name in enumerate(args.overlay, start=1):
+                        print(f"Drawing map overlay '{overlay_name}' for language '{lang}'...")
+                        if overlay_name not in map_overlays:
+                            raise ValueError(f"Invalid overlay name specified ({overlay_name}). Allowed values are: {list(map_overlays.keys())}")
+                        map_overlay = map_overlays[overlay_name]
+                        overridden_zone_data = override_zone_data(zone_data[lang], map_overlay) if args.overrides else zone_data
+                        part_image_copy = part_image.copy()
+                        map_overlay.draw_overlay(part_image_copy, overridden_zone_data, map_layout, map_coord, scale_factor,
+                                                 debug=args.debug)
 
-                    if overlay_name not in part_images:
-                        part_images[overlay_name] = []
-                    part_images[overlay_name].append((part_top_left, part_image_copy))
+                        if lang not in part_images:
+                            part_images[lang] = {}
+                        if overlay_name not in part_images[lang]:
+                            part_images[lang][overlay_name] = []
+                        part_images[lang][overlay_name].append((part_top_left, part_image_copy))
 
-                    print(f"Map overlay '{overlay_name}' finished.")
+                        print(f"Map overlay '{overlay_name}' for language '{lang}' finished.")
 
-            for overlay_name in part_images.keys():
-                zoom_text = str(zoom).replace('.', '-')
-                output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom_text}_{args.lang}.{args.format}'
 
-                if len(part_images[overlay_name]) == 1:
-                    full_image = part_images[overlay_name][0][1]
-                else:
-                    full_image = combine_part_images(part_images[overlay_name], map_coord, scale_factor)
+            for lang in part_images.keys():
+                for overlay_name in part_images[lang].keys():
+                    zoom_text = str(zoom).replace('.', '-')
+                    output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom_text}_{lang}.{args.format}'
 
-                if args.legend:
-                    map_overlays[overlay_name].draw_legend(full_image, map_layout, map_coord, scale_factor)
+                    if len(part_images[lang][overlay_name]) == 1:
+                        full_image = part_images[lang][overlay_name][0][1]
+                    else:
+                        full_image = combine_part_images(part_images[lang][overlay_name], map_coord, scale_factor)
 
-                full_image.save(output_path, quality=95 if args.format == 'jpg' else None)
+                    if args.legend:
+                        map_overlays[overlay_name].draw_legend(full_image, map_layout, map_coord, scale_factor)
+
+                    full_image.save(output_path, quality=95 if args.format == 'jpg' else None)
 
             print(f"\nMaps for layout '{layout_name}' at zoom {zoom} finished.")
 
