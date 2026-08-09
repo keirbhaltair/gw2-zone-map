@@ -9,6 +9,7 @@ from PIL import Image
 from PIL.Image import Resampling
 from requests import HTTPError
 
+from data.map_images import tile_api_map_overlays
 from mapgen.map_coordinates import tile_image_size, MapCoordinateSystem
 
 
@@ -21,9 +22,17 @@ class MapTileSource(ABC):
     def get_max_parallel_workers(self) -> int:
         pass
 
+    def get_image_overlays(self, continent: int, floor: int) -> list[
+        tuple[Image.Image, tuple[tuple[int, int], tuple[int, int]]]]:
+        """
+        Returns a list of tuples: (overlay_image, continent_rect)
+        where continent_rect is ((min_x, min_y), (max_x, max_y)).
+        """
+        return []
+
 
 class LocalMapTileSource(MapTileSource):
-    """Map tile source looking for tile images on the local file system, in the format of "continent/floor/zoom/x/y.jpg", for instance from that_shaman's mapgen API."""
+    """Map tile source looking for tile images on local file system."""
 
     def __init__(self, input_directory: str):
         self.input_directory = input_directory
@@ -36,12 +45,13 @@ class LocalMapTileSource(MapTileSource):
 
 
 class TileApiMapTileSource(MapTileSource):
-    """Map tile source looking for tile images in the official API's tile service."""
+    """Map tile source looking for tile images in official API's tile service."""
 
     dns_count = 4
 
     def __init__(self):
         self.dns_index = 0
+        self._overlay_cache: dict[str, Image.Image] = {}
 
     def get_tile_image(self, continent: int, floor: int, zoom: int, x: int, y: int) -> Image.Image:
         url = f"https://tiles{self.dns_index + 1}.guildwars2.com/{continent}/{floor}/{zoom}/{x}/{y}.jpg"
@@ -56,12 +66,36 @@ class TileApiMapTileSource(MapTileSource):
     def get_max_parallel_workers(self) -> int:
         return 32
 
+    def get_image_overlays(self, continent: int, floor: int) -> list[
+        tuple[Image.Image, tuple[tuple[int, int], tuple[int, int]]]]:
+        overlays = []
+        for ov in tile_api_map_overlays:
+            if "continent_id" in ov and ov["continent_id"] != continent:
+                continue
+
+            url = ov["image_url"]
+            if url not in self._overlay_cache:
+                try:
+                    res = requests.get(url)
+                    res.raise_for_status()
+                    # Convert to RGBA to preserve WebP transparency during alpha compositing
+                    self._overlay_cache[url] = Image.open(BytesIO(res.content)).convert("RGBA")
+                except Exception as e:
+                    print(f"Warning: Failed to download overlay {url}: {e}")
+                    continue
+
+            overlay_img = self._overlay_cache[url]
+            overlays.append((overlay_img, ov["continent_rect"]))
+
+        return overlays
+
 
 class MapGenerator:
     def __init__(self, args):
         self.tile_source = self.get_tile_source(args)
 
-    def generate_map_image(self, continent: int, floor: int, map_coord: MapCoordinateSystem, sector_index: int, sector_total: int) -> Image.Image:
+    def generate_map_image(self, continent: int, floor: int, map_coord: MapCoordinateSystem, sector_index: int,
+                           sector_total: int) -> Image.Image:
         int_zoom_map_coord = map_coord.with_int_zoom()
         int_zoom: int = int_zoom_map_coord.zoom
         int_zoom_image_dimensions = int_zoom_map_coord.continent_to_full_image_coord(
@@ -120,9 +154,52 @@ class MapGenerator:
         reporter_thread.join()
         print(f"Done fetching {total} tiles, combining into a single image...")
 
+        # 1. Base tile composition
         for tile_image, position in results:
             image.paste(tile_image, position)
 
+        # 2. Apply Image Overlays
+        overlays = self.tile_source.get_image_overlays(continent, floor)
+        if overlays:
+            print("Applying image overlays...")
+            canvas_w, canvas_h = image.size
+
+            for overlay_img, (ov_top_left, ov_bottom_right) in overlays:
+                # Map continent rect to target pixel coordinates at current integer zoom
+                px_top_left = int_zoom_map_coord.continent_to_full_image_coord(ov_top_left)
+                px_bottom_right = int_zoom_map_coord.continent_to_full_image_coord(ov_bottom_right)
+
+                # Relative placement on the sector canvas
+                canvas_x1 = px_top_left[0] - top_left_image_coord[0]
+                canvas_y1 = px_top_left[1] - top_left_image_coord[1]
+                canvas_x2 = px_bottom_right[0] - top_left_image_coord[0]
+                canvas_y2 = px_bottom_right[1] - top_left_image_coord[1]
+
+                ov_width = canvas_x2 - canvas_x1
+                ov_height = canvas_y2 - canvas_y1
+
+                # Skip if the overlay falls completely outside the rendered sector
+                if canvas_x2 <= 0 or canvas_y2 <= 0 or canvas_x1 >= canvas_w or canvas_y1 >= canvas_h:
+                    continue
+
+                # Scale overlay to match the current zoom scale
+                resized_overlay = overlay_img.resize((ov_width, ov_height), Resampling.LANCZOS)
+
+                # Crop overlay edges if partially off-canvas
+                crop_x1 = max(0, -canvas_x1)
+                crop_y1 = max(0, -canvas_y1)
+                crop_x2 = ov_width - max(0, canvas_x2 - canvas_w)
+                crop_y2 = ov_height - max(0, canvas_y2 - canvas_h)
+
+                visible_overlay = resized_overlay.crop((crop_x1, crop_y1, crop_x2, crop_y2))
+
+                paste_x = max(0, canvas_x1)
+                paste_y = max(0, canvas_y1)
+
+                # Paste onto base canvas using alpha transparency mask
+                image.paste(visible_overlay, (paste_x, paste_y), visible_overlay)
+
+        # 3. Handle floating point zoom resizing
         if map_coord.zoom == int_zoom:
             print("Map image generated.")
             return image
