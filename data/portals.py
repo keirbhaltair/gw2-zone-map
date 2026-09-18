@@ -48,6 +48,7 @@ portals: dict[str, list[tuple[str, float, float] | tuple[str, float, float, floa
         ("Dredgehaunt Cliffs - Timberline Falls", 53414, 34560),
         ("Elon Riverlands - The Desolation (W)", 60095, 48192),
         ("Elon Riverlands - The Desolation (E)", 61434, 48192),
+        ("Eternity's Garden - Leyspring Hollows", 4564, 60266, 5862, 59625),
         ("Eternity's Garden - Starlit Weald", 4320, 62900, 7258, 59720),
         ("Fireheart Rise - Frostgorge Sound", 56576, 26174),
         ("Fireheart Rise - Iron Marches", 59904, 27082),
@@ -126,6 +127,7 @@ portals: dict[str, list[tuple[str, float, float] | tuple[str, float, float, floa
         ("Dragon's End -> Harvest Temple", 34433, 105132),
         ("Lion's Arch -> Old Lion's Court", 49006.9, 31189.1),
         ("The Wizard's Tower hub", 24108, 22416),
+        ("Leyspring Hollows -> Nexus of Eternity", 4633, 58059),
     ],
     'asura_gate': [
         # ("Arborstone -> Lion's Arch", 29833.7, 101567.3),

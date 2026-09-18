@@ -90,6 +90,7 @@ zone_ids: dict[str, list[int]] = {
         1595,  # Shipwreck Strand
         1593,  # Starlit Weald
         1622,  # Eternity's Garden
+        1633,  # Leyspring Hollows
     ],
 
     'festival': [
@@ -130,10 +131,13 @@ zone_ids: dict[str, list[int]] = {
         1303,  # Mythwright Gambit
         1323,  # The Key of Ahdashim
         # 1564,  # Mount Balrior
+        1609,  # Guardian's Glade
+        # 1638,  # Nexus of Eternity
     ],
 
     'raid_convergence': [
         1564,  # Mount Balrior
+        1638,  # Nexus of Eternity
     ],
 
     'strike': [
@@ -161,6 +165,7 @@ zone_ids: dict[str, list[int]] = {
         1480,  # The Twisted Marionette
         1523,  # Convergence: Outer Nayos
         # 1562,  # Convergence: Mount Balrior
+        # 1627,  # Convergence: Nexus of Eternity
     ],
 
     'story': [
@@ -313,6 +318,12 @@ all_zone_data_overrides: dict[int, dict] = {
         'label_rect': [[34127, 10361], [35656, 12921]],
         'label_size': 0.9,
     },
+    1595: {  # Shipwreck Strand
+        'label_rect': [[9530, 58153], [12090, 60585]],
+    },
+    1609: {  # Guardian's Glade
+        'continent_rect': [[9727, 58208], [10142, 58637]],
+    },
 }
 
 """Custom overrides for the data coming from the API to make the resulting map look a bit cleaner. Similar to zone_data_overrides, but it includes additional changes for 
@@ -446,6 +457,15 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_rect': [[9844, 55500], [12020, 56908]],
             'access_req': ['jw', 'voe'],
         },
+        1609: {  # Guardian's Glade
+            'label_rect': [[8910, 57232], [10959, 58217]],
+            'label_anchor': 'mb'
+        },
+        1638: {  # Nexus of Eternity
+            'continent_rect': [[4633, 58059], [4633, 58059]],
+            'label_rect': [[3448, 56907], [5818, 57907]],
+            'label_anchor': 'mb'
+        },
     },
     MasteryRegionMapOverlay: {
         26: {  # Dredgehaunt Cliffs
@@ -538,6 +558,13 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         1564: {  # Mount Balrior
             'label_size': 0.9
+        },
+        1609: {  # Guardian's Glade
+            'label_rect': [[8654, 57232], [11215, 58518]],
+            'label_anchor': 'mb'
+        },
+        1638: {  # Nexus of Eternity
+            'continent_rect': [[3514, 56665], [5946, 57385]]
         },
     }
 }

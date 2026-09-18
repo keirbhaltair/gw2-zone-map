@@ -54,7 +54,7 @@ class ZoneMapOverlay(MapOverlay):
         'guild_hall': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Guild hall'},
         'dungeon': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Dungeon'},
         'raid': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid'},
-        'raid_convergence': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid\u00A0&\nPublic instance'},
+        'raid_convergence': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid\u00A0& Public instance'},
         'strike': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid encounter'},
         'story': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Story'},
         'public_instance': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Public instance'},
@@ -86,7 +86,7 @@ class ZoneMapOverlay(MapOverlay):
         'strike': {
             'icon': get_image("https://wiki.guildwars2.com/images/e/e7/Strike_Mission_%28map_icon%29.png"),
             'line_color': None,
-            'legend': 'Raid encounter'
+            'legend': 'Raid encounter / Convergence'
         },
         'raid': {
             'icon': get_image("https://wiki.guildwars2.com/images/8/86/Raid_%28map_icon%29.png"),
