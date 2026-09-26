@@ -11,14 +11,11 @@ zone_ids: dict[str, list[int]] = {
         326,  # Hoelbrak
     ],
 
-    'lobby': [
+    'hub': [
         1155,  # Lion's Arch Aerodrome
-        # 1483,  # Memory of Old Lion's Arch
-    ],
-
-    'outpost': [
         1370,  # Eye of the North
         1428,  # Arborstone
+        # 1483,  # Memory of Old Lion's Arch
         1509,  # The Wizard's Tower
     ],
 
@@ -334,20 +331,20 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_rect': [[52672, 32524], [54080, 33664]],
         },
         27: {  # Lornar's Pass
-            'label_rect': [[50720, 30112], [51968, 31548]],
-            'label_anchor': 'mt',
+            'label_rect': [[50720, 29696], [51968, 32134]],
+            'label_anchor': 'mm',
         },
         36: {  # Ascalonian Catacombs
             'label_rect': [[61248, 29024], [62656, 30048]],
             'label_anchor': 'lb'
         },
         50: {  # Lion's Arch
-            'label_rect': [[46976, 30800], [48704, 31636]],
-            'label_anchor': 'rb'
+            'label_size': 0.9
         },
         64: {  # Sorrow's Embrace
             'label_rect': [[52704, 33792], [55232, 34816]],
-            'label_anchor': 'lt'
+            'label_anchor': 'lt',
+            'label_size': 0.7
         },
         67: {  # Twilight Arbor
             'label_rect': [[42560, 32672], [43968, 33728]],
@@ -362,14 +359,13 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_anchor': 'lm'
         },
         73: {  # Bloodtide Coast
-            'label_rect': [[48000, 33600], [50432, 35456]],
-            'label_anchor': 'mt',
+            'label_rect': [[48512, 33600], [49920, 35456]],
         },
         76: {  # Caudecus's Manor
             'label_rect': [[43984, 28144], [45818, 28800]],
             'label_anchor': 'rm'
         },
-        82: {  # Crucible of Eternity+
+        82: {  # Crucible of Eternity
             'label_rect': [[53952, 37728], [55328, 38592]],
             'label_anchor': 'lb'
         },
@@ -378,15 +374,18 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_rect': [[37376, 37566], [39936, 38718]],
             'label_anchor': 'mt',
         },
+        335: {  # Claw Island
+            'label_size': 0.7
+        },
         336: {  # Chantry of Secrets
-            'label_rect': [[48448, 32576], [49203, 33280]],
-            'label_size': 0.6,
-            'label_anchor': 'rm',
+            'label_rect': [[48640, 33312], [49920, 33856]],
+            'label_size': 0.7,
+            'label_anchor': 'mt',
         },
         872: {  # Fractals of the Mists
             'continent_rect': [[49392.2, 31889.7], [49392.2, 31889.7]],
-            'label_rect': [[49632, 31644], [51753, 32252]],
-            'label_anchor': 'lt',
+            'label_rect': [[46208, 31788], [48990, 32252]],
+            'label_anchor': 'rt',
             'label_size': 0.6
         },
         1043: {  # Auric Basin
@@ -395,13 +394,13 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         1155: {  # Lion's Arch Aerodrome
             'continent_rect': [[49054, 31868], [49641, 32374]],
-            'label_rect': [[47006, 31500], [49014, 32116]],
-            'label_anchor': 'rb',
+            'label_rect': [[49705, 31868], [51241, 32310]],
+            'label_anchor': 'lm',
             'label_size': 0.6
         },
         1264: {  # Hall of Chains
             'continent_rect': [[51935.2, 32267.7], [51935.2, 32267.7]],
-            'label_rect': [[52128, 31900], [54784, 32438]],
+            'label_rect': [[52128, 32011.7], [54784, 32523.7]],
             'label_anchor': 'lb',
             'label_size': 0.7
         },
@@ -411,7 +410,7 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         1303: {  # Mythwright Gambit
             'continent_rect': [[49331.4, 32136.9], [49331.4, 32136.9]],
-            'label_rect': [[47006, 32084], [49014, 32630]],
+            'label_rect': [[46208, 32252], [49014, 32748]],
             'label_anchor': 'rt',
             'label_size': 0.6
         },
@@ -431,15 +430,21 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_anchor': 'rm'
         },
         1480: {  # The Twisted Marionette
-            'label_rect': [[50678, 32646], [51835, 33170]],
+            'label_rect': [[50678, 32582], [51835, 33170]],
             'label_size': 0.7,
             'label_anchor': 'rt'
         },
         1482: {  # The Battle for Lion's Arch
-            'name': "The\u00A0Battle\u00A0for\nLion's\u00A0Arch",
+            'name': "The Battle for Lion's Arch",
             'continent_rect': [[48064, 30784], [50368, 32192]],
-            'label_rect': [[49081, 30240], [50625, 30992]],
-            'label_anchor': 'lb',
+            'label_rect': [[46208, 30816], [48256, 31296]],
+            'label_anchor': 'rt',
+            'label_size': 0.6
+        },
+        1485: {  # Old Lion's Court
+            'continent_rect': [[49006.9, 31189.1], [49006.9, 31189.1]],
+            'label_rect': [[46208, 31296], [48256, 31776]],
+            'label_anchor': 'rt',
             'label_size': 0.6
         },
         1509: {  # The Wizard's Tower
@@ -488,23 +493,24 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_size': 0.8
         },
         872: {  # Fractals of the Mists
-            'continent_rect': [[46336, 31008], [48128, 31680]],
-            'label_rect': [[46336, 31072], [48128, 31680]],
-            'label_size': 0.75
+            'continent_rect': [[46336, 31568], [48192, 32208]],
+            'label_rect': [[46208, 31568], [48320, 32208]],
+            'label_size': 0.7
         },
-        1185: {  # Lake Doric,
+        1185: {  # Lake Doric
             'label_size': 0.9
         },
         1264: {  # Hall of Chains
-            'continent_rect': [[51840, 31996], [53760, 32764]]
+            'continent_rect': [[51840, 31996], [53760, 32636]],
+            'label_size': 0.7
         },
         1268: {  # Fahranur, the First City
             'label_size': 0.8
         },
         1303: {  # Mythwright Gambit
-            'continent_rect': [[46336, 31680], [48128, 32352]],
-            'label_rect': [[46336, 31712], [48128, 32352]],
-            'label_size': 0.75,
+            'continent_rect': [[48192, 32000], [50240, 32640]],
+            'label_rect': [[47744, 32000], [50688, 32640]],
+            'label_size': 0.7
         },
         1370: {  # Eye of the North
             'label_rect': [[57088, 21248], [58454, 22102]],
@@ -530,16 +536,18 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         1480: {  # The Twisted Marionette
             'label_rect': [[50646, 32249], [51776, 33170]],
             'label_anchor': 'rm',
-            'label_size': 0.75
+            'label_size': 0.7
         },
         1482: {  # The Battle for Lion's Arch
             'name': "The Battle for Lion's Arch",
             'continent_rect': [[47584, 30288], [50592, 30928]],
             'label_rect': [[47584, 30352], [50592, 30928]],
-            'label_size': 0.75
+            'label_size': 0.7
         },
         1485: {  # Old Lion's Court
-            'continent_rect': [[48256, 32128], [50176, 32848]],
+            'continent_rect': [[46336, 30928], [48192, 31568]],
+            'label_rect': [[46208, 30928], [48320, 31568]],
+            'label_size': 0.7
         },
         1509: {  # The Wizard's Tower
             'label_rect': [[23271, 21882], [24935, 22650]],
@@ -577,7 +585,6 @@ conditional_zone_blacklist: dict[type, list[int]] = {
         1450,  # Xunlai Jade Junkyard
         1451,  # Kaineng Overlook
         1437,  # Harvest Temple
-        1485,  # Old Lion's Court
         1515,  # Cosmic Observatory
         1520,  # Temple of Febe
     ],

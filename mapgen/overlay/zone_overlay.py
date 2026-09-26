@@ -46,8 +46,7 @@ class ZoneMapOverlay(MapOverlay):
 
     category_settings = {
         'city': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'City'},
-        'lobby': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'Lobby'},
-        'outpost': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'Outpost'},
+        'hub': {'boundary_order': 0, 'label_order': 2, 'special': False, 'show_level': False, 'label': 'Hub'},
         'open_world': {'boundary_order': 0, 'label_order': 1, 'special': False, 'show_level': True, 'label': None},
         'festival': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Festival zone'},
         'homestead': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Homestead'},
@@ -55,7 +54,7 @@ class ZoneMapOverlay(MapOverlay):
         'dungeon': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Dungeon'},
         'raid': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid'},
         'raid_convergence': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid\u00A0& Public instance'},
-        'strike': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid encounter'},
+        'strike': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Raid'},
         'story': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Story'},
         'public_instance': {'boundary_order': 1, 'label_order': 0, 'special': True, 'show_level': False, 'label': 'Public instance'},
         'lounge': {'boundary_order': 0, 'label_order': 0, 'special': False, 'show_level': False, 'label': 'Lounge'},
@@ -86,7 +85,7 @@ class ZoneMapOverlay(MapOverlay):
         'strike': {
             'icon': get_image("https://wiki.guildwars2.com/images/e/e7/Strike_Mission_%28map_icon%29.png"),
             'line_color': None,
-            'legend': 'Raid encounter / Convergence'
+            'legend': 'Raid encounter / Public instance'
         },
         'raid': {
             'icon': get_image("https://wiki.guildwars2.com/images/8/86/Raid_%28map_icon%29.png"),

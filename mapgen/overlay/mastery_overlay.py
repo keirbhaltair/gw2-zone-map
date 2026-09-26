@@ -21,8 +21,7 @@ class MasteryRegionMapOverlay(MapOverlay):
 
     category_settings = {
         'city': {'order': 1, 'label_size': 1},
-        'lobby': {'order': 1, 'label_size': 1},
-        'outpost': {'order': 1, 'label_size': 1},
+        'hub': {'order': 1, 'label_size': 1},
         'open_world': {'order': 0, 'label_size': 1},
         'festival': {'order': 1, 'label_size': 0.8},
         'homestead': {'order': 1, 'label_size': 0.8},
