@@ -137,15 +137,18 @@ zone_ids: dict[str, list[int]] = {
         1638,  # Nexus of Eternity
     ],
 
-    'strike': [
+    'festival_raid': [
         1352,  # Secret Lair of the Snowmen
-        # 1331,  # Shiverpeaks Pass
-        # 1351,  # Boneskinner
+    ],
+
+    'strike': [
+        1332,  # Shiverpeaks Pass
+        # 1339,  # Boneskinner
         # 1341,  # Fraenir of Jormag
-        # 1344,  # Voice of the Fallen and Claw of the Fallen
-        # 1357,  # Whisper of Jormag
-        # 1362,  # Forging Steel
-        # 1376,  # Cold War
+        1346,  # Voice of the Fallen and Claw of the Fallen
+        1359,  # Whisper of Jormag
+        1368,  # Forging Steel
+        1374,  # Cold War
         1432,  # Aetherblade Hideout
         1450,  # Xunlai Jade Junkyard
         1451,  # Kaineng Overlook
@@ -176,6 +179,16 @@ zone_ids: dict[str, list[int]] = {
 
     'misc': [
         336,  # Chantry of Secrets
+        # 1397,  # Dragon Response Mission: Metrica Province
+        # 1399,  # Dragon Response Mission: Brisban Wildlands
+        # 1396,  # Dragon Response Mission: Gendarran Fields
+        # 1398,  # Dragon Response Mission: Fields of Ruin
+        # 1395,  # Dragon Response Mission: Thunderhead Peaks
+        # 1393,  # Dragon Response Mission: Lake Doric
+        # 1389,  # Dragon Response Mission: Snowden Drifts
+        # 1403,  # Dragon Response Mission: Caledon Forest
+        # 1387,  # Dragon Response Mission: Bloodtide Coast
+        # 1390,  # Dragon Response Mission: Fireheart Rise
     ],
 }
 
@@ -216,7 +229,8 @@ all_zone_data_overrides: dict[int, dict] = {
         'continent_rect': [[48896, 32576], [49664, 33280]]
     },
     872: {  # Fractals of the Mists
-        'continent_id': 1,  # Fractals are technically in the Mists, but we might want to display them on the overworld map as well
+        'continent_id': 1,
+        # Fractals are technically in the Mists, but we might want to display them on the overworld map as well
         'continent_name': 'Tyria',
     },
     988: {  # Dry Top
@@ -284,22 +298,64 @@ all_zone_data_overrides: dict[int, dict] = {
         'access_req': 'pof'
     },
     1323: {  # The Key of Ahdashim
-        'access_req': 'pof'
+        'access_req': 'pof',
+        'continent_rect': [[66298, 50786], [68218, 52354]]
+    },
+    1332: {  # Shiverpeaks Pass
+        'continent_rect': [[59392, 19014], [59900, 20064]],
+        'label_rect': [[57683, 19014], [59731, 20064]],
+        'label_anchor': 'rm'
+    },
+    1343: {  # Bjora Marches
+        'label_rect': [[54943, 16972], [57122, 19148]]
+    },
+    1346: {  # Sanctum Arena (Voice of the Fallen and Claw of the Fallen / Fraenir of Jormag / Boneskinner)
+        'name': "Voice of the Fallen and Claw of the Fallen,\nFraenir of Jormag,\nBoneskinner",
+        'continent_rect': [[57058, 17816], [57430, 18187]],
+        'label_rect': [[57106, 15892], [64162, 17816]],
+        'label_anchor': 'lb'
     },
     1352: {  # Secret Lair of the Snowmen
         'name': "Secret Lair of the Snowmen",
         'mastery_region': 'Central Tyria',
-        'label_rect': [[51180, 24384], [53484, 25664]],
-        'label_anchor': 'rm'
+        'continent_rect': [[52268, 24384], [53504, 25664]],
+        'label_rect': [[51116, 24384], [53420, 25664]],
+        'label_anchor': 'rm',
+        'access_req': 'gw2'
+    },
+    1359: {  # Whisper of Jormag
+        'label_rect': [[53928, 19164], [55464, 19724]],
+        'label_anchor': 'rt'
+    },
+    1368: {  # Forging Steel
+        'name': "Forging Steel"
     },
     1370: {  # Eye of the North
         'continent_rect': [[57344, 21248], [58198, 22102]]
+    },
+    1371: {  # Drizzlewood Coast
+        'label_rect': [[50128, 17809], [52304, 20192]],
+        'label_anchor': 'mb'
+    },
+    1374: {  # Cold War
+        'continent_rect': [[51100, 20448], [51509, 20841]],
+        'label_rect': [[50248, 20905], [52297, 21417]],
+        'label_anchor': 'mt'
     },
     1419: {  # Isle of Reflection
         'continent_rect': [[21319, 103785], [23239, 105705]]
     },
     1428: {  # Arborstone
         'continent_rect': [[29185, 100890], [30141, 101657]]
+    },
+    1450: {  # Xunlai Jade Junkyard
+        'continent_rect': [[30751, 101830], [31324, 102296]],
+    },
+    1451: {  # Kaineng Overlook
+        'continent_rect': [[25831, 99877], [26151, 100153]],
+    },
+    1437: {  # Harvest Temple
+        'continent_rect': [[33874, 104306], [34474, 104906]],
     },
     1465: {  # Thousand Seas Pavilion
         'continent_rect': [[20900, 98253], [22052, 99405]],
@@ -309,6 +365,12 @@ all_zone_data_overrides: dict[int, dict] = {
     },
     1480: {  # The Twisted Marionette
         'continent_rect': [[51446, 32249], [52224, 33170]]
+    },
+    1515: {  # Cosmic Observatory
+        'continent_rect': [[26810, 23005], [27302, 23497]],
+    },
+    1520: {  # Temple of Febe
+        'continent_rect': [[24108, 22416], [24108, 22416]],
     },
     1575: {  # Mistburned Barrens
         'continent_rect': [[34063, 10361], [35720, 12921]],
@@ -414,13 +476,15 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_anchor': 'rt',
             'label_size': 0.6
         },
+        1368: {  # Forging Steel
+            'continent_rect': [[57621.8, 21596.3], [57621.8, 21596.3]],
+            'label_rect': [[57862, 21116], [59862, 21660]],
+            'label_anchor': 'lb'
+        },
         1370: {  # Eye of the North
             'label_rect': [[54944, 21248], [57248, 22102]],
             'label_anchor': 'rm',
             'access_req': 'gw2'
-        },
-        1371: {  # Drizzlewood Coast
-            'label_rect': [[50128, 17809], [52304, 22289]]
         },
         1412: {  # Dragonstorm
             'label_rect': [[51776, 26112], [53696, 27648]]
@@ -512,8 +576,14 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_rect': [[47744, 32000], [50688, 32640]],
             'label_size': 0.7
         },
+        1368: {  # Forging Steel
+            'continent_rect': [[58262, 20939], [60006, 21643]],
+            'label_rect': [[58358, 20939], [60006, 21643]],
+            'label_anchor': 'lm'
+        },
         1370: {  # Eye of the North
-            'label_rect': [[57088, 21248], [58454, 22102]],
+            'label_rect': [[56086, 21248], [58102, 22102]],
+            'label_anchor': 'rm',
             'mastery_region': 'Central Tyria',
             'label_size': 0.9
         },
@@ -522,16 +592,16 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_size': 0.9
         },
         1432: {  # Aetherblade Hideout
-            'continent_rect': [[23367, 103145], [26055, 103865]],
+            # 'continent_rect': [[23367, 103145], [26055, 103865]],
         },
         1437: {  # Harvest Temple
-            'continent_rect': [[33222, 105550], [35206, 106270]],
+            # 'continent_rect': [[33222, 105550], [35206, 106270]],
         },
         1450: {  # Xunlai Jade Junkyard
-            'continent_rect': [[29793, 100170], [32417, 100890]],
+            # 'continent_rect': [[29793, 100170], [32417, 100890]],
         },
         1451: {  # Kaineng Overlook
-            'continent_rect': [[25768, 100660], [28072, 101380]],
+            # 'continent_rect': [[25768, 100660], [28072, 101380]],
         },
         1480: {  # The Twisted Marionette
             'label_rect': [[50646, 32249], [51776, 33170]],
@@ -554,10 +624,10 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_size': 0.9
         },
         1515: {  # Cosmic Observatory
-            'continent_rect': [[27302, 22650], [29866, 23434]],
+            # 'continent_rect': [[27302, 22650], [29866, 23434]],
         },
         1520: {  # Temple of Febe
-            'continent_rect': [[19691, 24076], [21871, 24860]],
+            # 'continent_rect': [[19691, 24076], [21871, 24860]],
         },
         1523: {  # Convergence: Outer Nayos
             'name': "Convergence:\nOuter Nayos",
@@ -579,15 +649,6 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
 
 """Map IDs to ignore for specific map overlays."""
 conditional_zone_blacklist: dict[type, list[int]] = {
-    ZoneMapOverlay: [
-        1352,  # Secret Lair of the Snowmen
-        1432,  # Aetherblade Hideout
-        1450,  # Xunlai Jade Junkyard
-        1451,  # Kaineng Overlook
-        1437,  # Harvest Temple
-        1515,  # Cosmic Observatory
-        1520,  # Temple of Febe
-    ],
     MasteryRegionMapOverlay: [
         336,  # Chantry of Secrets
         1155,  # Lion's Arch Aerodrome
@@ -595,31 +656,24 @@ conditional_zone_blacklist: dict[type, list[int]] = {
 }
 
 conditional_custom_zones: dict[type, list[dict]] = {
-    MasteryRegionMapOverlay: [
-        {
-            'name': '\n'.join([
-                "Raid Encounters:",
-                "   Shiverpeaks Pass",
-                "   Fraenir of Jormag",
-                "   Voice of the Fallen",
-                "      and Claw of the Fallen",
-                "   Boneskinner",
-                "   Whisper of Jormag",
-                "   Forging Steel",
-                "   Cold War",
-            ]),
-            'category': 'strike',
-            'continent_rect': [[59222, 20384], [62614, 23232]],
-            'label_rect': [[59350, 20384], [62998, 23232]],
-            'label_anchor': 'lm',
-            'mastery_region': 'Icebrood Saga',
-            'access_req': 'lw5',
-        },
+    ZoneMapOverlay: [
         {
             'name': "Dragon Response Missions",
             'category': 'misc',
-            'continent_rect': [[55382, 20288], [58838, 21056]],
-            'label_rect': [[55382, 20352], [58838, 21056]],
+            'continent_rect': [[57853.3, 21830.8], [57853.3, 21830.8]],
+            'label_rect': [[58093, 21718], [60029, 22342]],
+            'label_anchor': 'lt',
+            'mastery_region': 'Icebrood Saga',
+            'access_req': 'lw5',
+        },
+    ],
+    MasteryRegionMapOverlay: [
+        {
+            'name': "Dragon Response Missions",
+            'category': 'misc',
+            'continent_rect': [[58262, 21707], [61590, 22411]],
+            'label_rect': [[58358, 21707], [61590, 22411]],
+            'label_anchor': 'lm',
             'mastery_region': 'Icebrood Saga',
             'access_req': 'lw5',
         },

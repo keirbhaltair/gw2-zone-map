@@ -24,6 +24,7 @@ class MasteryRegionMapOverlay(MapOverlay):
         'hub': {'order': 1, 'label_size': 1},
         'open_world': {'order': 0, 'label_size': 1},
         'festival': {'order': 1, 'label_size': 0.8},
+        'festival_raid': {'order': 1, 'label_size': 0.8},
         'homestead': {'order': 1, 'label_size': 0.8},
         'guild_hall': {'order': 1, 'label_size': 0.8},
         'dungeon': {'order': 3, 'label_size': 0.8},
