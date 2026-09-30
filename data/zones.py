@@ -339,23 +339,40 @@ all_zone_data_overrides: dict[int, dict] = {
     },
     1374: {  # Cold War
         'continent_rect': [[51100, 20448], [51509, 20841]],
-        'label_rect': [[50248, 20905], [52297, 21417]],
+        'label_rect': [[50588, 20905], [52021, 21417]],
         'label_anchor': 'mt'
     },
     1419: {  # Isle of Reflection
         'continent_rect': [[21319, 103785], [23239, 105705]]
     },
+    1422: {  # Dragon's End
+        'label_rect': [[33126, 101838], [35302, 103758]],
+        'label_anchor': 'mb'
+    },
     1428: {  # Arborstone
         'continent_rect': [[29185, 100890], [30141, 101657]]
     },
+    1432: {  # Aetherblade Hideout
+        'label_rect': [[22576, 102796], [25008, 103340]],
+        'label_anchor': 'mt'
+    },
     1450: {  # Xunlai Jade Junkyard
         'continent_rect': [[30751, 101830], [31324, 102296]],
+        'label_rect': [[30783, 101286], [33855, 101846]],
+        'label_anchor': 'lb'
     },
     1451: {  # Kaineng Overlook
-        'continent_rect': [[25831, 99877], [26151, 100153]],
+        'continent_rect': [[25829, 99853], [26153, 100177]],
+        'label_rect': [[24807, 100209], [27175, 100721]],
+        'label_anchor': 'mt'
+    },
+    1452: {  # The Echovald Wilds
+        'label_rect': [[29185, 102296], [33025, 103450]]
     },
     1437: {  # Harvest Temple
         'continent_rect': [[33874, 104306], [34474, 104906]],
+        'label_rect': [[31762, 104306], [33810, 104906]],
+        'label_anchor': 'rm'
     },
     1465: {  # Thousand Seas Pavilion
         'continent_rect': [[20900, 98253], [22052, 99405]],
@@ -382,6 +399,8 @@ all_zone_data_overrides: dict[int, dict] = {
     },
     1609: {  # Guardian's Glade
         'continent_rect': [[9727, 58208], [10142, 58637]],
+        'label_rect': [[8910, 57232], [10959, 58217]],
+        'label_anchor': 'mb'
     },
 }
 
@@ -433,7 +452,7 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         139: {  # Rata Sum
             'continent_rect': [[37376, 36096], [39936, 38654]],
-            'label_rect': [[37376, 37566], [39936, 38718]],
+            'label_rect': [[37376, 37438], [39936, 38718]],
             'label_anchor': 'mt',
         },
         335: {  # Claw Island
@@ -451,7 +470,7 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_size': 0.6
         },
         1043: {  # Auric Basin
-            'label_rect': [[33408, 33984], [35200, 35328]],
+            'label_rect': [[33408, 33856], [35200, 35328]],
             'label_anchor': 'mt',
         },
         1155: {  # Lion's Arch Aerodrome
@@ -491,7 +510,8 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         1428: {  # Arborstone
             'label_rect': [[26817, 100890], [29121, 101657]],
-            'label_anchor': 'rm'
+            'label_anchor': 'rm',
+            'label_size': 0.9
         },
         1480: {  # The Twisted Marionette
             'label_rect': [[50678, 32582], [51835, 33170]],
@@ -514,6 +534,7 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         1509: {  # The Wizard's Tower
             'label_rect': [[24839, 21882], [28071, 22682]],
             'label_anchor': 'lm',
+            'label_size': 0.9
         },
         1523: {  # Convergence: Outer Nayos
             'name': "Convergence: Outer Nayos",
@@ -525,10 +546,6 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         1596: {  # Comosus Isle
             'label_rect': [[9844, 55500], [12020, 56908]],
             'access_req': ['jw', 'voe'],
-        },
-        1609: {  # Guardian's Glade
-            'label_rect': [[8910, 57232], [10959, 58217]],
-            'label_anchor': 'mb'
         },
         1638: {  # Nexus of Eternity
             'continent_rect': [[4633, 58059], [4633, 58059]],
@@ -558,7 +575,7 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         872: {  # Fractals of the Mists
             'continent_rect': [[46336, 31568], [48192, 32208]],
-            'label_rect': [[46208, 31568], [48320, 32208]],
+            'label_rect': [[46208, 31632], [48320, 32208]],
             'label_size': 0.7
         },
         1185: {  # Lake Doric
@@ -591,18 +608,6 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_rect': [[28929, 100890], [30397, 101657]],
             'label_size': 0.9
         },
-        1432: {  # Aetherblade Hideout
-            # 'continent_rect': [[23367, 103145], [26055, 103865]],
-        },
-        1437: {  # Harvest Temple
-            # 'continent_rect': [[33222, 105550], [35206, 106270]],
-        },
-        1450: {  # Xunlai Jade Junkyard
-            # 'continent_rect': [[29793, 100170], [32417, 100890]],
-        },
-        1451: {  # Kaineng Overlook
-            # 'continent_rect': [[25768, 100660], [28072, 101380]],
-        },
         1480: {  # The Twisted Marionette
             'label_rect': [[50646, 32249], [51776, 33170]],
             'label_anchor': 'rm',
@@ -610,13 +615,13 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         1482: {  # The Battle for Lion's Arch
             'name': "The Battle for Lion's Arch",
-            'continent_rect': [[47584, 30288], [50592, 30928]],
-            'label_rect': [[47584, 30352], [50592, 30928]],
+            'continent_rect': [[47640, 30288], [50536, 30928]],
+            'label_rect': [[47640, 30352], [50536, 30928]],
             'label_size': 0.7
         },
         1485: {  # Old Lion's Court
             'continent_rect': [[46336, 30928], [48192, 31568]],
-            'label_rect': [[46208, 30928], [48320, 31568]],
+            'label_rect': [[46208, 30992], [48320, 31568]],
             'label_size': 0.7
         },
         1509: {  # The Wizard's Tower
@@ -637,12 +642,8 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         1564: {  # Mount Balrior
             'label_size': 0.9
         },
-        1609: {  # Guardian's Glade
-            'label_rect': [[8654, 57232], [11215, 58518]],
-            'label_anchor': 'mb'
-        },
         1638: {  # Nexus of Eternity
-            'continent_rect': [[3514, 56665], [5946, 57385]]
+            'continent_rect': [[3538, 56665], [5922, 57385]]
         },
     }
 }
