@@ -226,7 +226,7 @@ all_zone_data_overrides: dict[int, dict] = {
         'continent_rect': [[46720, 32256], [48000, 33792]]
     },
     336: {  # Chantry of Secrets
-        'continent_rect': [[48896, 32576], [49664, 33280]]
+        'continent_rect': [[48996, 32780], [49548, 33280]]
     },
     872: {  # Fractals of the Mists
         'continent_id': 1,
@@ -383,11 +383,15 @@ all_zone_data_overrides: dict[int, dict] = {
     1480: {  # The Twisted Marionette
         'continent_rect': [[51446, 32249], [52224, 33170]]
     },
+    1510: {  # Skywatch Archipelago
+        'label_rect': [[23590, 23498], [27302, 24826]],
+        'label_anchor': 'mt'
+    },
     1515: {  # Cosmic Observatory
         'continent_rect': [[26810, 23005], [27302, 23497]],
-    },
-    1520: {  # Temple of Febe
-        'continent_rect': [[24108, 22416], [24108, 22416]],
+        'label_rect': [[27366, 23005], [30438, 23497]],
+        'label_anchor': 'lm',
+        'label_size': 0.8
     },
     1575: {  # Mistburned Barrens
         'continent_rect': [[34063, 10361], [35720, 12921]],
@@ -459,7 +463,7 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_size': 0.7
         },
         336: {  # Chantry of Secrets
-            'label_rect': [[48640, 33312], [49920, 33856]],
+            'label_rect': [[48484, 33312], [50060, 33856]],
             'label_size': 0.7,
             'label_anchor': 'mt',
         },
@@ -491,7 +495,7 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
         },
         1303: {  # Mythwright Gambit
             'continent_rect': [[49331.4, 32136.9], [49331.4, 32136.9]],
-            'label_rect': [[46208, 32252], [49014, 32748]],
+            'label_rect': [[46208, 32236], [49014, 32748]],
             'label_anchor': 'rt',
             'label_size': 0.6
         },
@@ -532,16 +536,26 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_size': 0.6
         },
         1509: {  # The Wizard's Tower
-            'label_rect': [[24839, 21882], [28071, 22682]],
+            'label_rect': [[24871, 21882], [28071, 22682]],
             'label_anchor': 'lm',
             'label_size': 0.9
+        },
+        1520: {  # Temple of Febe
+            'continent_rect': [[24108, 22416], [24108, 22416]],
+            'label_rect': [[20652, 22336], [23836, 22944]],
+            'label_anchor': 'rt',
+            'label_size': 0.7
         },
         1523: {  # Convergence: Outer Nayos
             'name': "Convergence: Outer Nayos",
             'continent_rect': [[24108, 22416], [24108, 22416]],
-            'label_rect': [[21676, 21968], [23868, 22720]],
-            'label_anchor': 'rt',
-            'label_size': 0.8
+            'label_rect': [[20652, 21888], [23836, 22272]],
+            'label_anchor': 'rb',
+            'label_size': 0.7
+        },
+        1526: {  # Inner Nayos
+            'label_rect': [[19435, 22864], [23147, 24076]],
+            'label_anchor': 'mt'
         },
         1596: {  # Comosus Isle
             'label_rect': [[9844, 55500], [12020, 56908]],
@@ -628,22 +642,18 @@ conditional_zone_data_overrides: dict[type, dict[int, dict]] = {
             'label_rect': [[23271, 21882], [24935, 22650]],
             'label_size': 0.9
         },
-        1515: {  # Cosmic Observatory
-            # 'continent_rect': [[27302, 22650], [29866, 23434]],
-        },
         1520: {  # Temple of Febe
-            # 'continent_rect': [[19691, 24076], [21871, 24860]],
+            'continent_rect': [[19819, 21116], [21999, 21836]],
         },
         1523: {  # Convergence: Outer Nayos
             'name': "Convergence:\nOuter Nayos",
-            'continent_rect': [[19691, 20876], [21871, 21900]],
-            'label_size': 0.75
+            'continent_rect': [[19819, 20076], [21999, 21116]]
         },
         1564: {  # Mount Balrior
             'label_size': 0.9
         },
         1638: {  # Nexus of Eternity
-            'continent_rect': [[3538, 56665], [5922, 57385]]
+            'continent_rect': [[3538, 56601], [5922, 57321]]
         },
     }
 }
