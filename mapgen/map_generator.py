@@ -9,7 +9,7 @@ from PIL import Image
 from PIL.Image import Resampling
 from requests import HTTPError
 
-from data.map_images import tile_api_map_overlays
+from data.map_overlays import tile_api_map_overlays, tile_mixed_map_api_regions
 from mapgen.map_coordinates import tile_image_size, MapCoordinateSystem
 
 
@@ -88,6 +88,45 @@ class TileApiMapTileSource(MapTileSource):
             overlays.append((overlay_img, ov["continent_rect"]))
 
         return overlays
+
+
+class MixedMapTileSource(MapTileSource):
+    """
+    Map tile source that uses local disk tiles within specified rectangular regions
+    (in continent coordinates) and falls back to the web API for everything else.
+    """
+
+    def __init__(self, local_directory: str, max_zoom: int = 7):
+        self.local_source = LocalMapTileSource(local_directory)
+        self.web_source = TileApiMapTileSource()
+        self.max_zoom = max_zoom
+        self._disk_lock = threading.Lock()
+
+    def _is_tile_center_in_regions(self, zoom: int, x: int, y: int) -> bool:
+        # Scale tile dimensions to continent coordinates based on zoom level
+        tile_span = tile_image_size * (2 ** (self.max_zoom - zoom))
+        center_x = (x + 0.5) * tile_span
+        center_y = (y + 0.5) * tile_span
+
+        for (min_x, min_y), (max_x, max_y) in tile_mixed_map_api_regions:
+            if min_x <= center_x <= max_x and min_y <= center_y <= max_y:
+                return True
+        return False
+
+    def get_tile_image(self, continent: int, floor: int, zoom: int, x: int, y: int) -> Image.Image:
+        if self._is_tile_center_in_regions(zoom, x, y):
+            try:
+                # Synchronize disk reads to ensure sequential execution
+                with self._disk_lock:
+                    return self.local_source.get_tile_image(continent, floor, zoom, x, y)
+            except FileNotFoundError:
+                # Fallback to web source if local file is missing
+                return self.web_source.get_tile_image(continent, floor, zoom, x, y)
+        else:
+            return self.web_source.get_tile_image(continent, floor, zoom, x, y)
+
+    def get_max_parallel_workers(self) -> int:
+        return self.web_source.get_max_parallel_workers()
 
 
 class MapGenerator:
@@ -217,4 +256,6 @@ class MapGenerator:
                 return LocalMapTileSource(args.tiles_dir)
             case 'api':
                 return TileApiMapTileSource()
+            case 'mixed':
+                return MixedMapTileSource(args.tiles_dir)
         raise ValueError(f"Unknown tile source: {args.tiles}")

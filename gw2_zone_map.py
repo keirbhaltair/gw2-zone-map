@@ -23,14 +23,16 @@ def parse_arguments():
 
     sector_group = parser.add_mutually_exclusive_group()
     sector_group.add_argument('-c', '--continent', type=int, help="ID of the continent to generate the map for")
-    sector_group.add_argument('-l', '--layout', nargs='+', help=f"Name of the layout to generate the map for. Allowed values are: {list(map_layouts.keys())}")
+    sector_group.add_argument('-l', '--layout', nargs='+',
+                              help=f"Name of the layout to generate the map for. Allowed values are: {list(map_layouts.keys())}")
 
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
     parser.add_argument('-t', '--tiles', default='api',
-                        help="Source of map tile images. Allowed values are: 'local' (provided in a local directory structure, such as from that_shaman's map API), and 'api' (provided by the official tile API). Default is 'api'.")
-    parser.add_argument('-v', '--overlay', nargs='+', default=['zone_access', 'mastery'], help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
+                        help="Source of map tile images. Allowed values are: 'local' (provided in a local directory structure, such as from that_shaman's map API), 'api' (provided by the official tile API), and 'mixed' (official tile API in up-to-date regions, local tiles otherwise). Default is 'api'.")
+    parser.add_argument('-v', '--overlay', nargs='+', default=['zone_access', 'mastery'],
+                        help=f"Map overlays to generate. Allowed values are: {list(map_overlays.keys())}")
     parser.add_argument('-z', '--zoom', nargs='+', type=float, default=[3.4],
                         help="The zoom levels to generate the maps for. Does support decimal numbers as long as the zoom level exists when rounded up.")
     parser.add_argument('--api-load', action='store_true', default=False,
@@ -38,11 +40,14 @@ def parse_arguments():
     parser.add_argument('--api-save', action='store_true', default=False,
                         help='Optionally saves the data downloaded from the REST API to the api-cache directory, to be loaded later by the --api-load parameter in case the API service is down.')
     parser.add_argument('--debug', action='store_true', help="Renders debugging overlays, such as text label regions.")
-    parser.add_argument('--lang', nargs='+', default=['en'], help="Languages to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
-    parser.add_argument('--no-legend', dest='legend', action='store_false', help="Marks if the overlay legends should be generated.")
+    parser.add_argument('--lang', nargs='+', default=['en'],
+                        help="Languages to generate the map for (en, es, de, fr). Default is en. (Not fully supported yet.)")
+    parser.add_argument('--no-legend', dest='legend', action='store_false',
+                        help="Marks if the overlay legends should be generated.")
     parser.add_argument('--no-overrides', dest='overrides', action='store_false',
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
-    parser.add_argument('--tiles-dir', default='tiles', help="If tiles are set to 'local', name of the input tiles directory, such as from that_shaman's map API.")
+    parser.add_argument('--tiles-dir', default='tiles',
+                        help="If tiles are set to 'local', name of the input tiles directory, such as from that_shaman's map API.")
 
     args = parser.parse_args()
     if not args.continent and not args.layout:
@@ -98,7 +103,6 @@ def generate_maps(args):
                         part_images[lang][overlay_name].append((part_top_left, part_image_copy))
 
                         print(f"Map overlay '{overlay_name}' for language '{lang}' finished.")
-
 
             for lang in part_images.keys():
                 for overlay_name in part_images[lang].keys():
