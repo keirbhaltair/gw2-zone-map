@@ -27,6 +27,7 @@ def parse_arguments():
                               help=f"Name of the layout to generate the map for. Allowed values are: {list(map_layouts.keys())}")
 
     parser.add_argument('-f', '--format', default='jpg', help="Output file format")
+    parser.add_argument('-q', '--quality', type=int, default=95, help="Quality of the output file (only affects JPG format)")
     parser.add_argument('-o', '--output', default='output', help="The output directory")
     parser.add_argument('-s', '--scale', type=float, default=1, help="Overlay scaling factor, default is 1.")
     parser.add_argument('-t', '--tiles', default='api',
@@ -48,6 +49,8 @@ def parse_arguments():
                         help="Marks if custom zone data overrides to the official API should be ignored (by default they are applied).")
     parser.add_argument('--tiles-dir', default='tiles',
                         help="If tiles are set to 'local', name of the input tiles directory, such as from that_shaman's map API.")
+    parser.add_argument('--zoom-interpolate', default='exponential',
+                        help="How non-integer zoom levels should be handled. Supported values: exponential, linear")
 
     args = parser.parse_args()
     if not args.continent and not args.layout:
@@ -70,17 +73,19 @@ def generate_maps(args):
     zone_data = load_zone_data(args.lang, args.api_save, args.api_load)
     print(f"Data loaded.")
 
+    scale_factor = args.scale
+    zoom_interpolation = args.zoom_interpolate
+
     for layout_name, map_layout in choose_map_layouts(args):
         for zoom in args.zoom:
             print(f"Generating maps for layout '{layout_name}' at zoom {zoom}...")
             part_images = {}
 
             map_coord = None
-            scale_factor = args.scale
             for sector_index, part in enumerate(map_layout.parts, start=1):
                 sector = part[1]
                 map_params = continent_map_params[sector.continent_id]
-                map_coord = MapCoordinateSystem(map_params, zoom, sector)
+                map_coord = MapCoordinateSystem(map_params, zoom, zoom_interpolation, sector)
                 part_top_left = map_coord.continent_to_full_image_coord(part[0], False)
 
                 part_image = map_generator.generate_map_image(sector.continent_id, 1, map_coord, sector_index, len(map_layout.parts))
@@ -106,7 +111,7 @@ def generate_maps(args):
 
             for lang in part_images.keys():
                 for overlay_name in part_images[lang].keys():
-                    zoom_text = str(zoom).replace('.', '-')
+                    zoom_text = str(zoom).replace('.', '-') + ('-lin' if zoom_interpolation == 'linear' else '')
                     output_path = f'{args.output}/{layout_name}_{overlay_name}_z{zoom_text}_{lang}.{args.format}'
 
                     if len(part_images[lang][overlay_name]) == 1:
@@ -117,7 +122,11 @@ def generate_maps(args):
                     if args.legend:
                         map_overlays[overlay_name].draw_legend(full_image, map_layout, map_coord, scale_factor)
 
-                    full_image.save(output_path, quality=95 if args.format == 'jpg' else None)
+                    if args.format == 'jpg':
+                        print(f"Saving full image in format {args.format.upper()} and quality {args.quality}...")
+                    else:
+                        print(f"Saving full image in format {args.format.upper()}...")
+                    full_image.save(output_path, quality=args.quality if args.format == 'jpg' else None)
 
             print(f"\nMaps for layout '{layout_name}' at zoom {zoom} finished.")
 

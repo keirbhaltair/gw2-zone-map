@@ -25,8 +25,12 @@ tile_api_map_overlays: list[dict[str, Any]] = [
     }
 ]
 
-# Regions for the 'mixed' tile source where local file system's tiles should be used instead of the official API.
+# Regions for the 'mixed' tile source per continent ID where local file system's tiles should be used instead of the official API.
 # To be used when the official API is not up-to-date in a certain region, but updated local tile files exist (such as those from that_shaman).
-tile_mixed_map_api_regions = [
-    [[0, 32768], [16384, 72704]]  # Castora
-]
+tile_mixed_map_local_regions = {
+    1: [  # Continent: Tyria
+        [[0, 0], [81920, 8960]],  # Top of the continent
+        [[0, 111104], [81920, 114688]],  # Bottom of the continent
+        [[0, 32768], [16384, 72704]],  # Castora
+    ]
+}

@@ -9,7 +9,7 @@ from PIL import Image
 from PIL.Image import Resampling
 from requests import HTTPError
 
-from data.map_overlays import tile_api_map_overlays, tile_mixed_map_api_regions
+from data.map_overlays import tile_api_map_overlays, tile_mixed_map_local_regions
 from mapgen.map_coordinates import tile_image_size, MapCoordinateSystem
 
 
@@ -102,19 +102,22 @@ class MixedMapTileSource(MapTileSource):
         self.max_zoom = max_zoom
         self._disk_lock = threading.Lock()
 
-    def _is_tile_center_in_regions(self, zoom: int, x: int, y: int) -> bool:
+    def _is_tile_center_in_regions(self, continent: int, zoom: int, x: int, y: int) -> bool:
+        if continent not in tile_mixed_map_local_regions:
+            return False
+
         # Scale tile dimensions to continent coordinates based on zoom level
         tile_span = tile_image_size * (2 ** (self.max_zoom - zoom))
         center_x = (x + 0.5) * tile_span
         center_y = (y + 0.5) * tile_span
 
-        for (min_x, min_y), (max_x, max_y) in tile_mixed_map_api_regions:
+        for (min_x, min_y), (max_x, max_y) in tile_mixed_map_local_regions[continent]:
             if min_x <= center_x <= max_x and min_y <= center_y <= max_y:
                 return True
         return False
 
     def get_tile_image(self, continent: int, floor: int, zoom: int, x: int, y: int) -> Image.Image:
-        if self._is_tile_center_in_regions(zoom, x, y):
+        if self._is_tile_center_in_regions(continent, zoom, x, y):
             try:
                 # Synchronize disk reads to ensure sequential execution
                 with self._disk_lock:
